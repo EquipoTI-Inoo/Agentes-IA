@@ -1,3 +1,4 @@
+# DEPRECATED: se elimina tras verificar la transcripción de Gemini (Fase 0.2.2)
 """
 Enterprise Video Forensics Engine
 Performs 100% full-duration audio transcription with millisecond timestamps (Faster-Whisper)
@@ -13,7 +14,10 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from faster_whisper import WhisperModel
+try:
+    from faster_whisper import WhisperModel
+except ImportError:
+    WhisperModel = None
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("VideoForensics")
@@ -44,6 +48,11 @@ class VideoForensicsEngine:
     """Enterprise engine for full-video multimodal deconstruction (Audio + Visuals)."""
 
     def __init__(self, whisper_model_size: str = "base") -> None:
+        if WhisperModel is None:
+            raise RuntimeError(
+                "VideoForensicsEngine está DEPRECATED y faster-whisper no está instalado. "
+                "Gemini multimodal maneja la transcripción y el análisis nativamente (Fase 0.2)."
+            )
         logger.info(f"Cargando modelo Whisper ({whisper_model_size})...")
         # Runs on CPU with int8 quantization for high speed, or CUDA if available
         self.whisper = WhisperModel(whisper_model_size, device="cpu", compute_type="int8")

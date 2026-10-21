@@ -37,9 +37,9 @@ class Settings(BaseSettings):
     )
 
     # LLM Providers & Models (Gemini-only in Free Tier mode)
-    LLM_PROVIDER: Literal["gemini", "anthropic", "openai"] = Field(
+    LLM_PROVIDER: Literal["gemini"] = Field(
         default="gemini",
-        description="Primary LLM provider for evaluation and intelligence",
+        description="Primary LLM provider for evaluation and intelligence (Gemini Free Tier)",
     )
     LLM_MODEL: str = Field(
         default="gemini-2.5-flash",
@@ -54,24 +54,6 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: Optional[str] = Field(
         default=None,
         description="Google Gemini API Key",
-    )
-    ANTHROPIC_API_KEY: Optional[str] = Field(
-        default=None,
-        description="Anthropic Claude API Key (optional/legacy)",
-    )
-    OPENAI_API_KEY: Optional[str] = Field(
-        default=None,
-        description="OpenAI API Key (optional/legacy)",
-    )
-
-    # Forensics & Transcription
-    WHISPER_MODEL: str = Field(
-        default="small",
-        description="Whisper model size for audio transcription (e.g. tiny, base, small)",
-    )
-    WHISPER_DEVICE: Literal["cpu", "cuda"] = Field(
-        default="cpu",
-        description="Hardware acceleration target for Whisper",
     )
 
     # Geographical Markets (comma-separated string or list)
@@ -158,8 +140,6 @@ class Settings(BaseSettings):
         "GEMINI_RPD_MAIN",
         "GEMINI_RPD_CHEAP",
         "GEMINI_API_KEY",
-        "ANTHROPIC_API_KEY",
-        "OPENAI_API_KEY",
         mode="before",
     )
     @classmethod

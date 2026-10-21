@@ -1,6 +1,5 @@
 # Jinora Production Dependencies
 meta-ads-collector==1.6.0
-faster-whisper==1.2.1
 fastapi>=0.115.0
 uvicorn[standard]>=0.30.0
 jinja2>=3.1.4
@@ -14,15 +13,14 @@ Pillow>=10.0.0
 pydantic>=2.0.0
 pydantic-settings>=2.0.0
 
-# AI & LLM Providers
-google-genai>=0.1.0
-anthropic>=0.25.0
-openai>=1.20.0
+# AI & LLM Provider (Gemini Free Tier)
+google-genai>=2.32.0
 
-# Utilities & Forensics
+# Utilities & Media Inspection
+pymediainfo>=7.0.0
+imagehash>=4.3.1
 tenacity>=8.2.0
 pyyaml>=6.0.0
-imagehash>=4.3.1
 tzdata>=2024.1
 
 # Testing
