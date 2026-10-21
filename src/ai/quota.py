@@ -325,3 +325,8 @@ def should_evaluate_ad(
 
 # Global singleton instance
 quota_guard = QuotaGuard()
+
+
+def get_quota_guard() -> QuotaGuard:
+    """Return the global QuotaGuard singleton instance."""
+    return quota_guard

@@ -15,10 +15,14 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 from meta_ads_collector import MetaAdsCollector
+from meta_ads_collector.collector import SEARCH_KEYWORD, SEARCH_PAGE
 from meta_ads_collector.filters import FilterConfig
 from meta_ads_collector.models import Ad, AdCreative
 from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
 
+import random
+import time
+from src.collect.relevance import TwoLayerRelevanceFilter
 from src.relevance import is_ad_relevant
 
 # Ensure stdout handles UTF-8 on Windows
@@ -40,10 +44,15 @@ logger = logging.getLogger("MetaAdsHunter")
 class MetaAdsHunter:
     """High-level hunter for Meta Ads Library with automatic media download and metadata archiving."""
 
-    def __init__(self, output_dir: str = "downloads") -> None:
+    def __init__(
+        self,
+        output_dir: str = "downloads",
+        relevance_filter: Optional[TwoLayerRelevanceFilter] = None,
+    ) -> None:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.collector = MetaAdsCollector()
+        self.relevance_filter = relevance_filter or TwoLayerRelevanceFilter()
 
     def close(self) -> None:
         """Close collector sessions."""
@@ -130,8 +139,14 @@ class MetaAdsHunter:
         media_filter: str = "video",  # 'video', 'image', 'all'
         limit: int = 10,
         min_active_days: int = 0,
+        page_ids: Optional[List[str]] = None,
+        competitor: Optional[Dict[str, Any]] = None,
+        use_two_layer_relevance: bool = True,
     ) -> List[Dict[str, Any]]:
-        """Search ads by keyword or brand name."""
+        """
+        Search ads either by page_id (official competitor mode) or keyword (discovery mode).
+        If competitor has page_ids, page_id search takes priority over query.
+        """
         has_video = True if media_filter == "video" else None
         has_image = True if media_filter == "image" else None
 
@@ -142,41 +157,81 @@ class MetaAdsHunter:
 
         target_country = "US" if country.upper() == "ALL" else country.upper()
 
-        logger.info(
-            f"Buscando anuncios: query='{query}', country='{target_country}', media='{media_filter}', limit={limit}"
-        )
+        # Check if competitor provides page_ids
+        resolved_page_ids: List[str] = []
+        if competitor and competitor.get("page_ids"):
+            resolved_page_ids = [str(pid) for pid in competitor.get("page_ids", []) if pid]
+        elif page_ids:
+            resolved_page_ids = [str(pid) for pid in page_ids if pid]
 
-        raw_results = self.collector.collect(
-            query=query,
-            country=target_country,
-            max_results=limit,
-            filter_config=filter_cfg,
-        )
+        # Rate-limiting polite delay with random jitter (1.0 to 2.5s)
+        time.sleep(random.uniform(1.0, 2.5))
+
+        if resolved_page_ids:
+            logger.info(
+                f"Buscando por PAGE_ID={resolved_page_ids} (competidor='{competitor.get('name') if competitor else 'N/A'}'), "
+                f"country='{target_country}', media='{media_filter}', limit={limit}"
+            )
+            raw_results = self.collector.collect(
+                page_ids=resolved_page_ids,
+                search_type=SEARCH_PAGE,
+                country=target_country,
+                max_results=limit,
+                filter_config=filter_cfg,
+            )
+        else:
+            logger.info(
+                f"Buscando por KEYWORD DISCOVERY: query='{query}', country='{target_country}', media='{media_filter}', limit={limit}"
+            )
+            raw_results = self.collector.collect(
+                query=query,
+                search_type=SEARCH_KEYWORD,
+                country=target_country,
+                max_results=limit,
+                filter_config=filter_cfg,
+            )
 
         logger.info(f"Encontrados {len(raw_results)} anuncios brutos.")
 
-        parsed_ads: List[Dict[str, Any]] = []
+        raw_parsed_ads: List[Dict[str, Any]] = []
         for ad in raw_results:
             ad_dict = self._ad_to_dict(ad)
             if min_active_days > 0 and ad_dict["days_active"] < min_active_days:
                 continue
+            raw_parsed_ads.append(ad_dict)
 
-            # Extract first creative texts for relevance audit
-            creatives = ad_dict.get("creatives", [])
-            first_c = creatives[0] if creatives else {}
-            ad_for_check = {
-                "page_name": ad_dict.get("page_name"),
-                "headline": first_c.get("title") or "",
-                "body_text": first_c.get("body") or "",
-                "link_url": first_c.get("link_url") or "",
-            }
+        parsed_ads: List[Dict[str, Any]] = []
 
-            relevant, reason = is_ad_relevant(ad_for_check, target_query=query)
-            if not relevant:
-                logger.warning(f"  [X] Descartado por Jinora (Irrelevante): {ad_dict.get('page_name')} ({ad_dict.get('ad_id')}) -> {reason}")
-                continue
-
-            parsed_ads.append(ad_dict)
+        if use_two_layer_relevance:
+            # Filter through modern Two-Layer Relevance System (Layer 1 rules + Layer 2 Gemini Flash-Lite)
+            filtered_pairs = self.relevance_filter.filter_ads(raw_parsed_ads)
+            for ad_dict, rel_res in filtered_pairs:
+                if rel_res.is_relevant or rel_res.pending_relevance:
+                    ad_dict["relevance_result"] = rel_res.model_dump()
+                    if rel_res.pending_relevance:
+                        ad_dict["status"] = "pending_relevance"
+                    parsed_ads.append(ad_dict)
+                else:
+                    logger.warning(
+                        f"  [X] Descartado por Relevancia (Capa {'1' if 'Capa 1' in rel_res.reason else '2'}): "
+                        f"{ad_dict.get('page_name')} ({ad_dict.get('ad_id')}) -> {rel_res.reason}"
+                    )
+        else:
+            # Fallback legacy filter
+            for ad_dict in raw_parsed_ads:
+                creatives = ad_dict.get("creatives", [])
+                first_c = creatives[0] if creatives else {}
+                ad_for_check = {
+                    "page_name": ad_dict.get("page_name"),
+                    "headline": first_c.get("title") or "",
+                    "body_text": first_c.get("body") or "",
+                    "link_url": first_c.get("link_url") or "",
+                }
+                relevant, reason = is_ad_relevant(ad_for_check, target_query=query)
+                if not relevant:
+                    logger.warning(f"  [X] Descartado por Jinora (Irrelevante): {ad_dict.get('page_name')} ({ad_dict.get('ad_id')}) -> {reason}")
+                    continue
+                parsed_ads.append(ad_dict)
 
         # Sort by days active descending (longest running winning ads first)
         parsed_ads.sort(key=lambda x: x.get("days_active", 0), reverse=True)
