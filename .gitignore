@@ -1,0 +1,33 @@
+# Environment variables
+.env
+
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Environments
+.venv/
+venv/
+ENV/
+env/
+
+# Media downloads & database backups
+downloads/
+data/*.db
+data/backup/
+logs/
+*.log
+
+# Pytest & testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# OS specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store

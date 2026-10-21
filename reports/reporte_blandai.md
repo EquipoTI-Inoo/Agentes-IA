@@ -1,0 +1,299 @@
+# Reporte de Inteligencia Publicitaria: BLAND AI
+**Total Anuncios Analizados:** 1
+**Fecha de Extracción:** C:\Users\Gabo\Documents\Jinora
+
+---
+
+## Resumen de Anuncios Ganadores (Ordenados por Longevidad)
+
+### #1. Kong (Ad ID: `1763243594393368`)
+- **Días Activo:** `358 días` 🔥 Ganador Longevo
+- **Plataformas:** FACEBOOK, INSTAGRAM, AUDIENCE_NETWORK, MESSENGER
+- **Titular:** *1000's Of Proven Ads in Seconds*
+- **Gancho / Copy:**
+> “This thing is batsh*t CRAZY! It increased my ROAS 72% INSTANTLY”  It requires zero change to your business.  You paste in some basic info about your biz.  And it spits out high-converting ads (creative + copy).  You paste ‘em into your ads manager.  Ad performance skyrockets.  ROAS improves.  Ads scale.  You make more moolah.  So if you’d like:  🌶️ Guaranteed 20% Uplift In ROAS  🔥 1000's Of Proven Ads in Seconds  💰 Scale FB Ads To $10k/Day  🔪 Slash Your CPA by 20%  💸 Higher conversion rates  So you can wave goodbye to ad fatigue.  Low ROAS.  Lack of new creatives.  And sh*tty agencies.  Once you plug it into your business…  It GUARANTEES to increase your ROAS by 20%.  Or you don’t pay.  Click the link below and try it for free for 7 days.  👉  https://go.kingkong.co/signup
+- **CTA:** `Learn more` -> [https://getkong.ai/](https://getkong.ai/)
+- **Formato:** 🎥 Video MP4
+- **Archivos Descargados Localmente:**
+  - `video_0.mp4`
+  - `image_0.jpg`
+- **🎙️ Transcripción Completa del Video (100%):**
+> "This is an AI, and today we're going to see that it can replace a hundred of the employees in my business. I wasn't expecting things to get this out of hand. This is action. You look nervous, you have your cake looking up. These ads are so much better. They're ridiculous. And on this USB stick is the wild and scandalous future of marketing that I uncovered in the process and how you can use it to literally double your row ads in the next 30 days guarantee. I've done a hundred million dollars in my agency. I'm a shark on shark tank and I've generated my clients over 7.8 billion in sales in over a thousand different niches. Just over nine months ago I had grown tired of hearing about everyone and their mother talk about how AI is coming to replace everyone's jobs. There's no question artificial intelligence will remake the workplace. So I wanted to actually put it to the test once and for all. So I turned to chat GPD. I told her to write me a successful CEO's morning routine. First things first I headed to the gym to get a diabolical pump at 8 AMI arrived at the office and continued through my AI planned morning routine. Putting together a morning routine was chill, but it was far from actually taking over my business. To do that it would have to show me that it could actually do the work of my team. Our biggest constraint right now is copywriting. How should I increase the output of my Facebook ads team? What's this? A headline battle? It told me to challenge three of my team members in a timed copywriting battle. So I decided to pit them up against chat GPD to see who could write the best Facebook ads. I'll be the one controlling chat GPD in this battle against my team. And we each have five minutes to produce five headlines and a single body copy to sell to our designated avatar. And so the winner is completely unbiased. I am bringing my head of paid social in-sem to be the judge of which ads are the best. Alrighty, Liz. Hi, sorry. Let's see if chat GPD can replace my pro copywriters. You ready? Yep. Your time starts. Now. This is Liz. And she has been assigned Madison from Melbourne. The product she's selling is a dental solution to get a million dollar smile. Why am I going through all these great lengths to set up all of these tests? Well, if you've been running ads online for any length of time, you would have noticed that the cost to advertise just keeps on going up and up and up. The longer the time goes on, the more that these platforms are removing any control from anyone running ads, and they're leveraging their AI to do most of the heavy lifting. Hello. Well, I've done my headlines just not by copy. Three minutes left. Time to see how chat GPD stacks up against copywriter Liz. Read me your headlines one by one. Okay. What a flawless smile without the hefty dental price tag. Unique dental tech gives 5,349 women flawless teeth in 30 days. Not bad. It's got a new and unique solution, so it's unlike anything that I've ever seen or heard before. However, we've also got the social proof of having 5,349 women. And then we've got the big benefit of flawless teeth and also a specificity around time frame of 30 days. Let's see what I came up with with chat GPD tape. Melbourne's ultimate smile transformation, no more missing teeth, 5 transform your smile, transform your life. Pretty good. The issue with all of these headlines is they are like boiled rice. They're like any spice or specificity. Look at this headline. Melbourne's ultimate smile transformation, no more missing teeth. So there's nothing specific about it other than the location that it is, and the big benefit is missing teeth. So when you run stuff like this, you end up spending two, three, four, or even 10X the cost to get a lead or to get a sale, because it's just so watered down and so vague. It's not really like a coffee. We took turns reading our coffee and it was clear from the results that chat GPD wasn't able to produce coffee of the same standard as my trained team of copyrighters. I didn't even get one round. So it's been six hours since I've been trying to replace my business with AI and chat GPD just isn't coming in clutch. But a new chat GPD was not the only tool out there, so I tried optimizing my calendar with an app called Motion, which was cool, but could definitely not replace my actual assistant. Tried creating an AI version of myself in Hagen. Hey guys, it's Sabrina Super here. And even scoured the internet to see how I could more intelligently prompt chat GPD to write killer headlines and copy myself. I am nine and a half hours into the experiment and I'm just not getting any progress. So I'm gonna have to figure something else out. I spent the next nine months deep in the AI rabbit hole in search for a better way to use it in my business. After many, many months of marking around with chat GPD and pretty much every single AI writing tool that exists on the internet, I have finally done it. I have cracked the code, I developed my own AI software, and I fed this thing over $200 million in advertising research. I'm talking about which of the ads that got the highest CTR, which of the ads that brought in the lowest cost per lead, and the most amount of rowers. And this data is responsible for generating over $7.8 billion in sales and rowers. And I've called this little bad boy, Kong. And to show you how powerful this thing is, I'm gonna be pitting it up against some worthy opponents. Ooh, I've already spit out 171 banger headlines. The first one being our good old faithful friend, chat GPD. Two minutes on the timer, and we are writing copy for a fine lady called Madison from Melbourne, and we are giving her a solution to give her a million dollar smile. Alrighty, let's do it. Let the games begin. At the end of the two minutes, we read out the headlines and body copy to compare the quality produced by each AI platform. Don't let dental issues hold you back any longer. Join countless satisfied clients who have transformed their smiles and their lives. Blah, blah, blah, blah, blah, blah, blah, blah, blah. Way too vague, way too watered down. Let's switch gears and have a look at what this spicy little Kong has put together. Did you know three out of four adults feel self-conscious about their teeth? It's true. Missing, cracked, or decaying teeth can make you feel down. But here's the good news, you feel confident. This isn't just about looks, it's about feeling great. Just hit the link, pick a time that suits you, and let's talk. Man, these ads are so much better than chat GPD's ridiculous. I wonder how it would go against Lewis. Lewis is one of my senior paid social specialists. He's one of the best performing campaigns two years in a row, and the man is a beast at copywriting. Best copywriter at King Kong? Lewis. Yeah, Lewis is best copywriter for sure. Yo, how confident are you in going head-to-head in a headline battle against AI? Very confident. If you lose, you have to get my face as a semi-permanent tattoo on your body. Okay. Alright, let's do it. You are going to be writing an ad for a course that teaches people how to quit their nine-to-five job and start their own e-commerce side password. Five minutes, your time starts now. This hip sweep has nothing against my Kong AI. Going to sweep the floor with his ass. Three minutes left. Oh my god. One minute until he's like, I'm like, you're going to bring out lines. Once the five minutes was up, we read out our headlines and body copy. Let's see how Kong stacks up against my own personally trained king of copy. Give me three of your best headlines. I scaled my e-commerce biz from $0 to $30k per month with this. This gave me the balls to finally quit my training nine-to-five. I never felt so lost. That's an incomplete headline. An incomplete headline. This has spat out 171 headlines. Crazy. Add 10k to your monthly income. It's this simple $100,000 e-commerce secrets for less than a fancy coffee. How people in their 20s are secretly becoming a living mess. This one is really good. Alright, let's move over to body copy. This e-commerce strategy skyrocketed my e-commerce business after 14 failed attempts. I always dreamt of quitting my nine-to-five, but I never had the balls. You don't have a call to action in the ad. You get that far. Waking up to an alarm that feels like a punch in the gut doesn't it? Dragging yourself to a job that eats away your soul. Then imagine a different morning. One way you wake up, no alarm, no dread. It is so specific and it talks so directly to the target market that it is impossible to ignore. Just pop your e-mail in here. You lose nothing but a few minutes. But imagine if it works. This is what winning copy looks like. That's ridiculous. That's insane, right? Let's actually use this copy. Run it live and let's see what converts and what doesn't. After the battle, we got Lewis semi-inked with the tattoo of my head. Alright, so let's go talk to Lewis and get an update on how the Kong ads are performing versus his. My headline, $8,000 spent $64 a week. We got the Kong headline, $8,000, $3,000 spent $57 a week. So it's beaten by CPL by $7 bucks. $1.16% clicks to rate versus a $1.37. So it's a damn bitch. She is spicy. It's unreal. Yeah, actually think it. Right's better copy than you, Sabri. Think it. Right's better copy than you, Sabri. Right's better copy than you, Sabri. Some people think I'm a moody little sucker. But if you ask me, I'm the best goddamn AI writing tool on the internet. The time has come. It's time for Kong to finally meet its master. I'm going head to head against Kong in the ultimate showdown. So buckle up because it's Kong versus the internet daddy. I spit out copy that's 10 times better than 99% of copy writers. Yep, I will grab your favorite media buyer by the balls and whisper in his ear. Who's your daddy? Time cap, five minutes. Let's roll. All right, we're writing a ad for a property investment company targeted towards a 43 year old Melbourne man looking to replace his nine to five income through property investment. What you got, you created me and I'll still kick your ass you little bitch. I'll shut your mouth. I've already spit out 171 banger headlines. Times up, let's read our ads. Millionaire property investor reveals income replacing hack. Millionaire property investors retirement secret revealed. New legal property scheme replaces nine to five salary in eight months. How a 37 year old accountant built a nine million dollar property portfolio. This is turning everyday Americans into millionaires. I am going to bitch slap you back to charge everything. Body copy. Six a.m. alarm clock goes off. Grab phone and roll out of bed. Sit on the toilet as calendar notifications pop up on your phone. There's no time for breakfast so you chug down a copy on your way out the door. Go ahead and read me your ad. What about to choke you out harder than could be? Millionaire property investor discovers easy strategy to erase nine to five jobs. Tired of your nine to five grind? Try this. Weird property loophole lets you ditch nine to five jobs. Unusual secret of a millionaire still working a day job. Exhausted nine to five. Now millionaire property tycoon. Are you tired from the endless cycle of day to day work? That alarm clock forcing you into another day you dread? You're not alone. Imagine a life where you wake up because you're ready. Not because you have to. That dream is real because you left that soul sucking nine to five jobs behind. Your family has never been prouder. This isn't a fantasy. It's your life thanks to an unusual property strategy that worked. We've laid out the blueprint in a brand new report. Today it's yours for free. Just enter your email here. So there's the two ads. I can't be the judge. But what I will say is from the time it took me to write five headlines and half a body copy. This thing had written two body copies and over 181 headlines. On this USB is an army of a thousand AI marketing box. That once you plug it into your business guarantees to increase your row as by 20% in the next 30 days. Imagine having an army of a thousand AI marketing bots in your business that has spent over 200 million dollars on ads built 1200 plus funnels in a thousand plus different niches and generated over $7.8 billion in sales. Lee Jen, e-com, low ticket, high ticket, you name it. It's Chad Stale, the fuck out of it. What would that do for your business? What would it be worth? Heck, what do you think that you'd have to pay for something like that? An army of a thousand AI marketing bots working 24-7 to grow your business. They'll never call in sick, go around holiday or leave you the second and competitor offers them more money. Would it be a hundred K per year? Well, what did I told you that you could get started for just $19.00 per month? But it gets better. If this AI doesn't drop your cost per lead or increase your ROI by at least 20% in the next 30 days, you don't pay them a single cent. Look, if you've been prompt wrestling with ChatGPT to get some half-baked shit that couldn't sell a lollipop to a five-year-old, you are not alone. Because most AI copywriting tools suck harder than a Dyson, but Kong doesn't. It's like ChatGPT's better looking older brother after a couple of spicy margaritas with a vengeance for selling. This little bad boy uses proprietary AI technology that guarantees to increase your rowers by 20% or you don't pay. Kong acts like a forensic detective and collects stalker-level insights into your dream customer. It then uses these insights and combines them with $7.8 billion worth of marketing intel to spit out Facebook ads, headlines, landing page copy that's better than 99% of copywriters. With Kong, you'll be pumping out 100 times more ads, running more split tests and iterating your way to the bullseye of your market a thousand times faster than the competition. AI is changing the face of business, but it's not the AI that you need to fear. It's the AI-wielding barbarians that are riding over the hill on horseback coming from your customers that you need to fear. So I have put an insane amount of work into Kong to get it to the stage where it's now beating 99% of copywriters. You can request an invitation on the link below and see for yourself what the fuss is all about. This thing is seriously a game changer."
+- **⏱️ Ritmo de Locución:** `166.7 palabras/min` | **Duración:** `951.53s`
+- **🎞️ Desglose Visual (1 frame/seg):** `952 fotogramas extraídos` en carpeta `frames/`
+- **Línea de Tiempo Exacta:**
+  - `[00.00s -> 06.54s]` This is an AI, and today we're going to see that it can replace a hundred of the employees in my business.
+  - `[06.98s -> 09.80s]` I wasn't expecting things to get this out of hand.
+  - `[10.54s -> 11.60s]` This is action.
+  - `[12.14s -> 14.64s]` You look nervous, you have your cake looking up.
+  - `[15.00s -> 17.74s]` These ads are so much better.
+  - `[18.02s -> 18.70s]` They're ridiculous.
+  - `[19.30s -> 24.94s]` And on this USB stick is the wild and scandalous future of marketing that I uncovered in the process
+  - `[24.94s -> 30.10s]` and how you can use it to literally double your row ads in the next 30 days guarantee.
+  - `[30.54s -> 32.56s]` I've done a hundred million dollars in my agency.
+  - `[32.80s -> 39.44s]` I'm a shark on shark tank and I've generated my clients over 7.8 billion in sales in over a thousand different niches.
+  - `[39.56s -> 47.46s]` Just over nine months ago I had grown tired of hearing about everyone and their mother talk about how AI is coming to replace everyone's jobs.
+  - `[47.78s -> 51.18s]` There's no question artificial intelligence will remake the workplace.
+  - `[51.54s -> 54.26s]` So I wanted to actually put it to the test once and for all.
+  - `[54.26s -> 55.76s]` So I turned to chat GPD.
+  - `[56.42s -> 59.24s]` I told her to write me a successful CEO's morning routine.
+  - `[59.72s -> 67.52s]` First things first I headed to the gym to get a diabolical pump at 8 AMI arrived at the office and continued through my AI planned morning routine.
+  - `[67.86s -> 72.74s]` Putting together a morning routine was chill, but it was far from actually taking over my business.
+  - `[73.00s -> 77.24s]` To do that it would have to show me that it could actually do the work of my team.
+  - `[78.04s -> 80.98s]` Our biggest constraint right now is copywriting.
+  - `[81.30s -> 85.48s]` How should I increase the output of my Facebook ads team?
+  - `[86.82s -> 89.32s]` What's this? A headline battle?
+  - `[92.58s -> 97.30s]` It told me to challenge three of my team members in a timed copywriting battle.
+  - `[97.50s -> 102.74s]` So I decided to pit them up against chat GPD to see who could write the best Facebook ads.
+  - `[102.74s -> 106.28s]` I'll be the one controlling chat GPD in this battle against my team.
+  - `[106.66s -> 113.30s]` And we each have five minutes to produce five headlines and a single body copy to sell to our designated avatar.
+  - `[113.60s -> 116.88s]` And so the winner is completely unbiased.
+  - `[117.08s -> 122.08s]` I am bringing my head of paid social in-sem to be the judge of which ads are the best.
+  - `[122.80s -> 124.02s]` Alrighty, Liz.
+  - `[124.54s -> 125.10s]` Hi, sorry.
+  - `[125.50s -> 128.88s]` Let's see if chat GPD can replace my pro copywriters.
+  - `[129.10s -> 129.28s]` You ready?
+  - `[129.52s -> 129.60s]` Yep.
+  - `[129.98s -> 130.76s]` Your time starts.
+  - `[132.02s -> 132.54s]` Now.
+  - `[133.84s -> 134.76s]` This is Liz.
+  - `[135.02s -> 137.18s]` And she has been assigned Madison from Melbourne.
+  - `[137.58s -> 141.42s]` The product she's selling is a dental solution to get a million dollar smile.
+  - `[141.82s -> 146.14s]` Why am I going through all these great lengths to set up all of these tests?
+  - `[146.38s -> 150.00s]` Well, if you've been running ads online for any length of time,
+  - `[150.18s -> 154.86s]` you would have noticed that the cost to advertise just keeps on going up and up and up.
+  - `[155.00s -> 156.74s]` The longer the time goes on,
+  - `[156.74s -> 161.62s]` the more that these platforms are removing any control from anyone running ads,
+  - `[161.86s -> 165.44s]` and they're leveraging their AI to do most of the heavy lifting.
+  - `[167.06s -> 167.64s]` Hello.
+  - `[168.22s -> 170.70s]` Well, I've done my headlines just not by copy.
+  - `[171.04s -> 171.78s]` Three minutes left.
+  - `[177.58s -> 181.40s]` Time to see how chat GPD stacks up against copywriter Liz.
+  - `[182.02s -> 183.34s]` Read me your headlines one by one.
+  - `[183.34s -> 183.74s]` Okay.
+  - `[184.14s -> 186.58s]` What a flawless smile without the hefty dental price tag.
+  - `[186.76s -> 190.82s]` Unique dental tech gives 5,349 women flawless teeth in 30 days.
+  - `[191.00s -> 191.36s]` Not bad.
+  - `[191.70s -> 193.86s]` It's got a new and unique solution,
+  - `[193.86s -> 196.40s]` so it's unlike anything that I've ever seen or heard before.
+  - `[196.68s -> 201.64s]` However, we've also got the social proof of having 5,349 women.
+  - `[201.78s -> 204.52s]` And then we've got the big benefit of flawless teeth
+  - `[204.52s -> 208.78s]` and also a specificity around time frame of 30 days.
+  - `[209.02s -> 210.96s]` Let's see what I came up with with chat GPD tape.
+  - `[210.96s -> 214.56s]` Melbourne's ultimate smile transformation, no more missing teeth,
+  - `[215.02s -> 218.02s]` 5 transform your smile, transform your life.
+  - `[218.40s -> 219.16s]` Pretty good.
+  - `[219.50s -> 224.20s]` The issue with all of these headlines is they are like boiled rice.
+  - `[224.42s -> 227.38s]` They're like any spice or specificity.
+  - `[227.50s -> 228.00s]` Look at this headline.
+  - `[228.46s -> 232.16s]` Melbourne's ultimate smile transformation, no more missing teeth.
+  - `[232.36s -> 235.40s]` So there's nothing specific about it other than the location that it is,
+  - `[235.64s -> 238.12s]` and the big benefit is missing teeth.
+  - `[238.12s -> 241.62s]` So when you run stuff like this, you end up spending two, three, four,
+  - `[241.74s -> 245.56s]` or even 10X the cost to get a lead or to get a sale,
+  - `[245.74s -> 248.26s]` because it's just so watered down and so vague.
+  - `[248.62s -> 249.50s]` It's not really like a coffee.
+  - `[249.90s -> 253.22s]` We took turns reading our coffee and it was clear from the results
+  - `[253.22s -> 257.44s]` that chat GPD wasn't able to produce coffee of the same standard
+  - `[257.44s -> 259.90s]` as my trained team of copyrighters.
+  - `[259.98s -> 261.28s]` I didn't even get one round.
+  - `[261.66s -> 266.56s]` So it's been six hours since I've been trying to replace my business
+  - `[266.56s -> 270.14s]` with AI and chat GPD just isn't coming in clutch.
+  - `[270.48s -> 273.26s]` But a new chat GPD was not the only tool out there,
+  - `[273.36s -> 276.00s]` so I tried optimizing my calendar with an app called Motion,
+  - `[276.36s -> 279.68s]` which was cool, but could definitely not replace my actual assistant.
+  - `[280.10s -> 282.88s]` Tried creating an AI version of myself in Hagen.
+  - `[283.20s -> 284.54s]` Hey guys, it's Sabrina Super here.
+  - `[284.82s -> 288.56s]` And even scoured the internet to see how I could more intelligently prompt
+  - `[288.56s -> 291.58s]` chat GPD to write killer headlines and copy myself.
+  - `[291.98s -> 294.76s]` I am nine and a half hours into the experiment
+  - `[294.76s -> 296.70s]` and I'm just not getting any progress.
+  - `[297.24s -> 299.56s]` So I'm gonna have to figure something else out.
+  - `[299.80s -> 303.18s]` I spent the next nine months deep in the AI rabbit hole
+  - `[303.18s -> 305.90s]` in search for a better way to use it in my business.
+  - `[325.20s -> 329.34s]` After many, many months of marking around with chat GPD
+  - `[329.34s -> 332.90s]` and pretty much every single AI writing tool that exists on the internet,
+  - `[332.90s -> 334.62s]` I have finally done it.
+  - `[334.70s -> 338.16s]` I have cracked the code, I developed my own AI software,
+  - `[338.46s -> 342.52s]` and I fed this thing over $200 million in advertising research.
+  - `[342.66s -> 345.14s]` I'm talking about which of the ads that got the highest CTR,
+  - `[345.32s -> 347.76s]` which of the ads that brought in the lowest cost per lead,
+  - `[347.76s -> 349.66s]` and the most amount of rowers.
+  - `[349.80s -> 353.78s]` And this data is responsible for generating over $7.8 billion
+  - `[353.78s -> 356.48s]` in sales and rowers.
+  - `[356.70s -> 359.26s]` And I've called this little bad boy, Kong.
+  - `[359.78s -> 361.92s]` And to show you how powerful this thing is,
+  - `[362.06s -> 364.90s]` I'm gonna be pitting it up against some worthy opponents.
+  - `[365.28s -> 368.52s]` Ooh, I've already spit out 171 banger headlines.
+  - `[368.96s -> 374.28s]` The first one being our good old faithful friend, chat GPD.
+  - `[374.68s -> 377.90s]` Two minutes on the timer, and we are writing copy
+  - `[377.90s -> 381.36s]` for a fine lady called Madison from Melbourne,
+  - `[381.36s -> 385.00s]` and we are giving her a solution to give her a million dollar smile.
+  - `[385.24s -> 387.06s]` Alrighty, let's do it. Let the games begin.
+  - `[387.88s -> 390.34s]` At the end of the two minutes, we read out the headlines
+  - `[390.34s -> 394.76s]` and body copy to compare the quality produced by each AI platform.
+  - `[394.92s -> 397.10s]` Don't let dental issues hold you back any longer.
+  - `[397.34s -> 401.60s]` Join countless satisfied clients who have transformed their smiles and their lives.
+  - `[401.84s -> 404.50s]` Blah, blah, blah, blah, blah, blah, blah, blah, blah.
+  - `[404.60s -> 406.52s]` Way too vague, way too watered down.
+  - `[406.72s -> 411.34s]` Let's switch gears and have a look at what this spicy little Kong has put together.
+  - `[411.34s -> 414.96s]` Did you know three out of four adults feel self-conscious about their teeth?
+  - `[415.58s -> 416.08s]` It's true.
+  - `[416.62s -> 420.10s]` Missing, cracked, or decaying teeth can make you feel down.
+  - `[420.52s -> 422.52s]` But here's the good news, you feel confident.
+  - `[422.94s -> 425.52s]` This isn't just about looks, it's about feeling great.
+  - `[425.60s -> 428.62s]` Just hit the link, pick a time that suits you, and let's talk.
+  - `[429.28s -> 433.92s]` Man, these ads are so much better than chat GPD's ridiculous.
+  - `[434.46s -> 435.90s]` I wonder how it would go against Lewis.
+  - `[436.80s -> 439.62s]` Lewis is one of my senior paid social specialists.
+  - `[439.62s -> 443.06s]` He's one of the best performing campaigns two years in a row,
+  - `[443.06s -> 445.84s]` and the man is a beast at copywriting.
+  - `[446.10s -> 447.40s]` Best copywriter at King Kong?
+  - `[447.84s -> 448.36s]` Lewis.
+  - `[448.66s -> 450.24s]` Yeah, Lewis is best copywriter for sure.
+  - `[451.16s -> 458.38s]` Yo, how confident are you in going head-to-head in a headline battle against AI?
+  - `[458.86s -> 459.62s]` Very confident.
+  - `[460.44s -> 468.20s]` If you lose, you have to get my face as a semi-permanent tattoo on your body.
+  - `[468.20s -> 468.80s]` Okay.
+  - `[469.10s -> 470.12s]` Alright, let's do it.
+  - `[470.20s -> 475.70s]` You are going to be writing an ad for a course that teaches people how to quit their nine-to-five job
+  - `[475.70s -> 478.34s]` and start their own e-commerce side password.
+  - `[479.80s -> 482.70s]` Five minutes, your time starts now.
+  - `[482.98s -> 485.64s]` This hip sweep has nothing against my Kong AI.
+  - `[486.18s -> 488.02s]` Going to sweep the floor with his ass.
+  - `[488.58s -> 489.28s]` Three minutes left.
+  - `[489.74s -> 490.44s]` Oh my god.
+  - `[492.16s -> 493.52s]` One minute until he's like,
+  - `[493.52s -> 495.54s]` I'm like, you're going to bring out lines.
+  - `[502.38s -> 506.40s]` Once the five minutes was up, we read out our headlines and body copy.
+  - `[506.98s -> 512.34s]` Let's see how Kong stacks up against my own personally trained king of copy.
+  - `[512.58s -> 513.76s]` Give me three of your best headlines.
+  - `[514.34s -> 518.78s]` I scaled my e-commerce biz from $0 to $30k per month with this.
+  - `[519.22s -> 522.26s]` This gave me the balls to finally quit my training nine-to-five.
+  - `[522.26s -> 524.34s]` I never felt so lost.
+  - `[527.20s -> 528.64s]` That's an incomplete headline.
+  - `[528.94s -> 529.68s]` An incomplete headline.
+  - `[529.92s -> 532.66s]` This has spat out 171 headlines.
+  - `[532.78s -> 533.10s]` Crazy.
+  - `[533.60s -> 535.32s]` Add 10k to your monthly income.
+  - `[535.54s -> 540.06s]` It's this simple $100,000 e-commerce secrets for less than a fancy coffee.
+  - `[540.32s -> 543.46s]` How people in their 20s are secretly becoming a living mess.
+  - `[543.84s -> 545.08s]` This one is really good.
+  - `[545.32s -> 546.60s]` Alright, let's move over to body copy.
+  - `[546.80s -> 551.50s]` This e-commerce strategy skyrocketed my e-commerce business after 14 failed attempts.
+  - `[551.50s -> 554.52s]` I always dreamt of quitting my nine-to-five, but I never had the balls.
+  - `[554.94s -> 556.88s]` You don't have a call to action in the ad.
+  - `[557.10s -> 558.50s]` You get that far.
+  - `[558.80s -> 561.72s]` Waking up to an alarm that feels like a punch in the gut doesn't it?
+  - `[561.78s -> 564.62s]` Dragging yourself to a job that eats away your soul.
+  - `[564.78s -> 566.04s]` Then imagine a different morning.
+  - `[566.36s -> 569.10s]` One way you wake up, no alarm, no dread.
+  - `[569.40s -> 576.16s]` It is so specific and it talks so directly to the target market that it is impossible to ignore.
+  - `[576.38s -> 577.74s]` Just pop your e-mail in here.
+  - `[577.90s -> 579.62s]` You lose nothing but a few minutes.
+  - `[579.96s -> 580.98s]` But imagine if it works.
+  - `[580.98s -> 584.10s]` This is what winning copy looks like.
+  - `[584.16s -> 585.14s]` That's ridiculous.
+  - `[585.72s -> 586.82s]` That's insane, right?
+  - `[587.44s -> 589.38s]` Let's actually use this copy.
+  - `[589.68s -> 592.56s]` Run it live and let's see what converts and what doesn't.
+  - `[592.66s -> 596.08s]` After the battle, we got Lewis semi-inked with the tattoo of my head.
+  - `[599.14s -> 605.36s]` Alright, so let's go talk to Lewis and get an update on how the Kong ads are performing versus his.
+  - `[605.66s -> 609.44s]` My headline, $8,000 spent $64 a week.
+  - `[609.44s -> 614.06s]` We got the Kong headline, $8,000, $3,000 spent $57 a week.
+  - `[614.26s -> 617.04s]` So it's beaten by CPL by $7 bucks.
+  - `[617.20s -> 620.04s]` $1.16% clicks to rate versus a $1.37.
+  - `[620.68s -> 621.80s]` So it's a damn bitch.
+  - `[622.20s -> 623.44s]` She is spicy.
+  - `[623.94s -> 624.38s]` It's unreal.
+  - `[625.32s -> 626.30s]` Yeah, actually think it.
+  - `[626.46s -> 627.78s]` Right's better copy than you, Sabri.
+  - `[628.72s -> 629.44s]` Think it.
+  - `[629.78s -> 631.30s]` Right's better copy than you, Sabri.
+  - `[631.54s -> 633.58s]` Right's better copy than you, Sabri.
+  - `[633.88s -> 635.62s]` Some people think I'm a moody little sucker.
+  - `[635.96s -> 636.82s]` But if you ask me,
+  - `[636.82s -> 640.10s]` I'm the best goddamn AI writing tool on the internet.
+  - `[640.44s -> 641.52s]` The time has come.
+  - `[641.62s -> 645.32s]` It's time for Kong to finally meet its master.
+  - `[645.68s -> 649.76s]` I'm going head to head against Kong in the ultimate showdown.
+  - `[649.96s -> 653.24s]` So buckle up because it's Kong versus the internet daddy.
+  - `[653.78s -> 658.12s]` I spit out copy that's 10 times better than 99% of copy writers.
+  - `[658.42s -> 662.18s]` Yep, I will grab your favorite media buyer by the balls and whisper in his ear.
+  - `[662.40s -> 662.98s]` Who's your daddy?
+  - `[663.56s -> 665.12s]` Time cap, five minutes.
+  - `[666.16s -> 666.90s]` Let's roll.
+  - `[667.38s -> 673.80s]` All right, we're writing a ad for a property investment company targeted towards a 43 year old Melbourne man
+  - `[673.80s -> 678.26s]` looking to replace his nine to five income through property investment.
+  - `[678.50s -> 682.82s]` What you got, you created me and I'll still kick your ass you little bitch.
+  - `[683.14s -> 684.20s]` I'll shut your mouth.
+  - `[684.78s -> 687.98s]` I've already spit out 171 banger headlines.
+  - `[696.12s -> 697.44s]` Times up, let's read our ads.
+  - `[697.88s -> 701.32s]` Millionaire property investor reveals income replacing hack.
+  - `[701.72s -> 705.14s]` Millionaire property investors retirement secret revealed.
+  - `[705.66s -> 710.16s]` New legal property scheme replaces nine to five salary in eight months.
+  - `[710.48s -> 715.56s]` How a 37 year old accountant built a nine million dollar property portfolio.
+  - `[716.14s -> 719.40s]` This is turning everyday Americans into millionaires.
+  - `[719.62s -> 722.38s]` I am going to bitch slap you back to charge everything.
+  - `[722.38s -> 723.56s]` Body copy.
+  - `[724.12s -> 726.06s]` Six a.m. alarm clock goes off.
+  - `[726.32s -> 727.80s]` Grab phone and roll out of bed.
+  - `[728.26s -> 731.46s]` Sit on the toilet as calendar notifications pop up on your phone.
+  - `[731.86s -> 735.92s]` There's no time for breakfast so you chug down a copy on your way out the door.
+  - `[736.20s -> 737.30s]` Go ahead and read me your ad.
+  - `[737.56s -> 739.48s]` What about to choke you out harder than could be?
+  - `[740.50s -> 744.42s]` Millionaire property investor discovers easy strategy to erase nine to five jobs.
+  - `[745.02s -> 746.26s]` Tired of your nine to five grind?
+  - `[746.78s -> 747.28s]` Try this.
+  - `[747.62s -> 750.12s]` Weird property loophole lets you ditch nine to five jobs.
+  - `[750.12s -> 752.84s]` Unusual secret of a millionaire still working a day job.
+  - `[753.02s -> 753.98s]` Exhausted nine to five.
+  - `[754.06s -> 755.48s]` Now millionaire property tycoon.
+  - `[756.00s -> 758.50s]` Are you tired from the endless cycle of day to day work?
+  - `[758.74s -> 761.26s]` That alarm clock forcing you into another day you dread?
+  - `[761.60s -> 762.18s]` You're not alone.
+  - `[762.52s -> 764.76s]` Imagine a life where you wake up because you're ready.
+  - `[765.04s -> 765.94s]` Not because you have to.
+  - `[766.16s -> 769.88s]` That dream is real because you left that soul sucking nine to five jobs behind.
+  - `[770.26s -> 771.56s]` Your family has never been prouder.
+  - `[771.86s -> 772.80s]` This isn't a fantasy.
+  - `[773.16s -> 776.18s]` It's your life thanks to an unusual property strategy that worked.
+  - `[776.50s -> 778.58s]` We've laid out the blueprint in a brand new report.
+  - `[778.58s -> 779.84s]` Today it's yours for free.
+  - `[780.00s -> 781.12s]` Just enter your email here.
+  - `[781.30s -> 782.46s]` So there's the two ads.
+  - `[782.84s -> 783.88s]` I can't be the judge.
+  - `[784.10s -> 789.84s]` But what I will say is from the time it took me to write five headlines and half a body copy.
+  - `[790.04s -> 794.58s]` This thing had written two body copies and over 181 headlines.
+  - `[795.54s -> 799.88s]` On this USB is an army of a thousand AI marketing box.
+  - `[800.54s -> 807.02s]` That once you plug it into your business guarantees to increase your row as by 20% in the next 30 days.
+  - `[807.02s -> 814.04s]` Imagine having an army of a thousand AI marketing bots in your business that has spent over 200 million dollars on ads
+  - `[814.04s -> 821.62s]` built 1200 plus funnels in a thousand plus different niches and generated over $7.8 billion in sales.
+  - `[821.94s -> 825.26s]` Lee Jen, e-com, low ticket, high ticket, you name it.
+  - `[825.40s -> 827.24s]` It's Chad Stale, the fuck out of it.
+  - `[827.44s -> 828.96s]` What would that do for your business?
+  - `[829.28s -> 830.16s]` What would it be worth?
+  - `[830.36s -> 833.48s]` Heck, what do you think that you'd have to pay for something like that?
+  - `[833.48s -> 838.86s]` An army of a thousand AI marketing bots working 24-7 to grow your business.
+  - `[839.16s -> 844.66s]` They'll never call in sick, go around holiday or leave you the second and competitor offers them more money.
+  - `[844.90s -> 846.30s]` Would it be a hundred K per year?
+  - `[846.58s -> 851.24s]` Well, what did I told you that you could get started for just $19.00 per month?
+  - `[851.48s -> 852.14s]` But it gets better.
+  - `[852.36s -> 861.64s]` If this AI doesn't drop your cost per lead or increase your ROI by at least 20% in the next 30 days, you don't pay them a single cent.
+  - `[861.64s -> 868.72s]` Look, if you've been prompt wrestling with ChatGPT to get some half-baked shit that couldn't sell a lollipop to a five-year-old,
+  - `[868.84s -> 869.64s]` you are not alone.
+  - `[869.82s -> 875.08s]` Because most AI copywriting tools suck harder than a Dyson, but Kong doesn't.
+  - `[875.26s -> 882.64s]` It's like ChatGPT's better looking older brother after a couple of spicy margaritas with a vengeance for selling.
+  - `[882.86s -> 891.16s]` This little bad boy uses proprietary AI technology that guarantees to increase your rowers by 20% or you don't pay.
+  - `[891.16s -> 897.40s]` Kong acts like a forensic detective and collects stalker-level insights into your dream customer.
+  - `[897.58s -> 906.32s]` It then uses these insights and combines them with $7.8 billion worth of marketing intel to spit out Facebook ads, headlines,
+  - `[906.74s -> 910.16s]` landing page copy that's better than 99% of copywriters.
+  - `[911.00s -> 919.08s]` With Kong, you'll be pumping out 100 times more ads, running more split tests and iterating your way to the bullseye of your market
+  - `[919.08s -> 921.58s]` a thousand times faster than the competition.
+  - `[921.90s -> 926.88s]` AI is changing the face of business, but it's not the AI that you need to fear.
+  - `[927.06s -> 934.26s]` It's the AI-wielding barbarians that are riding over the hill on horseback coming from your customers that you need to fear.
+  - `[935.44s -> 942.50s]` So I have put an insane amount of work into Kong to get it to the stage where it's now beating 99% of copywriters.
+  - `[942.50s -> 948.14s]` You can request an invitation on the link below and see for yourself what the fuss is all about.
+  - `[948.24s -> 951.08s]` This thing is seriously a game changer.
+
+---

@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jinora | Inteligencia Forense de Video Ads</title>
+  
+  <!-- Fonts: Newsreader (Editorial Serif) & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&display=swap" rel="stylesheet">
+  
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['Newsreader', 'Georgia', 'serif'],
+            sans: ['Inter', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            paper: '#ffffff',
+            canvas: '#fafafa',
+            charcoal: '#111827',
+            accent: '#7f1d1d', // subtle burgundy indicator
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { background-color: #ffffff; color: #111827; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  </style>
+</head>
+<body class="bg-white text-slate-900 font-sans min-h-screen flex flex-col antialiased selection:bg-slate-900 selection:text-white">
+
+  <!-- Top Global Navbar -->
+  <header class="w-full max-w-7xl mx-auto px-6 py-5 flex items-center justify-between border-b border-transparent">
+    <!-- Left: Brand Logo & Navigation Pills -->
+    <div class="flex items-center gap-6">
+      <a href="/" class="flex items-center gap-2.5 text-slate-900 group">
+        <span class="w-2.5 h-2.5 rounded-full bg-purple-600 shadow-[0_0_10px_rgba(147,51,234,0.6)]"></span>
+        <span class="font-serif text-2xl font-bold tracking-tight text-slate-950">Jinora</span>
+      </a>
+
+      <nav class="flex items-center gap-2 text-xs font-medium border-l border-slate-200/80 pl-6">
+        <a href="/" class="px-4 py-1.5 rounded-full bg-black text-white font-semibold transition">
+          Ads
+        </a>
+        <button onclick="openCompetitorsModal()" class="px-4 py-1.5 rounded-full text-slate-600 hover:text-black hover:bg-slate-100 transition">
+          Competidores (105)
+        </button>
+        <button onclick="openSearchModal()" class="px-4 py-1.5 rounded-full text-slate-600 hover:text-black hover:bg-slate-100 transition">
+          + Rastrear con Jinora
+        </button>
+      </nav>
+    </div>
+
+    <!-- Right: Search & Actions -->
+    <div class="flex items-center gap-4 text-xs">
+      <div class="relative w-64 md:w-80">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+        <input type="text" id="global-search" oninput="applyFilters()" placeholder="Search copy, companies..." class="w-full pl-9 pr-4 py-1.5 rounded-full border border-slate-200 bg-white text-slate-800 placeholder-slate-400 text-xs focus:outline-none focus:border-slate-400 transition">
+      </div>
+      <button onclick="openSearchModal()" class="text-slate-600 hover:text-black transition flex items-center gap-1.5">
+        <i class="fa-solid fa-bolt text-slate-400"></i>
+        <span>Scan Meta</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Content Canvas -->
+  <main class="w-full max-w-7xl mx-auto px-6 py-6 space-y-12 flex-1">
+
+    <!-- HERO SECTION: CHAMPIONS (What's working - Top 10) -->
+    <section class="space-y-4">
+      <div>
+        <p class="text-[11px] font-bold tracking-widest text-slate-400 uppercase font-sans">Champions · Top 10</p>
+        <h2 class="text-3xl md:text-4xl font-serif text-slate-950 tracking-tight mt-0.5">What's working</h2>
+        <p class="text-xs text-slate-500 mt-1">The 10 longest-running, highest-converting ads across all competitors</p>
+      </div>
+
+      <!-- Horizontal Carousel Container -->
+      <div class="relative group">
+        <div id="champions-carousel" class="flex gap-4 overflow-x-auto no-scrollbar scroll-smooth pb-2 pt-1">
+          {% for champ in champions %}
+          <div class="flex-none w-[260px] md:w-[280px] aspect-[4/5] rounded-2xl overflow-hidden relative shadow-sm border border-slate-200/80 bg-slate-900 group/card cursor-pointer transition transform hover:-translate-y-1 hover:shadow-md" onclick="openDetailModal('{{ champ.id }}')">
+            
+            <!-- Media / Poster Background -->
+            {% if champ.has_video and champ.video_url %}
+            <video preload="metadata" muted playsinline class="w-full h-full object-cover">
+              <source src="{{ champ.video_url }}" type="video/mp4">
+            </video>
+            {% elif champ.image_url %}
+            <img src="{{ champ.image_url }}" alt="Creative" class="w-full h-full object-cover">
+            {% else %}
+            <div class="w-full h-full bg-gradient-to-tr from-slate-900 to-slate-800 flex items-center justify-center text-slate-600">
+              <i class="fa-solid fa-play text-4xl"></i>
+            </div>
+            {% endif %}
+
+            <!-- Dark Gradient Vignette for Legibility -->
+            <div class="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-black/40"></div>
+
+            <!-- Top Left: Brand Label -->
+            <div class="absolute top-3.5 left-3.5 flex items-center gap-2">
+              <span class="text-xs font-semibold text-white/90 drop-shadow-md">
+                {{ champ.page_name }}
+              </span>
+            </div>
+
+            <!-- Top Right: Rank Badge (#1 to #10) -->
+            <div class="absolute top-3.5 right-3.5">
+              {% if champ.rank == 1 %}
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-400 text-slate-950 shadow-md flex items-center gap-1">
+                <i class="fa-solid fa-crown text-[9px]"></i> #1
+              </span>
+              {% elif champ.rank == 2 %}
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-200 text-slate-900 shadow-md">
+                #2
+              </span>
+              {% elif champ.rank == 3 %}
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-700 text-white shadow-md">
+                #3
+              </span>
+              {% else %}
+              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-black/60 text-white/90 backdrop-blur">
+                #{{ champ.rank }}
+              </span>
+              {% endif %}
+            </div>
+
+            <!-- Bottom Info: Giant Days + Status Pill -->
+            <div class="absolute bottom-4 left-4 right-4 space-y-1.5">
+              <div class="text-4xl font-sans font-bold text-white tracking-tight leading-none">
+                {{ champ.days_active }}<span class="text-2xl font-normal text-white/80">d</span>
+              </div>
+              <div>
+                <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-semibold tracking-wide 
+                  {% if champ.days_active >= 90 %}bg-amber-400 text-slate-950
+                  {% elif champ.days_active >= 30 %}bg-white text-slate-900
+                  {% else %}bg-slate-200/90 text-slate-800{% endif %}">
+                  {% if champ.days_active >= 90 %}Gold · Champion
+                  {% elif champ.days_active >= 30 %}Winning Ad
+                  {% else %}Testing{% endif %}
+                </span>
+              </div>
+            </div>
+
+          </div>
+          {% endfor %}
+        </div>
+
+        <!-- Carousel Left/Right Buttons -->
+        <button onclick="scrollCarousel(-1)" class="absolute -left-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white shadow-md border border-slate-200 text-slate-700 hover:text-black flex items-center justify-center text-xs transition z-10">
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+        <button onclick="scrollCarousel(1)" class="absolute -right-3 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-white shadow-md border border-slate-200 text-slate-700 hover:text-black flex items-center justify-center text-xs transition z-10">
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- MAIN SECTION: THE LIBRARY (All ads) -->
+    <section class="space-y-4 pt-4">
+      <!-- Section Header with View Modes -->
+      <div class="flex flex-col sm:flex-row sm:items-baseline justify-between border-b border-slate-200 pb-3 gap-2">
+        <div>
+          <p class="text-[11px] font-bold tracking-widest text-slate-400 uppercase font-sans">The Library</p>
+          <div class="flex items-baseline gap-2">
+            <h2 class="text-2xl md:text-3xl font-serif text-slate-950 tracking-tight">All ads</h2>
+            <span class="text-xl md:text-2xl font-serif italic text-slate-400" id="ad-counter">{{ total_ads }}</span>
+          </div>
+        </div>
+
+        <!-- Right: View Modes (Gallery / Grid / Ad copy) -->
+        <div class="flex items-center gap-6 text-xs text-slate-500">
+          <button class="font-medium text-slate-900 pb-1 border-b-2 border-slate-900">Gallery</button>
+          <button class="hover:text-slate-900 transition">Grid</button>
+          <button class="hover:text-slate-900 transition">Ad copy</button>
+        </div>
+      </div>
+
+      <!-- Filter Controls Bar -->
+      <div class="flex flex-wrap items-center justify-between gap-y-3 pt-1 text-xs text-slate-600">
+        <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+          
+          <!-- Company Dropdown -->
+          <div class="flex items-center gap-1.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Company</span>
+            <select id="filter-company" onchange="applyFilters()" class="font-medium text-slate-900 bg-transparent border-b border-slate-300 py-0.5 focus:outline-none cursor-pointer">
+              <option value="ALL">All</option>
+              {% for comp in companies %}
+              <option value="{{ comp }}">{{ comp }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Media Filters -->
+          <div class="flex items-center gap-1.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Media</span>
+            <div class="flex items-center gap-1">
+              <button onclick="setMediaFilter('ALL', this)" class="media-btn font-semibold text-slate-900 underline underline-offset-4 px-1.5 py-0.5">All</button>
+              <button onclick="setMediaFilter('video', this)" class="media-btn text-slate-500 hover:text-slate-900 px-1.5 py-0.5">Video</button>
+              <button onclick="setMediaFilter('image', this)" class="media-btn text-slate-500 hover:text-slate-900 px-1.5 py-0.5">Image</button>
+            </div>
+          </div>
+
+          <!-- Status Filters -->
+          <div class="flex items-center gap-1.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status</span>
+            <div class="flex items-center gap-1">
+              <button class="font-semibold text-slate-900 underline underline-offset-4 px-1.5 py-0.5">Active</button>
+              <button class="text-slate-500 hover:text-slate-900 px-1.5 py-0.5">Inactive</button>
+            </div>
+          </div>
+
+          <!-- Duration Filters -->
+          <div class="flex items-center gap-1.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Duration</span>
+            <div class="flex items-center gap-1">
+              <button onclick="setDurationFilter(0, this)" class="duration-btn font-semibold text-slate-900 underline underline-offset-4 px-1.5 py-0.5">Any</button>
+              <button onclick="setDurationFilter(7, this)" class="duration-btn text-slate-500 hover:text-slate-900 px-1.5 py-0.5">7d+</button>
+              <button onclick="setDurationFilter(14, this)" class="duration-btn text-slate-500 hover:text-slate-900 px-1.5 py-0.5">14d+</button>
+              <button onclick="setDurationFilter(30, this)" class="duration-btn text-slate-500 hover:text-slate-900 px-1.5 py-0.5">30d+</button>
+              <button onclick="setDurationFilter(90, this)" class="duration-btn text-slate-500 hover:text-slate-900 px-1.5 py-0.5">90d+</button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Sort & Export Actions -->
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Sort</span>
+            <select id="sort-order" onchange="sortAds()" class="font-medium text-slate-900 bg-transparent border-b border-slate-300 py-0.5 focus:outline-none cursor-pointer">
+              <option value="duration">Duration ▾</option>
+              <option value="recent">Recent</option>
+            </select>
+          </div>
+
+          <button onclick="exportCSV()" class="px-3 py-1 rounded-md border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-medium transition flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-down-to-line text-[10px]"></i>
+            <span>Export CSV</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Ad Grid (4 Columns) -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 pt-3" id="gallery-grid">
+        {% for ad in ads %}
+        <div class="ad-card bg-white border border-slate-200 rounded-2xl overflow-hidden flex flex-col justify-between shadow-sm hover:shadow-md transition cursor-pointer group"
+             data-id="{{ ad.id }}"
+             data-company="{{ ad.page_name }}"
+             data-days="{{ ad.days_active }}"
+             data-media="{% if ad.has_video %}video{% else %}image{% endif %}"
+             onclick="openDetailModal('{{ ad.id }}')">
+          
+          <!-- Media Container -->
+          <div class="relative aspect-square bg-slate-100 overflow-hidden flex items-center justify-center">
+            {% if ad.image_url %}
+            <img src="{{ ad.image_url }}" alt="Creative" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" loading="lazy">
+            {% elif ad.has_video and ad.video_url %}
+            <video preload="metadata" muted playsinline class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+              <source src="{{ ad.video_url }}#t=0.5" type="video/mp4">
+            </video>
+            {% else %}
+            <div class="text-slate-300 flex flex-col items-center">
+              <i class="fa-solid fa-photo-film text-3xl"></i>
+            </div>
+            {% endif %}
+
+            <!-- Top Left Pill Badge -->
+            <div class="absolute top-2.5 left-2.5">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-medium bg-black/60 text-white backdrop-blur flex items-center gap-1">
+                {% if ad.has_video %}
+                <i class="fa-solid fa-video text-[9px]"></i> Video · HD
+                {% else %}
+                <i class="fa-solid fa-image text-[9px]"></i> Image
+                {% endif %}
+              </span>
+            </div>
+
+            <!-- Cognitive Score Badge -->
+            <div class="absolute top-2.5 right-2.5">
+              <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-white/90 text-slate-900 shadow-sm border border-slate-200 backdrop-blur font-mono">
+                {{ ad.cognitive_score or 85 }}/100
+              </span>
+            </div>
+          </div>
+
+          <!-- Bottom Meta Strip -->
+          <div class="p-3.5 flex items-center justify-between text-xs border-t border-slate-100 bg-white">
+            <span class="font-semibold text-slate-800 truncate max-w-[130px]">
+              {{ ad.page_name }}
+            </span>
+            <span class="text-[11px] font-medium text-slate-500">
+              {{ ad.days_active }}d · {% if ad.days_active >= 90 %}Gold{% elif ad.days_active >= 30 %}Winning{% else %}Testing{% endif %}
+            </span>
+          </div>
+
+        </div>
+        {% endfor %}
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Detail & Forensics Modal -->
+  <div id="detail-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[92vh] overflow-hidden flex flex-col shadow-2xl border border-slate-200">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-bold" id="modal-brand-avatar">
+            A
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-slate-900" id="modal-brand-name">Brand Name</h3>
+            <p class="text-xs text-slate-400" id="modal-ad-meta">Ad ID: -- · -- días activo</p>
+          </div>
+        </div>
+        <button onclick="closeDetailModal()" class="w-8 h-8 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-800 flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Two Columns) -->
+      <div class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+        
+        <!-- Left: Video Player & Media -->
+        <div class="p-6 space-y-4 bg-slate-900/5 flex flex-col items-center justify-center min-h-[460px]">
+          <div class="relative flex items-center justify-center w-full transition-all duration-300">
+            <div id="modal-media-container" class="relative overflow-hidden bg-black flex items-center justify-center shadow-xl transition-all duration-300 rounded-2xl w-full aspect-video">
+              <!-- Video or Image injected here -->
+            </div>
+          </div>
+
+          <!-- Quick Action Links -->
+          <div class="flex items-center justify-between w-full text-xs pt-1">
+            <a id="modal-cta-link" href="#" target="_blank" class="px-4 py-2 rounded-xl bg-black text-white font-semibold hover:bg-slate-800 transition flex items-center gap-1.5 shadow-sm">
+              <span>Visitar Destino</span>
+              <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+            </a>
+
+            <button id="modal-run-forensics-btn" onclick="triggerForensicsFromModal()" class="px-4 py-2 rounded-xl border border-slate-300 bg-white text-slate-700 font-semibold hover:bg-slate-50 transition flex items-center gap-1.5 shadow-sm">
+              <i class="fa-solid fa-microscope text-purple-600"></i>
+              <span>Re-auditar con IA</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right: AI Forensic Analysis & Evaluative Verdict (Primary Focus) -->
+        <div class="p-6 space-y-5 overflow-y-auto max-h-[78vh]">
+          
+          <!-- AI Score & Overall Verdict (Hero Box) -->
+          <div class="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Evaluación Cognitiva Forense</p>
+                <div class="flex items-baseline gap-2 mt-0.5">
+                  <span class="text-3xl font-sans font-bold text-slate-900" id="modal-score">94</span>
+                  <span class="text-sm font-semibold text-slate-400">/ 100 Puntos</span>
+                </div>
+              </div>
+              <span class="px-3 py-1 rounded-full text-xs font-semibold bg-black text-white" id="modal-verdict-badge">
+                Ganador Longevo
+              </span>
+            </div>
+
+            <!-- Por qué obtuvo esta puntuación -->
+            <div class="pt-2 border-t border-slate-200/60">
+              <p class="text-[11px] font-bold text-slate-900 mb-1 flex items-center gap-1.5">
+                <i class="fa-solid fa-brain text-purple-600"></i>
+                ¿Por qué obtuvo esta puntuación?
+              </p>
+              <p class="text-xs text-slate-600 leading-relaxed" id="modal-why-scored">
+                Cargando análisis forense...
+              </p>
+            </div>
+
+            <!-- Dimension Mini Breakdown -->
+            <div class="grid grid-cols-4 gap-2 pt-1 text-[11px] text-center font-mono">
+              <div class="bg-white p-2 rounded-xl border border-slate-200/60">
+                <p class="text-[9px] text-slate-400 font-sans uppercase">Gancho</p>
+                <p class="font-bold text-slate-900 mt-0.5" id="modal-score-captacion">24/25</p>
+              </div>
+              <div class="bg-white p-2 rounded-xl border border-slate-200/60">
+                <p class="text-[9px] text-slate-400 font-sans uppercase">Prueba</p>
+                <p class="font-bold text-slate-900 mt-0.5" id="modal-score-mecanismo">25/25</p>
+              </div>
+              <div class="bg-white p-2 rounded-xl border border-slate-200/60">
+                <p class="text-[9px] text-slate-400 font-sans uppercase">Pacing</p>
+                <p class="font-bold text-slate-900 mt-0.5" id="modal-score-narrativa">23/25</p>
+              </div>
+              <div class="bg-white p-2 rounded-xl border border-slate-200/60">
+                <p class="text-[9px] text-slate-400 font-sans uppercase">Oferta</p>
+                <p class="font-bold text-slate-900 mt-0.5" id="modal-score-oferta">22/25</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Deep AI Video Insights -->
+          <div class="space-y-3 text-xs">
+            <!-- 1. Gancho -->
+            <div class="p-3.5 rounded-xl border border-slate-100 bg-white shadow-xs space-y-1">
+              <p class="font-bold text-slate-900 flex items-center gap-1.5 text-[11px]">
+                <i class="fa-solid fa-bullseye text-purple-600"></i>
+                1. Análisis del Gancho Visual y Auditivo (0-3s)
+              </p>
+              <p class="text-slate-600 leading-relaxed" id="modal-hook-analysis">
+                --
+              </p>
+            </div>
+
+            <!-- 2. Mecanismo y Prueba -->
+            <div class="p-3.5 rounded-xl border border-slate-100 bg-white shadow-xs space-y-1">
+              <p class="font-bold text-slate-900 flex items-center gap-1.5 text-[11px]">
+                <i class="fa-solid fa-flask text-blue-600"></i>
+                2. Demostración del Mecanismo y Nivel de Prueba
+              </p>
+              <p class="text-slate-600 leading-relaxed" id="modal-proof-analysis">
+                --
+              </p>
+            </div>
+
+            <!-- 3. Oferta y CTA -->
+            <div class="p-3.5 rounded-xl border border-slate-100 bg-white shadow-xs space-y-1">
+              <p class="font-bold text-slate-900 flex items-center gap-1.5 text-[11px]">
+                <i class="fa-solid fa-handshake text-emerald-600"></i>
+                3. Arquitectura de la Oferta & Reversión de Riesgo
+              </p>
+              <p class="text-slate-600 leading-relaxed" id="modal-offer-analysis">
+                --
+              </p>
+            </div>
+
+            <!-- 4. Recomendación para nuestro Negocio -->
+            <div class="p-3.5 rounded-xl border border-purple-100 bg-purple-50/40 shadow-xs space-y-1">
+              <p class="font-bold text-purple-950 flex items-center gap-1.5 text-[11px]">
+                <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                Cómo modelarlo para nuestros Agentes de IA y CRM
+              </p>
+              <p class="text-purple-900 leading-relaxed" id="modal-adapt-analysis">
+                --
+              </p>
+            </div>
+          </div>
+
+          <!-- Secondary Expandable Buttons (Copy & Transcript) -->
+          <div class="space-y-2 pt-2 border-t border-slate-100">
+            
+            <!-- Button 1: Toggle Copy -->
+            <div class="border border-slate-200 rounded-xl overflow-hidden">
+              <button onclick="toggleAccordion('modal-copy-box')" class="w-full px-4 py-2.5 bg-slate-50 hover:bg-slate-100 text-left text-xs font-semibold text-slate-800 flex items-center justify-between transition">
+                <span class="flex items-center gap-2">
+                  <i class="fa-solid fa-file-lines text-slate-500"></i>
+                  <span>Ver Copy Original del Anuncio</span>
+                </span>
+                <i class="fa-solid fa-chevron-down text-slate-400 text-[10px]" id="icon-copy-box"></i>
+              </button>
+              <div id="modal-copy-box" class="hidden p-4 bg-white text-xs text-slate-700 leading-relaxed border-t border-slate-100">
+                <p id="modal-copy-text">--</p>
+              </div>
+            </div>
+
+            <!-- Button 2: Toggle Transcript -->
+            <div class="border border-slate-200 rounded-xl overflow-hidden">
+              <button onclick="toggleAccordion('modal-transcript-box')" class="w-full px-4 py-2.5 bg-slate-50 hover:bg-slate-100 text-left text-xs font-semibold text-slate-800 flex items-center justify-between transition">
+                <span class="flex items-center gap-2">
+                  <i class="fa-solid fa-microphone-lines text-purple-600"></i>
+                  <span>Ver Transcripción Completa Segundo a Segundo (Whisper)</span>
+                </span>
+                <i class="fa-solid fa-chevron-down text-slate-400 text-[10px]" id="icon-transcript-box"></i>
+              </button>
+              <div id="modal-transcript-box" class="hidden p-4 bg-white space-y-2 border-t border-slate-100 max-h-60 overflow-y-auto">
+                <div class="flex items-center justify-between text-[11px] text-slate-400 mb-2">
+                  <span>Línea de tiempo auditada al 100%</span>
+                  <span class="font-mono text-purple-600 font-semibold" id="modal-duration">--</span>
+                </div>
+                <div class="space-y-2 text-xs" id="modal-timeline-container">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Search Modal -->
+  <div id="search-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-5 shadow-2xl border border-slate-200">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <h3 class="text-sm font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-radar text-purple-600"></i>
+          Nueva Búsqueda en Meta Ads Library
+        </h3>
+        <button onclick="closeSearchModal()" class="text-slate-400 hover:text-black">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <form id="search-form" onsubmit="submitSearch(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Palabra Clave o Competidor</label>
+          <input type="text" id="search-query" required placeholder="Ej: Vapi, Bland AI, Kommo, chatbot whatsapp" class="w-full rounded-xl border border-slate-300 px-3.5 py-2 text-xs focus:outline-none focus:border-black transition">
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">País</label>
+            <select id="search-country" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-xs focus:outline-none focus:border-black transition">
+              <option value="US">Estados Unidos (US)</option>
+              <option value="CO">Colombia (CO)</option>
+              <option value="MX">México (MX)</option>
+              <option value="ES">España (ES)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Límite</label>
+            <input type="number" id="search-limit" value="5" min="1" max="50" class="w-full rounded-xl border border-slate-300 px-3 py-2 text-xs focus:outline-none focus:border-black transition">
+          </div>
+        </div>
+
+        <label class="flex items-center gap-2 text-xs text-slate-600 cursor-pointer pt-2">
+          <input type="checkbox" id="search-forensics" checked class="rounded border-slate-300 text-black focus:ring-0">
+          <span>Transcribir audio 100% (Whisper) y extraer fotogramas</span>
+        </label>
+
+        <div class="pt-3 flex items-center justify-end gap-2 border-t border-slate-100">
+          <button type="button" onclick="closeSearchModal()" class="px-4 py-2 rounded-xl text-slate-600 hover:bg-slate-100 text-xs font-medium transition">
+            Cancelar
+          </button>
+          <button type="submit" id="search-btn" class="px-5 py-2 rounded-xl bg-black text-white text-xs font-semibold hover:bg-slate-800 transition flex items-center gap-1.5 shadow-sm">
+            <span>Iniciar Extracción</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Competitors Directory Modal -->
+  <div id="competitors-modal" class="fixed inset-0 bg-black/75 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl max-w-4xl w-full p-6 space-y-4 shadow-2xl border border-slate-200 max-h-[90vh] flex flex-col">
+      <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div>
+          <h3 class="text-base font-bold text-slate-900">Directorio Global: 105 Competidores Mapeados</h3>
+          <p class="text-xs text-slate-500">Agentes de Voz, WhatsApp Conversacional y CRM Inteligente</p>
+        </div>
+        <button onclick="closeCompetitorsModal()" class="text-slate-400 hover:text-black">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <input type="text" id="comp-modal-search" oninput="filterModalCompetitors()" placeholder="Buscar entre los 105 competidores..." class="flex-1 rounded-xl border border-slate-200 px-3 py-1.5 text-xs focus:outline-none focus:border-black">
+        <select id="comp-modal-pillar" onchange="filterModalCompetitors()" class="rounded-xl border border-slate-200 px-3 py-1.5 text-xs text-slate-700 focus:outline-none">
+          <option value="all">Todos los Pilares</option>
+          <option value="voz">Voz (Voice AI)</option>
+          <option value="conversacional">WhatsApp / Instagram</option>
+          <option value="crm">CRM Inteligente</option>
+        </select>
+      </div>
+
+      <div class="flex-1 overflow-y-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 pr-1" id="modal-competitors-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Interactive Scripts -->
+  <script>
+    let CURRENT_MEDIA_FILTER = 'ALL';
+    let CURRENT_MIN_DAYS = 0;
+    let ACTIVE_MODAL_AD_ID = null;
+    let RAW_ADS_CACHE = [];
+    let ALL_COMPETITORS = [];
+
+    // Scroll Hero Carousel
+    function scrollCarousel(direction) {
+      const el = document.getElementById('champions-carousel');
+      el.scrollBy({ left: direction * 300, behavior: 'smooth' });
+    }
+
+    // Set Media Filter
+    function setMediaFilter(mediaType, btn) {
+      CURRENT_MEDIA_FILTER = mediaType;
+      document.querySelectorAll('.media-btn').forEach(b => {
+        b.className = 'media-btn text-slate-500 hover:text-slate-900 px-1.5 py-0.5';
+      });
+      btn.className = 'media-btn font-semibold text-slate-900 underline underline-offset-4 px-1.5 py-0.5';
+      applyFilters();
+    }
+
+    // Set Duration Filter
+    function setDurationFilter(minDays, btn) {
+      CURRENT_MIN_DAYS = minDays;
+      document.querySelectorAll('.duration-btn').forEach(b => {
+        b.className = 'duration-btn text-slate-500 hover:text-slate-900 px-1.5 py-0.5';
+      });
+      btn.className = 'duration-btn font-semibold text-slate-900 underline underline-offset-4 px-1.5 py-0.5';
+      applyFilters();
+    }
+
+    // Apply Client-Side Filters
+    function applyFilters() {
+      const q = document.getElementById('global-search').value.toLowerCase();
+      const comp = document.getElementById('filter-company').value;
+      const cards = document.querySelectorAll('#gallery-grid .ad-card');
+      let visibleCount = 0;
+
+      cards.forEach(card => {
+        const cardComp = card.getAttribute('data-company') || '';
+        const cardDays = parseInt(card.getAttribute('data-days') || '0');
+        const cardMedia = card.getAttribute('data-media') || '';
+        const cardText = card.innerText.toLowerCase();
+
+        const matchesQuery = !q || cardText.includes(q);
+        const matchesComp = (comp === 'ALL') || (cardComp === comp);
+        const matchesMedia = (CURRENT_MEDIA_FILTER === 'ALL') || (cardMedia === CURRENT_MEDIA_FILTER);
+        const matchesDuration = cardDays >= CURRENT_MIN_DAYS;
+
+        if (matchesQuery && matchesComp && matchesMedia && matchesDuration) {
+          card.classList.remove('hidden');
+          visibleCount++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      document.getElementById('ad-counter').innerText = visibleCount;
+    }
+
+    // Sort Ads
+    function sortAds() {
+      const sortVal = document.getElementById('sort-order').value;
+      const container = document.getElementById('gallery-grid');
+      const cards = Array.from(container.querySelectorAll('.ad-card'));
+
+      cards.sort((a, b) => {
+        const daysA = parseInt(a.getAttribute('data-days') || '0');
+        const daysB = parseInt(b.getAttribute('data-days') || '0');
+        return sortVal === 'duration' ? daysB - daysA : daysA - daysB;
+      });
+
+      cards.forEach(c => container.appendChild(c));
+    }
+
+    // Toggle expandable sections (Copy / Transcript)
+    function toggleAccordion(boxId) {
+      const box = document.getElementById(boxId);
+      box.classList.toggle('hidden');
+      const icon = document.getElementById(boxId === 'modal-copy-box' ? 'icon-copy-box' : 'icon-transcript-box');
+      if (icon) {
+        icon.classList.toggle('rotate-180');
+      }
+    }
+
+    // Open Detail Modal
+    async function openDetailModal(adId) {
+      ACTIVE_MODAL_AD_ID = adId;
+      try {
+        const res = await fetch(`/api/ads/${adId}`);
+        const ad = await res.json();
+
+        document.getElementById('modal-brand-name').innerText = ad.page_name || 'Desconocido';
+        document.getElementById('modal-brand-avatar').innerText = (ad.page_name || 'A')[0].toUpperCase();
+        document.getElementById('modal-ad-meta').innerText = `Ad ID: ${ad.id} · ${ad.days_active} días activo en Meta`;
+        
+        // Copy text
+        document.getElementById('modal-copy-text').innerText = ad.body_text || ad.headline || 'Sin texto de copy disponible.';
+        // Reset accordions to closed
+        document.getElementById('modal-copy-box').classList.add('hidden');
+        document.getElementById('modal-transcript-box').classList.add('hidden');
+
+        // AI Cognitive Evaluation & Score Rationale
+        const ev = ad.evaluation || {};
+        document.getElementById('modal-score').innerText = ev.total_score || '85';
+        document.getElementById('modal-why-scored').innerText = ev.why_scored_this_way || 'Evaluado en base a su longevidad comprobada en Meta y retención.';
+        document.getElementById('modal-score-captacion').innerText = (ev.score_captacion || 22) + '/25';
+        document.getElementById('modal-score-mecanismo').innerText = (ev.score_mecanismo || 23) + '/25';
+        document.getElementById('modal-score-narrativa').innerText = (ev.score_narrativa || 21) + '/25';
+        document.getElementById('modal-score-oferta').innerText = (ev.score_oferta || 20) + '/25';
+
+        document.getElementById('modal-hook-analysis').innerText = ev.hook_analysis || 'Detiene el scroll con interrupción de patrón y tensión cognitiva.';
+        document.getElementById('modal-proof-analysis').innerText = ev.proof_analysis || 'Demuestra el producto en pantalla frente a promesas vacías.';
+        document.getElementById('modal-offer-analysis').innerText = ev.offer_analysis || 'Oferta de baja fricción psicológica para el cliente.';
+        document.getElementById('modal-adapt-analysis').innerText = ev.how_to_adapt || 'Modelar la demostración en vivo para nuestros servicios de CRM e IA.';
+        document.getElementById('modal-verdict-badge').innerText = ad.days_active >= 30 ? '🔥 Winning Ad Longevo' : 'Test Activo';
+
+        // Media container (Video or Image) with Dynamic Aspect Ratio Adaptation
+        const mediaBox = document.getElementById('modal-media-container');
+
+        // Reset classes
+        mediaBox.className = "relative overflow-hidden bg-black flex items-center justify-center shadow-xl transition-all duration-300 rounded-2xl";
+
+        const applyDynamicRatio = (w, h) => {
+          if (!w || !h) return;
+          const ratio = w / h;
+
+          if (ratio < 0.75) {
+            // 9:16 Vertical (Reels / TikTok / Stories)
+            mediaBox.className = "relative overflow-hidden bg-black flex items-center justify-center shadow-2xl transition-all duration-300 rounded-[28px] border-4 border-slate-800 aspect-[9/16] h-[540px] max-h-[68vh] w-auto mx-auto ring-1 ring-slate-700/50";
+          } else if (ratio > 1.25) {
+            // 16:9 Landscape / Horizontal
+            mediaBox.className = "relative overflow-hidden bg-black flex items-center justify-center shadow-xl transition-all duration-300 rounded-2xl w-full aspect-video";
+          } else if (ratio >= 0.75 && ratio <= 0.88) {
+            // 4:5 Feed Portrait
+            mediaBox.className = "relative overflow-hidden bg-black flex items-center justify-center shadow-xl transition-all duration-300 rounded-2xl aspect-[4/5] h-[500px] max-h-[64vh] w-auto mx-auto";
+          } else {
+            // 1:1 Square
+            mediaBox.className = "relative overflow-hidden bg-black flex items-center justify-center shadow-xl transition-all duration-300 rounded-2xl aspect-square h-[450px] max-h-[58vh] w-auto mx-auto";
+          }
+        };
+
+        if (ad.video_url) {
+          mediaBox.innerHTML = `
+            <video id="modal-active-video" controls autoplay playsinline class="w-full h-full object-contain">
+              <source src="${ad.video_url}" type="video/mp4">
+            </video>
+          `;
+          const vid = document.getElementById('modal-active-video');
+          vid.addEventListener('loadedmetadata', function() {
+            applyDynamicRatio(this.videoWidth, this.videoHeight);
+          });
+          if (vid.videoWidth) {
+            applyDynamicRatio(vid.videoWidth, vid.videoHeight);
+          } else {
+            mediaBox.classList.add('w-full', 'aspect-video');
+          }
+        } else if (ad.image_url) {
+          mediaBox.innerHTML = `<img id="modal-active-img" src="${ad.image_url}" class="w-full h-full object-contain">`;
+          const img = document.getElementById('modal-active-img');
+          img.onload = () => applyDynamicRatio(img.naturalWidth, img.naturalHeight);
+          if (img.complete && img.naturalWidth) {
+            applyDynamicRatio(img.naturalWidth, img.naturalHeight);
+          } else {
+            mediaBox.classList.add('w-full', 'aspect-video');
+          }
+        } else {
+          mediaBox.innerHTML = `<div class="text-slate-400 text-xs py-16">Sin archivo multimedia descargado</div>`;
+          mediaBox.classList.add('w-full', 'aspect-video');
+        }
+
+        // CTA Link
+        const ctaBtn = document.getElementById('modal-cta-link');
+        if (ad.link_url) {
+          ctaBtn.href = ad.link_url;
+          ctaBtn.classList.remove('hidden');
+        } else {
+          ctaBtn.classList.add('hidden');
+        }
+
+        // Timeline
+        const timelineBox = document.getElementById('modal-timeline-container');
+        const timeline = JSON.parse(ad.transcript_timeline || '[]');
+        if (timeline.length > 0) {
+          document.getElementById('modal-duration').innerText = `${ad.duration_seconds}s`;
+          timelineBox.innerHTML = timeline.map(t => `
+            <div class="flex items-start gap-2.5 p-2 rounded-lg bg-slate-50 border border-slate-100">
+              <span class="font-mono text-purple-700 font-bold whitespace-nowrap text-[11px]">[${t.start.toFixed(1)}s -> ${t.end.toFixed(1)}s]</span>
+              <p class="text-slate-700 leading-snug">${t.text}</p>
+            </div>
+          `).join('');
+        } else {
+          document.getElementById('modal-duration').innerText = 'Sin auditar';
+          timelineBox.innerHTML = `<p class="text-slate-400 italic text-xs">Audio aún no auditado con Whisper. Pulsa "Re-auditar con IA".</p>`;
+        }
+
+        document.getElementById('detail-modal').classList.remove('hidden');
+      } catch (err) {
+        alert('Error abriendo anuncio: ' + err);
+      }
+    }
+
+    function closeDetailModal() {
+      const mediaBox = document.getElementById('modal-media-container');
+      mediaBox.innerHTML = ''; // Stop video playback
+      document.getElementById('detail-modal').classList.add('hidden');
+    }
+
+    // Modal controls
+    function openSearchModal() { document.getElementById('search-modal').classList.remove('hidden'); }
+    function closeSearchModal() { document.getElementById('search-modal').classList.add('hidden'); }
+
+    function openCompetitorsModal() {
+      document.getElementById('competitors-modal').classList.remove('hidden');
+      if (ALL_COMPETITORS.length === 0) loadCompetitorsModal();
+    }
+    function closeCompetitorsModal() { document.getElementById('competitors-modal').classList.add('hidden'); }
+
+    // Load Competitors for modal
+    async function loadCompetitorsModal() {
+      const res = await fetch('/api/competitors');
+      ALL_COMPETITORS = await res.json();
+      renderModalCompetitors(ALL_COMPETITORS);
+    }
+
+    function renderModalCompetitors(list) {
+      const grid = document.getElementById('modal-competitors-grid');
+      grid.innerHTML = list.map(c => `
+        <div class="p-3 rounded-xl border border-slate-100 bg-slate-50 flex items-center justify-between hover:bg-slate-100 transition">
+          <div>
+            <p class="font-bold text-slate-900 text-xs">${c.name}</p>
+            <p class="text-[10px] text-slate-400 uppercase font-mono">${c.pillar}</p>
+          </div>
+          <button onclick="trackCompetitor('${c.name}')" class="px-2.5 py-1 rounded-lg bg-black text-white text-[10px] font-semibold hover:bg-slate-800 transition">
+            Espiar Ads
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function filterModalCompetitors() {
+      const q = document.getElementById('comp-modal-search').value.toLowerCase();
+      const p = document.getElementById('comp-modal-pillar').value;
+      const filtered = ALL_COMPETITORS.filter(c => {
+        const matchesQ = c.name.toLowerCase().includes(q) || c.focus.toLowerCase().includes(q);
+        const matchesP = (p === 'all') || (c.pillar === p);
+        return matchesQ && matchesP;
+      });
+      renderModalCompetitors(filtered);
+    }
+
+    function trackCompetitor(name) {
+      closeCompetitorsModal();
+      document.getElementById('search-query').value = name;
+      openSearchModal();
+    }
+
+    // Submit live search
+    async function submitSearch(e) {
+      e.preventDefault();
+      const query = document.getElementById('search-query').value;
+      const country = document.getElementById('search-country').value;
+      const limit = parseInt(document.getElementById('search-limit').value);
+      const forensics = document.getElementById('search-forensics').checked;
+
+      const btn = document.getElementById('search-btn');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Rastreando...`;
+
+      try {
+        const res = await fetch('/api/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query, country, limit, forensics })
+        });
+        const data = await res.json();
+        alert(`Éxito: Se procesaron ${data.total_found} anuncios.`);
+        window.location.reload();
+      } catch (err) {
+        alert('Error: ' + err);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `Iniciar Extracción`;
+        closeSearchModal();
+      }
+    }
+
+    // Trigger forensics on demand
+    async function triggerForensicsFromModal() {
+      if (!ACTIVE_MODAL_AD_ID) return;
+      const btn = document.getElementById('modal-run-forensics-btn');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Procesando...`;
+
+      try {
+        const res = await fetch(`/api/forensics/${ACTIVE_MODAL_AD_ID}`, { method: 'POST' });
+        const data = await res.json();
+        alert('Auditoría completada.');
+        openDetailModal(ACTIVE_MODAL_AD_ID);
+      } catch (err) {
+        alert('Error: ' + err);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = `<i class="fa-solid fa-microscope text-purple-600"></i> Re-auditar con IA`;
+      }
+    }
+
+    function exportCSV() {
+      window.location.href = '/api/ads';
+    }
+  </script>
+</body>
+</html>

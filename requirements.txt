@@ -1,0 +1,28 @@
+# Jinora Production Dependencies
+meta-ads-collector==1.6.0
+faster-whisper==1.2.1
+fastapi>=0.115.0
+uvicorn[standard]>=0.30.0
+jinja2>=3.1.4
+aiofiles>=24.1.0
+sqlalchemy>=2.0.30
+psycopg[binary]>=3.1.0
+httpx>=0.27.0
+Pillow>=10.0.0
+
+# Settings & Validation
+pydantic>=2.0.0
+pydantic-settings>=2.0.0
+
+# AI & LLM Providers
+google-genai>=0.1.0
+anthropic>=0.25.0
+openai>=1.20.0
+
+# Utilities & Forensics
+tenacity>=8.2.0
+pyyaml>=6.0.0
+imagehash>=4.3.1
+
+# Testing
+pytest>=8.0.0

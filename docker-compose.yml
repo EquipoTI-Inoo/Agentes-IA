@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    container_name: jinora_app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - PORT=8000
+      - DATABASE_URL=sqlite:///data/meta_ads.db
+    volumes:
+      - ./data:/app/data
+      - ./downloads:/app/downloads
+      - ./reports:/app/reports
+      - ./config:/app/config
+
+  # Descomentar si se desea levantar PostgreSQL dedicado:
+  # db:
+  #   image: postgres:16-alpine
+  #   container_name: jinora_postgres
+  #   environment:
+  #     POSTGRES_USER: jinora
+  #     POSTGRES_PASSWORD: jinora_secret_password
+  #     POSTGRES_DB: jinora_ads
+  #   volumes:
+  #     - pgdata:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+
+# volumes:
+#   pgdata:
