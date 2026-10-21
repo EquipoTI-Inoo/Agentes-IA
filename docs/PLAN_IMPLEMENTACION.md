@@ -101,20 +101,91 @@ tests/
 
 **Objetivo:** trabajar seguro y con configuración centralizada.
 
-- [ ] Inicializar git si no existe; crear rama `feat/mejoras-ia`.
-- [ ] Backup: copiar `data/meta_ads.db` → `data/backup/meta_ads_YYYYMMDD.db`.
-- [ ] Crear `.env.example` y `src/config.py` con `pydantic-settings`:
+- [x] Inicializar git si no existe; crear rama `feat/mejoras-ia`.
+- [x] Backup: copiar `data/meta_ads.db` → `data/backup/meta_ads_YYYYMMDD.db`.
+- [x] Crear `.env.example` y `src/config.py` con `pydantic-settings`:
   - `DATABASE_URL`, `DOWNLOADS_DIR`
   - `LLM_PROVIDER` (`gemini` | `anthropic` | `openai`), `LLM_MODEL`, `LLM_MODEL_CHEAP` (para relevancia), `GEMINI_API_KEY`, `ANTHROPIC_API_KEY`, `OPENAI_API_KEY`
   - `WHISPER_MODEL` (default `small`), `WHISPER_DEVICE` (`cpu`/`cuda`)
   - `DEFAULT_COUNTRIES=PE,MX,CO,AR,CL,ES,US`
   - `SCORE_WEIGHT_CREATIVE=0.7`, `SCORE_WEIGHT_MARKET=0.3`
-- [ ] Añadir `.env` a `.gitignore`. Nunca escribir API keys en código.
-- [ ] Actualizar `requirements.txt`: `pydantic>=2`, `pydantic-settings`, `google-genai`, `anthropic`, `tenacity`, `pyyaml`, `pytest`, `imagehash` (quitar duplicados del Dockerfile).
+- [x] Añadir `.env` a `.gitignore`. Nunca escribir API keys en código.
+- [x] Actualizar `requirements.txt`: `pydantic>=2`, `pydantic-settings`, `google-genai`, `anthropic`, `tenacity`, `pyyaml`, `pytest`, `imagehash` (quitar duplicados del Dockerfile).
 
 **Criterio de aceptación:** `python -c "from src.config import settings; print(settings.LLM_PROVIDER)"` funciona leyendo `.env`.
 
 > **Prompt para Antigravity:** “Ejecuta la FASE 0 de docs/PLAN_IMPLEMENTACION.md. Crea src/config.py con pydantic-settings y todas las variables listadas, .env.example, actualiza requirements.txt y haz backup de la base de datos. No modifiques otra lógica.”
+
+---
+
+## FASE 0.1 — Modo nivel gratuito de Gemini + corrida cada 15 días (½ día) 🆕
+
+> **Nota:** esta fase se agregó **después** de ejecutar la Fase 0. No rehagas la Fase 0: solo **extiende** el `src/config.py` y el `.env.example` que ya existen.
+
+**Decisión del usuario:** usar la **API gratuita de Gemini** y lanzar el barrido **una vez cada 15 días**.
+
+**Contexto de límites:** el nivel gratuito tiene límites por minuto (RPM), por día (RPD, se reinicia a medianoche hora del Pacífico) y por tokens (TPM), **por proyecto**. Google ya no publica una tabla fija: el usuario debe revisar los valores reales en el panel de *Rate limits* de AI Studio y copiarlos al `.env`. Solo usar modelos **Flash / Flash-Lite** (los Pro recientes no tienen nivel gratuito). En el nivel gratuito Google puede usar el contenido para mejorar sus productos → **nunca enviar datos de clientes**, solo anuncios públicos.
+
+**Límite confirmado por el usuario: 20 solicitudes diarias (RPD)** en su proyecto. El cuello de botella son las **solicitudes**, no los tokens → la estrategia central es **evaluar varios anuncios por solicitud (lotes)**.
+
+**Volumen esperado (estimado, se medirá con `llm_usage`):** primera corrida ~300–500 anuncios; corridas siguientes ~50–150 anuncios nuevos (lo ya evaluado queda en caché).
+
+**Capacidad con 20 RPD:**
+| Estrategia | Anuncios/día | Primera corrida (~400) | Cada 15 días (~100) |
+|---|---|---|---|
+| 1 anuncio por solicitud | 20 | ~20 días ❌ | ~5 días |
+| Lotes (3 videos o 6 estáticos por solicitud) | ~60–100 | ~5–7 días | 1–2 días ✅ |
+| Lotes + filtro de “vale la pena evaluar” + primera corrida solo prioridad 1 | ~60–100 | ~3–4 días | 1 día ✅ |
+
+Tokens estimados por llamada (verificar con la documentación vigente): video 90 s en resolución baja ≈ 13.500; imagen ≈ 5.500; carrusel 10 tarjetas ≈ 17.000. Un lote de 3 videos ≈ 40.000 tokens, muy por debajo del TPM.
+
+### 0.1.1 Configuración (extender `src/config.py` y `.env.example`)
+- [ ] `GEMINI_RPM` (default 5), `GEMINI_RPD` (default **20**, valor real del usuario), `GEMINI_TPM` (default 250000) — el usuario los ajusta según AI Studio.
+- [ ] **Cuota por modelo:** en el nivel gratuito cada modelo suele tener su propio límite. Permitir límites separados: `GEMINI_RPD_MAIN` (para `LLM_MODEL`) y `GEMINI_RPD_CHEAP` (para `LLM_MODEL_CHEAP`). El usuario verifica en AI Studio si Flash-Lite tiene cuota propia; si es así, relevancia y estáticos simples van por Flash-Lite y los videos por Flash.
+- [ ] `EVAL_BATCH_VIDEOS` (default 3) y `EVAL_BATCH_STATICS` (default 6): anuncios por solicitud.
+- [ ] `RESERVE_REQUESTS` (default 2): solicitudes diarias que no se usan en el barrido (para pruebas manuales o reintentos).
+- [ ] `FIRST_RUN_PRIORITY_ONLY` (default `true`): la primera corrida solo evalúa competidores `priority=1`.
+- [ ] `MAX_EVALS_PER_RUN` (default 0 = sin tope; útil para pruebas).
+- [ ] `VIDEO_MAX_SECONDS_FOR_LLM` (default 90) y `GEMINI_MEDIA_RESOLUTION` (`low` | `medium`, default `low`).
+- [ ] `RELEVANCE_BATCH_SIZE` (default 20).
+- [ ] `FREE_TIER_MODE` (bool, default `true`).
+- [ ] Verificar que `DEFAULT_COUNTRIES=PE,MX,CO` (texto separado por comas) en `.env` se lea bien: pydantic-settings intenta decodificar como JSON los campos tipo lista; si falla, anotar el campo con `NoDecode` o declararlo como `str` y exponer una propiedad que devuelva la lista. Agregar un test.
+
+### 0.1.2 Control de cuota — `src/ai/quota.py`
+- [ ] Tabla `llm_usage(day_pt, model, requests, tokens_in, tokens_out)` en la DB (día calculado en hora del Pacífico, que es cuando Google reinicia el RPD).
+- [ ] `QuotaGuard.acquire(model, est_tokens)`: espera lo necesario para respetar RPM/TPM; si se alcanzó `GEMINI_RPD` del día lanza `QuotaExhausted`.
+- [ ] Ante error **429** de la API: backoff exponencial (30 s, 60 s, 120 s); si persiste o el mensaje indica cuota diaria agotada → `QuotaExhausted`.
+- [ ] Registrar uso real (tokens de la respuesta) tras cada llamada.
+
+### 0.1.3 Comportamiento del pipeline con cuota
+- [ ] Al capturar `QuotaExhausted`: guardar estado, dejar los anuncios restantes como `pending_evaluation`, imprimir resumen (“evaluados X, pendientes Y, se retoma en la próxima corrida”) y salir con código 0 (no es error).
+- [ ] **Cola priorizada** de evaluación: 1) competidores `priority=1` (WhatsApp/CRM LatAm), 2) `is_active=true`, 3) mayor `market_score`, 4) más reciente. Así, si la cuota se acaba, lo importante ya quedó evaluado.
+- [ ] Las etapas sin LLM (scraping, descarga, Whisper, FFmpeg, features de imagen, `market_score`) **siempre** se completan; solo la evaluación queda pendiente.
+
+### 0.1.4 Ahorro de cuota y tokens
+- [ ] **Relevancia en lote:** el clasificador recibe `RELEVANCE_BATCH_SIZE` anuncios (solo texto: página, copy, titular, dominio) en **una** llamada y devuelve una lista JSON. Los anuncios de competidores mapeados por `page_id` no gastan llamada.
+- [ ] **Video liviano:** enviar a Gemini solo los primeros `VIDEO_MAX_SECONDS_FOR_LLM` segundos (recorte con FFmpeg sin recodificar si es posible) y con `media_resolution=low` (≈100 tokens/s en lugar de ≈300 tokens/s; verificar en la documentación vigente).
+- [ ] Borrar los archivos subidos a la Files API de Gemini después de evaluarlos.
+- [ ] Caché estricta por `creative_hash`: variantes del mismo creativo **heredan** la evaluación (1 llamada por creativo, no por anuncio).
+- [ ] Una sola llamada por anuncio (evaluación completa); sin llamadas de “resumen” extra durante el barrido. El resumen ejecutivo por pilar (Fase 8) se genera al final con 1 llamada por pilar, solo si queda cuota.
+
+### 0.1.5 Programación cada 15 días (Windows, sin servidor)
+- [ ] Comandos del CLI (Fase 7):
+  - `python -m src.cli run --all` → barrido completo (scraping + preparación + evaluación hasta agotar cuota).
+  - `python -m src.cli evaluate --pending` → solo evalúa lo pendiente (no hace scraping).
+- [ ] `scripts/schedule_windows.ps1` que registre con el Programador de tareas:
+  - **Barrido:** días **1 y 15** de cada mes, 09:00 → `run --all`.
+  - **Recuperación de pendientes:** días **2, 3, 4, 16, 17 y 18**, 09:00 → `evaluate --pending` (termina sin hacer nada si no hay pendientes).
+  - Opción “ejecutar lo antes posible si se omitió el inicio programado” activada (por si la PC estaba apagada).
+  - Usar la ruta absoluta del Python del entorno virtual y el directorio del proyecto como carpeta de inicio.
+- [ ] Log por corrida en `logs/run_YYYYMMDD.log` + línea resumen en `logs/history.csv` (fecha, anuncios nuevos, evaluados, pendientes, requests usadas).
+
+**Criterio de aceptación:**
+- Con `GEMINI_RPD=3` y 10 anuncios, el pipeline evalúa 3, deja 7 pendientes, sale sin error; `evaluate --pending` al día siguiente continúa sin repetir los ya evaluados.
+- Un 429 simulado activa el backoff y no rompe la corrida.
+- Las tareas aparecen en el Programador de tareas de Windows.
+
+> **Prompt para Antigravity:** “Ejecuta la FASE 0.1 de docs/PLAN_IMPLEMENTACION.md. La Fase 0 ya está hecha: extiende el src/config.py y el .env.example existentes con las nuevas variables (no los reescribas). Crea src/ai/quota.py y deja preparada la cola priorizada y el manejo de QuotaExhausted para conectarlos en las Fases 4 y 7. Crea scripts/schedule_windows.ps1 pero NO lo ejecutes hasta que el pipeline (Fase 7) esté listo.”
 
 ---
 
@@ -157,7 +228,7 @@ tests/
 
 ### 2.3 Filtro de relevancia en dos capas
 - [ ] **Capa 1 (reglas, gratis):** si el `page_id` pertenece a un competidor mapeado → aprobado directo. Si viene de búsqueda por keyword → aplicar lista negra corregida.
-- [ ] **Capa 2 (LLM barato):** para anuncios de keyword discovery, clasificar con `LLM_MODEL_CHEAP` usando `prompts/relevance_v1.md`. Salida JSON:
+- [ ] **Capa 2 (LLM barato):** para anuncios de keyword discovery, clasificar con `LLM_MODEL_CHEAP` usando `prompts/relevance_v1.md`, **en lotes de `RELEVANCE_BATCH_SIZE`** y pasando por `QuotaGuard` (Fase 0.1). Salida JSON (una lista con un objeto por anuncio):
   ```json
   {"is_relevant": true, "pillar": "conversacional|voz|crm|ninguno",
    "is_competitor_of_cosmiq": true, "confidence": 0.0, "reason": "..."}
@@ -186,7 +257,7 @@ tests/
 - [ ] Borrar la extracción a 1 fps del video completo (ocupa disco y no se usa).
 
 ### 3.3 Comprensión visual
-- [ ] Si `LLM_PROVIDER=gemini`: subir el **video completo** (Gemini procesa audio+imagen nativamente) además de la transcripción.
+- [ ] Si `LLM_PROVIDER=gemini`: subir el video (Gemini procesa audio+imagen nativamente) además de la transcripción. En `FREE_TIER_MODE`: recortado a `VIDEO_MAX_SECONDS_FOR_LLM` y con `media_resolution` baja (Fase 0.1.4).
 - [ ] Si `anthropic`/`openai`: enviar keyframes + frames del gancho como imágenes + transcripción con timestamps.
 - [ ] La salida de esta etapa se guarda en `forensics.json` (reemplaza `full_forensic_analysis.json`).
 
@@ -252,8 +323,10 @@ class EvaluationResult(BaseModel):
 ### 4.4 Cliente LLM — `src/ai/llm_client.py`
 - [ ] Interfaz única: `evaluate(media: ForensicsBundle, copy: AdCopy) -> EvaluationResult`.
 - [ ] Implementaciones `GeminiClient` (video nativo) y `AnthropicClient` (imágenes); seleccionadas por `LLM_PROVIDER`.
-- [ ] Reintentos con `tenacity`; si el JSON no valida, 1 reintento con el error de validación en el prompt.
-- [ ] Registro de costo/tokens por llamada.
+- [ ] **Toda** llamada pasa por `QuotaGuard.acquire()` (Fase 0.1.2); el 429 se maneja ahí, no con reintentos ciegos.
+- [ ] Si el JSON no valida, 1 reintento con el error de validación en el prompt (también consume cuota: contarlo).
+- [ ] Registro de tokens por llamada en `llm_usage`.
+- [ ] Modelo por defecto: un **Flash** con nivel gratuito (`LLM_MODEL`); el usuario confirma en AI Studio qué Flash tiene disponible.
 
 ### 4.5 Persistencia y caché
 - [ ] Tabla `analyses`: `ad_id`, `model`, `prompt_version`, `rubric_version`, `result_json`, `creative_score`, `created_at`, `cost_usd`.
@@ -321,7 +394,9 @@ class EvaluationResult(BaseModel):
   python -m src.cli report --pillar crm --top 10
   ```
 - [ ] **Eliminar** `scripts/ingest_1000_ads.py`, `mass_global_harvester.py`, `run_full_global_audit.py`, `run_global_intelligence.py`, `scrape_conversational_crm.py` (su lógica queda en el pipeline). `main.py` pasa a llamar al CLI.
+- [ ] Comando `python -m src.cli evaluate --pending` y la **cola priorizada** + manejo de `QuotaExhausted` de la Fase 0.1.3.
 - [ ] Cola de trabajos: worker simple en proceso separado que consume la tabla `Job` (sin dependencias externas). La API solo encola y devuelve `job_id`; endpoint `GET /api/jobs/{id}`.
+- [ ] Al terminar esta fase: ejecutar `scripts/schedule_windows.ps1` (Fase 0.1.5) y verificar las tareas.
 - [ ] Rate limiting hacia Meta: pausa aleatoria 1–3 s entre consultas, backoff si hay bloqueo.
 - [ ] Logs a archivo `logs/jinora.log` + resumen de costo LLM por corrida.
 
@@ -358,7 +433,7 @@ class EvaluationResult(BaseModel):
 
 | Semana | Fases | Entregable |
 |--------|-------|------------|
-| 1 | 0, 1, 2 | Datos limpios, solo competidores reales, LatAm incluido |
+| 1 | 0, 0.1, 1, 2 | Config de nivel gratuito, datos limpios, solo competidores reales, LatAm incluido |
 | 2 | 3, 4 | Análisis multimodal + evaluador IA calibrado |
 | 3 | 5, 6, 7 | Puntaje final, nuevo esquema, pipeline único con cola |
 | 4 | 8, 9 | Dashboard nuevo, tests, Docker listo |
@@ -367,10 +442,11 @@ class EvaluationResult(BaseModel):
 
 ---
 
-## Costos estimados del LLM (orientativo, verificar precios vigentes)
-- Clasificador de relevancia (modelo barato, solo texto): fracciones de centavo por anuncio.
-- Evaluación multimodal (video 30–90 s o ~30 imágenes + transcripción): del orden de centavos por anuncio con modelos “flash/sonnet”.
-- Con caché por `creative_hash`, re-correr el pipeline no vuelve a pagar anuncios ya evaluados.
+## Costos del LLM
+- **Modo elegido: nivel gratuito de Gemini (costo $0)**, con corrida cada 15 días. El límite real es la **cuota diaria**, no el dinero (ver Fase 0.1).
+- Primera corrida: puede tomar varios días en evaluarse completa (se retoma sola con las tareas de recuperación).
+- Corridas siguientes: solo anuncios/creativos nuevos; la caché por `creative_hash` evita gastar cuota en lo ya evaluado.
+- Si en el futuro se necesita más volumen: activar facturación en el mismo proyecto de Google (sin cambiar código) y subir `GEMINI_RPM/RPD`; en el nivel de pago Google no usa el contenido para mejorar sus productos.
 
 ## Riesgos
 | Riesgo | Mitigación |
@@ -378,7 +454,8 @@ class EvaluationResult(BaseModel):
 | Meta cambia la estructura o bloquea el scraping | Mantener `meta-ads-collector` actualizado, backoff, aislar el scraper en `collect/` para poder cambiarlo por la API oficial de Ad Library. |
 | URLs de video de Meta expiran | Descargar en la misma corrida en que se descubre el anuncio. |
 | El LLM puntúa inconsistente | Rúbrica anclada, temperatura 0, calibración, versionado de prompt. |
-| Costos de LLM crecen | Filtro de relevancia antes de evaluar, caché por hash, modelo barato para clasificar. |
+| Se agota la cuota gratuita | `QuotaGuard`, cola priorizada (lo importante primero), relevancia en lote, video recortado/baja resolución, tareas de recuperación los días siguientes. |
+| Google cambia los límites del nivel gratuito | Límites en `.env` (no en código); revisar el panel de AI Studio antes de cada mes. |
 | Términos de uso de Meta | Uso interno de inteligencia competitiva, ritmo moderado de consultas, no redistribuir creativos. |
 
 ---
@@ -390,3 +467,4 @@ class EvaluationResult(BaseModel):
 - [ ] Calibración con Spearman ≥ 0.6 frente a puntajes humanos.
 - [ ] Dashboard muestra creative / market / jinora score y evidencias clicables.
 - [ ] Un solo comando corre todo el pipeline de forma reanudable.
+- [ ] Funciona dentro del nivel gratuito de Gemini y se ejecuta solo los días 1 y 15 (más recuperación de pendientes).
