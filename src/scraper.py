@@ -17,7 +17,7 @@ from typing import Any, Dict, List, Optional
 from meta_ads_collector import MetaAdsCollector
 from meta_ads_collector.filters import FilterConfig
 from meta_ads_collector.models import Ad, AdCreative
-from tenacity import retry, stop_after_attempt, wait_exponential
+from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponential
 
 from src.relevance import is_ad_relevant
 
@@ -190,10 +190,19 @@ class MetaAdsHunter:
         min_bytes: int = 500,
         max_bytes: int = 200 * 1024 * 1024,
     ) -> bool:
-        """Download file via streaming into temporary .tmp file and atomic rename on success."""
+        """Download file via streaming into temporary .tmp file and atomic rename on success.
+        Only retries network/HTTP/connection errors; does NOT retry when max_bytes is exceeded (ValueError).
+        """
         tmp_path = dest_path.with_suffix(f"{dest_path.suffix}.tmp")
 
+        def _should_retry_download(exc: BaseException) -> bool:
+            # Do not retry if the file exceeded maximum size limits (fatal, not transient)
+            if isinstance(exc, ValueError):
+                return False
+            return True
+
         @retry(
+            retry=retry_if_exception(_should_retry_download),
             stop=stop_after_attempt(3),
             wait=wait_exponential(multiplier=1, min=2, max=10),
             reraise=True,
