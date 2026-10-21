@@ -1,6 +1,8 @@
 # Jinora — Plan de Implementación: Análisis de Anuncios Estáticos
 
 > **Para el agente de Antigravity:** este plan **complementa** `docs/PLAN_IMPLEMENTACION.md`. Reutiliza su arquitectura (config, `llm_client.py`, `schemas.py`, tabla `analyses`, `market_score`, pipeline por etapas). Ejecuta una fase a la vez, marca las casillas y detente para revisión. Requisito previo: Fases 0, 1 y 4.4 (cliente LLM) del plan principal terminadas.
+>
+> **Decisión vigente (21-oct): los estáticos se evalúan con CLAUDE (API de Anthropic), no con Gemini.** Gemini queda para video y relevancia. Claude usa crédito prepago con tope de gasto (`CLAUDE_BUDGET_USD`), una imagen por solicitud (sin lotes de 6) y el cliente `ClaudeClient` descrito en la Fase 4.4 del plan principal. Donde este plan mencione `QuotaGuard`, lotes de `EVAL_BATCH_STATICS` o Gemini para estáticos, **manda este aviso**.
 
 ---
 
@@ -44,7 +46,7 @@ anuncio ─► detectar formato ─► descargar imágenes en resolución origin
                      market_score (mismo de la Fase 5) → jinora_score
 ```
 
-**Por qué funciona bien con API:** a diferencia del video, una imagen se manda directo al LLM (Gemini, Claude u OpenAI la leen nativamente, incluido el texto que tiene escrito). No hace falta Whisper ni FFmpeg, y el costo por anuncio es menor que en video.
+**Por qué funciona bien con API:** a diferencia del video, una imagen se manda directo a **Gemini**, que la lee nativamente, incluido el texto que tiene escrito. No hace falta Whisper ni FFmpeg, y consume menos tokens que un video. **Decisión del usuario: todo el análisis va con Gemini (nivel gratuito, 20 solicitudes diarias)**; los estáticos comparten esa cuota con los videos y la relevancia (ver tabla de capacidad en la Fase 0.1 del plan principal).
 
 ---
 
@@ -126,14 +128,16 @@ class StaticEvaluationResult(BaseModel):
     has_human_face: bool
     has_product_screenshot: bool
     main_promise: str                      # promesa principal en una frase
-    ai_mechanism_framing: str | None
+    value_proposition: str                 # problema que resuelven / qué prometen (sin asumir IA)
+    feature_focus: list[Literal["automatizacion","agendamiento","gestion_leads_crm","mensajes_masivos_campanas","atencion_omnicanal","agentes_ia","pagos_ventas_en_chat","integraciones_api","otro"]]
+    ai_mention: Literal["ninguna", "mencionada", "central"]  # dato factual; no puntúa
     target_niche: str | None
     language: str
     carousel_narrative: str | None         # solo carruseles
     weakest_card: int | None               # solo carruseles
     what_to_model: str
     what_to_beat: str
-    cosmiq_adaptation_idea: str            # idea concreta de estático para Cosmiq
+    cosmiq_adaptation_idea: str            # idea concreta de estático para Cosmiq, basada en la capacidad que destaca el anuncio (no forzar IA)
     confidence: float = Field(ge=0, le=1)
 ```
 `creative_score` = suma de las 4 dimensiones, **calculada por código**.
@@ -146,14 +150,15 @@ class StaticEvaluationResult(BaseModel):
   - Evaluar **como se ve en el feed del celular** (imagen pequeña + primeras 125 caracteres del copy antes de “Ver más”).
   - Cada puntaje con ≥1 evidencia (tarjeta + zona o fragmento del copy).
   - No usar días activos ni datos del anunciante para puntuar (no se envían).
-  - Usar todo el rango; un anuncio promedio cae en 10–15 por dimensión.
+  - Usar todo el rango según las anclas; sin cupos ni topes numéricos. Un 20 o más solo se justifica si lo observado cumple el ancla de ese nivel, con evidencia (tarjeta + zona o fragmento del copy).
 - [ ] Temperatura 0 y salida con JSON schema (igual que el evaluador de video).
 
 ### Evaluador — `src/ai/evaluator_static.py`
-- [ ] `evaluate_static(ad) -> StaticEvaluationResult` usando `llm_client.py` (una sola llamada con todas las imágenes).
+- [ ] `evaluate_static(ad) -> StaticEvaluationResult` usando `ClaudeClient` de `llm_client.py` (una sola llamada con todas las imágenes del mismo anuncio; salida JSON validada con el esquema, temperatura 0).
 - [ ] Carruseles de > 10 tarjetas: enviar las 10 primeras + la tira.
 - [ ] Guardar en `analyses` con `analysis_type="static"`, `prompt_version`, `model`, costo.
 - [ ] Caché por `creative_hash` (phash + copy).
+- [ ] Cada llamada a Claude pasa por el control de **presupuesto** (`CLAUDE_BUDGET_USD`, tabla `llm_usage` con `provider` y costo estimado). **Una imagen por solicitud**; carrusel/DCO: todas las tarjetas del mismo anuncio en una sola solicitud (máx. 10 + tira). Las imágenes repetidas (mismo `phash`) heredan la evaluación sin gastar crédito. Si falta la clave o se supera el tope, el anuncio queda `pending_evaluation` (no es error). Reducir el lado largo de la imagen a `CLAUDE_MAX_IMAGE_PX` (1568) antes de enviar.
 - [ ] Router en `pipeline.py`: `video → evaluator.py`, `imagen/carrusel → evaluator_static.py`, `dco → evaluar cada variante con su evaluador y guardar el mejor + promedio`.
 
 **Criterio de aceptación:** evaluar 5 estáticos distintos produce puntajes diferentes, con el texto de la imagen transcrito y evidencias por zona/tarjeta.
@@ -198,7 +203,7 @@ class StaticEvaluationResult(BaseModel):
 | Plan principal | Qué se agrega para estáticos |
 |----------------|------------------------------|
 | Fase 1 (bugs) | S1: formato + rol image/thumbnail + todos los creativos en DB |
-| Fase 3 (forense) | S2: `image_features.py` (equivalente “forense” para imágenes) |
+| Fase 3 (media, versión Gemini) | S2: `image_features.py` (`phash`, medidas y copia optimizada para Gemini; Pillow/imagehash, sin FFmpeg) |
 | Fase 4 (evaluador) | S3–S4: rúbrica, esquema, prompt y evaluador estático + router |
 | Fase 5 (mercado) | S5: variantes de copy/visual, rankings por formato |
 | Fase 8 (dashboard) | S6 |
@@ -207,7 +212,7 @@ class StaticEvaluationResult(BaseModel):
 **Orden recomendado:** S1 junto con la Fase 1 → S2 → S3/S4 inmediatamente después de la Fase 4 (comparten cliente LLM y tabla `analyses`) → S5–S7. Tiempo extra total: ~5 días.
 
 ## Costos (orientativo, verificar precios vigentes)
-- Un estático = 1 llamada con 1 imagen optimizada + texto → normalmente **más barato que un video**.
+- Un estático = 1 llamada a Claude con 1 imagen optimizada (~1.500 tokens aprox.) + texto → del orden de **1 centavo de dólar** con un modelo tipo Sonnet y menos con Haiku (estimación; verificar precios en la consola de Anthropic). Con ~USD 9,94 de crédito alcanza para cientos de anuncios. Empezar probando 5 estáticos y revisar a mano antes de lanzar todos.
 - Un carrusel de 10 tarjetas cuesta varias veces un estático simple; por eso se limita a 10 tarjetas + tira.
 - La caché por `phash` evita pagar dos veces la misma imagen repetida en muchos anuncios.
 
