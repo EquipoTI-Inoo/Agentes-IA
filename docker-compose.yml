@@ -8,6 +8,7 @@ services:
     ports:
       - "8000:8000"
     environment:
+      - HOST=0.0.0.0
       - PORT=8000
       - DATABASE_URL=sqlite:///data/meta_ads.db
     volumes:

@@ -6,7 +6,7 @@ Ensures scraped and analyzed ads strictly belong to our core commercial pillars:
 3. Voice AI & Phone Automation (Inbound/Outbound/Receptionist)
 4. B2B / SaaS / Agency Tech Stack
 
-Discards irrelevant ads (consumer goods, cosmetics, shampoos, fashion, personal loans, pension advisory, etc.)
+Discards irrelevant ads (consumer goods, cosmetics, shampoos, fashion, personal loans, romance books, household items, etc.)
 """
 
 from __future__ import annotations
@@ -41,13 +41,14 @@ NEGATIVE_KEYWORDS: List[str] = [
     "casino", "apuestas deportivas", "pronosticos", "ruleta", "tragamonedas",
     "tarot", "amarres de amor", "astrologia", "horoscopo",
 
-    # Generic Consumer E-commerce Gadgets & Household
+    # Generic Consumer E-commerce Gadgets & Household & Fiction
     "funda de celular", "juguetes", "limpieza del hogar", "utensilios de cocina",
     "air wick", "ambientador", "ambientadores", "airmoto", "inflador de llantas",
-    "tire inflator", "novela", "novelas", "rom-com", "romance book", "libro fisico",
+    "tire inflator", "novela", "novelas", "rom-com", "romance book", "rom-com reads",
+    "libro fisico", "chair co", "muebles", "decoracion hogar",
 ]
 
-# Core Positive Pillars & Terms (Must match at least one pillar or tech domain)
+# Core Positive Pillars & Terms (B2B SaaS, CRM, Voice AI, Conversational AI)
 POSITIVE_DOMAIN_KEYWORDS: List[str] = [
     # Voice AI
     "voice ai", "voicebot", "agente de voz", "llamadas con ia", "llamadas automatizadas",
@@ -73,56 +74,80 @@ POSITIVE_DOMAIN_KEYWORDS: List[str] = [
     "aumentar roas", "generacion de demanda", "ia para negocios",
 ]
 
+# Exact word boundary regexes for tech / B2B signals in page names
+TECH_PAGE_REGEXES: List[re.Pattern] = [
+    re.compile(r"\bai\b", re.IGNORECASE),
+    re.compile(r"\bcrm\b", re.IGNORECASE),
+    re.compile(r"\btech\b", re.IGNORECASE),
+    re.compile(r"\bsoftware\b", re.IGNORECASE),
+    re.compile(r"\bbots?\b", re.IGNORECASE),
+    re.compile(r"\bautomati\w*", re.IGNORECASE),
+    re.compile(r"\bsales\b", re.IGNORECASE),
+    re.compile(r"\bagency\b", re.IGNORECASE),
+    re.compile(r"\bsaas\b", re.IGNORECASE),
+    re.compile(r"\bkommo\b", re.IGNORECASE),
+    re.compile(r"\bvapi\b", re.IGNORECASE),
+    re.compile(r"\bhubspot\b", re.IGNORECASE),
+]
+
 
 def is_ad_relevant(ad_data: Dict[str, Any], target_query: str = "") -> Tuple[bool, str]:
     """
     Evaluates whether an ad belongs to Jinora's target pillars.
+    Enforces whole-word regex matching to eliminate substring false positives.
     Returns (is_relevant: bool, reason: str).
     """
-    page_name = (ad_data.get("page_name") or "").lower().strip()
+    page_name = (ad_data.get("page_name") or "").strip()
+    page_lower = page_name.lower()
     headline = (ad_data.get("headline") or "").lower()
     body = (ad_data.get("body_text") or "").lower()
     link = (ad_data.get("link_url") or "").lower()
     transcript = (ad_data.get("full_transcript") or "").lower()
     query_lower = (target_query or "").lower().strip()
 
-    combined_text = f"{page_name} {headline} {body} {transcript}"
+    combined_text = f"{page_lower} {headline} {body} {transcript}"
 
-    # 1. Negative Filter: Immediate rejection if blacklisted terms appear
+    # 1. Negative Filter: Reject if blacklisted consumer niche terms appear (whole-word boundary)
     for bad_term in NEGATIVE_KEYWORDS:
-        # Check boundary or direct occurrence
         pattern = r"\b" + re.escape(bad_term) + r"\b"
-        if re.search(pattern, combined_text, re.IGNORECASE) or bad_term in page_name:
+        if re.search(pattern, combined_text, re.IGNORECASE) or re.search(pattern, page_lower, re.IGNORECASE):
             return False, f"Rechazado por Jinora: Niche prohibido/irrelevante ('{bad_term}')"
 
     # 2. Competitor Brand Specific Guard
-    # If the user searched for a brand (e.g., 'Kommo', 'Manychat', 'Vapi', 'Bland AI', 'Notion', 'HubSpot')
     if query_lower and len(query_lower) >= 3:
         # If searching for Kommo, prevent Meta's false positive with Spanish '¿cómo?'
         if query_lower in ["kommo", "kommo crm"]:
-            is_kommo_official = "kommo" in page_name or "kommo.com" in link
-            speaks_crm = any(k in combined_text for k in ["crm", "ventas", "pipeline", "whatsapp", "leads", "mensajería"])
+            is_kommo_official = bool(re.search(r"\bkommo\b", page_lower) or "kommo.com" in link)
+            speaks_crm = any(
+                re.search(r"\b" + re.escape(k) + r"\b", combined_text, re.IGNORECASE)
+                for k in ["crm", "ventas", "pipeline", "whatsapp", "leads", "mensajería"]
+            )
             if not is_kommo_official and not speaks_crm:
                 return False, f"Rechazado por Jinora: Falsa coincidencia fonética con '{target_query}' (anuncio no trata de CRM/Software)"
 
         # If searching for Vapi
         if "vapi" in query_lower:
-            if "vapi" not in combined_text and "vapi.ai" not in link and "voice" not in combined_text:
+            if not re.search(r"\bvapi\b", combined_text) and "vapi.ai" not in link and "voice" not in combined_text:
                 return False, "Rechazado por Jinora: No menciona Vapi ni Voice AI"
 
         # If searching for Bland AI
         if "bland" in query_lower:
-            if "bland" not in combined_text and "bland.ai" not in link and "phone" not in combined_text and "ai" not in combined_text:
+            has_bland = bool(re.search(r"\bbland\b", combined_text))
+            has_voice = bool(re.search(r"\b(phone|calls?|llamadas?)\b", combined_text))
+            if not has_bland and "bland.ai" not in link and not has_voice:
                 return False, "Rechazado por Jinora: No menciona Bland AI ni agentes de llamada"
 
     # 3. Positive Domain Check: Must relate to B2B software, CRM, AI, or sales automation
-    has_positive = any(good_term in combined_text or good_term in link for good_term in POSITIVE_DOMAIN_KEYWORDS)
+    has_positive = any(
+        re.search(r"\b" + re.escape(good_term) + r"\b", combined_text, re.IGNORECASE) or good_term in link
+        for good_term in POSITIVE_DOMAIN_KEYWORDS
+    )
 
-    # Check if page name itself is an approved competitor or tech page
-    tech_in_page = any(k in page_name for k in ["ai", "crm", "tech", "software", "bot", "automati", "sales", "agency"])
+    # Check if page name itself matches tech patterns using strict word boundaries
+    tech_in_page = any(regex.search(page_name) for regex in TECH_PAGE_REGEXES)
 
     if has_positive or tech_in_page:
         return True, "Aprobado por Jinora: Alineado con CRM, Voice AI o Conversational AI"
 
-    # If it is too vague or generic with zero B2B tech match, reject
+    # If it has zero B2B tech match, reject
     return False, "Rechazado por Jinora: Sin relevancia temática para CRM, Voice AI ni Agentes Conversacionales"

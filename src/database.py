@@ -81,6 +81,18 @@ class AdRecord(Base):
 Base.metadata.create_all(bind=engine)
 
 
+def normalize_to_relative_path(path_str: Optional[str]) -> Optional[str]:
+    """Convert any full/absolute or messy path to relative path with respect to DOWNLOADS_DIR."""
+    if not path_str:
+        return None
+    clean = str(path_str).replace("\\", "/").strip()
+    if "/downloads/" in clean:
+        return clean.split("/downloads/", 1)[1]
+    if clean.startswith("downloads/"):
+        return clean[len("downloads/"):]
+    return clean
+
+
 def save_or_update_ad_record(ad_data: Dict[str, Any], pillar: str = "general", search_query: str = "") -> AdRecord:
     """Insert or update ad record in DB from scraper dict."""
     db = SessionLocal()
@@ -117,9 +129,9 @@ def save_or_update_ad_record(ad_data: Dict[str, Any], pillar: str = "general", s
         existing.search_query = search_query
 
         if v_path:
-            existing.video_path = v_path
+            existing.video_path = normalize_to_relative_path(v_path)
         if i_path:
-            existing.image_path = i_path
+            existing.image_path = normalize_to_relative_path(i_path)
 
         if forensics:
             existing.duration_seconds = forensics.get("duration_seconds")

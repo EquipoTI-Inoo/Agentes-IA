@@ -8,6 +8,7 @@ Supports keyword queries as well as specialized business pillars:
 """
 
 import argparse
+from datetime import datetime
 import json
 import sys
 from pathlib import Path
@@ -35,7 +36,7 @@ def generate_markdown_report(
     lines = [
         f"# Reporte de Inteligencia Publicitaria: {pillar_or_query.upper()}",
         f"**Total Anuncios Analizados:** {len(ads)}",
-        f"**Fecha de Extracción:** {Path.cwd()}",
+        f"**Fecha de Extracción:** {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}",
         "",
         "---",
         "",

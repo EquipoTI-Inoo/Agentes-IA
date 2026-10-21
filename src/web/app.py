@@ -50,16 +50,26 @@ def to_web_url(path_str: Optional[str]) -> Optional[str]:
     if not path_str:
         return None
     try:
-        p = Path(path_str)
-        if not p.is_absolute():
-            p = (BASE_DIR / p).resolve()
-        else:
-            p = p.resolve()
-
         downloads_resolved = DOWNLOADS_DIR.resolve()
-        if p.exists() and p.is_relative_to(downloads_resolved):
-            rel = p.relative_to(downloads_resolved)
-            return f"/downloads/{rel.as_posix()}"
+        p = Path(path_str)
+
+        if not p.is_absolute():
+            # Check if relative to DOWNLOADS_DIR first (standard format)
+            candidate = (DOWNLOADS_DIR / p).resolve()
+            if candidate.exists() and candidate.is_relative_to(downloads_resolved):
+                rel = candidate.relative_to(downloads_resolved)
+                return f"/downloads/{rel.as_posix()}"
+
+            # Or if relative to BASE_DIR (e.g. 'downloads/Brand/...')
+            candidate_base = (BASE_DIR / p).resolve()
+            if candidate_base.exists() and candidate_base.is_relative_to(downloads_resolved):
+                rel = candidate_base.relative_to(downloads_resolved)
+                return f"/downloads/{rel.as_posix()}"
+        else:
+            p_resolved = p.resolve()
+            if p_resolved.exists() and p_resolved.is_relative_to(downloads_resolved):
+                rel = p_resolved.relative_to(downloads_resolved)
+                return f"/downloads/{rel.as_posix()}"
     except Exception:
         pass
     return None

@@ -17,6 +17,7 @@ from typing import Any, Dict, List, Optional
 from meta_ads_collector import MetaAdsCollector
 from meta_ads_collector.filters import FilterConfig
 from meta_ads_collector.models import Ad, AdCreative
+from tenacity import retry, stop_after_attempt, wait_exponential
 
 from src.relevance import is_ad_relevant
 
@@ -181,12 +182,67 @@ class MetaAdsHunter:
         parsed_ads.sort(key=lambda x: x.get("days_active", 0), reverse=True)
         return parsed_ads
 
+    def _download_file_streaming(
+        self,
+        url: str,
+        dest_path: Path,
+        timeout: int = 120,
+        min_bytes: int = 500,
+        max_bytes: int = 200 * 1024 * 1024,
+    ) -> bool:
+        """Download file via streaming into temporary .tmp file and atomic rename on success."""
+        tmp_path = dest_path.with_suffix(f"{dest_path.suffix}.tmp")
+
+        @retry(
+            stop=stop_after_attempt(3),
+            wait=wait_exponential(multiplier=1, min=2, max=10),
+            reraise=True,
+        )
+        def _fetch_stream() -> int:
+            total_downloaded = 0
+            if tmp_path.exists():
+                tmp_path.unlink(missing_ok=True)
+
+            with self.collector.client.session.get(url, stream=True, timeout=timeout) as resp:
+                if resp.status_code != 200:
+                    raise IOError(f"HTTP status {resp.status_code} while downloading {url}")
+
+                with open(tmp_path, "wb") as f:
+                    for chunk in resp.iter_content(chunk_size=65536):
+                        if not chunk:
+                            continue
+                        total_downloaded += len(chunk)
+                        if total_downloaded > max_bytes:
+                            raise ValueError(
+                                f"Archivo excede límite de {max_bytes / (1024 * 1024):.0f} MB: {total_downloaded} bytes"
+                            )
+                        f.write(chunk)
+
+            if total_downloaded < min_bytes:
+                raise IOError(f"Archivo descargado demasiado pequeño ({total_downloaded} bytes)")
+
+            # Atomic rename on success
+            tmp_path.replace(dest_path)
+            return total_downloaded
+
+        try:
+            downloaded_bytes = _fetch_stream()
+            logger.info(f"  [+] Descargado ({downloaded_bytes / (1024 * 1024):.2f} MB): {dest_path.name}")
+            return True
+        except Exception as e:
+            if tmp_path.exists():
+                tmp_path.unlink(missing_ok=True)
+            logger.warning(f"  [!] Falló descarga de {dest_path.name}: {e}")
+            return False
+
     def download_ad(
         self,
         ad_data: Dict[str, Any],
         subfolder: str = "general",
     ) -> Dict[str, Any]:
-        """Download ad media and save metadata.json in target directory."""
+        """Download ad media via streaming and save metadata.json in target directory.
+        Saves relative paths with respect to output_dir.
+        """
         ad_id = str(ad_data.get("ad_id"))
         clean_sub = self._sanitize_folder_name(subfolder)
         target_dir = self.output_dir / clean_sub / ad_id
@@ -194,37 +250,46 @@ class MetaAdsHunter:
 
         downloaded_files: List[str] = []
 
-        # Download media using collector's native curl_cffi session
+        # Download media using streaming and retry
         for c in ad_data.get("creatives", []):
             idx = c["index"]
 
-            # Prefer HD Video, fallback to SD
+            # Prefer HD Video, fallback to SD (120s timeout, max 200MB)
             video_url = c.get("video_hd_url") or c.get("video_sd_url")
             if video_url:
                 v_path = target_dir / f"video_{idx}.mp4"
                 if not v_path.exists():
-                    try:
-                        resp = self.collector.client.session.get(video_url, timeout=30)
-                        if resp.status_code == 200 and len(resp.content) > 1000:
-                            v_path.write_bytes(resp.content)
-                            downloaded_files.append(str(v_path))
-                            logger.info(f"  [+] Video descargado: {v_path.name} ({len(resp.content) / 1024 / 1024:.2f} MB)")
-                    except Exception as e:
-                        logger.warning(f"  [!] Error descargando video {idx} para ad {ad_id}: {e}")
+                    success = self._download_file_streaming(
+                        url=video_url,
+                        dest_path=v_path,
+                        timeout=120,
+                        min_bytes=1000,
+                        max_bytes=200 * 1024 * 1024,
+                    )
+                    if success:
+                        rel_v = v_path.relative_to(self.output_dir).as_posix()
+                        downloaded_files.append(rel_v)
+                else:
+                    rel_v = v_path.relative_to(self.output_dir).as_posix()
+                    downloaded_files.append(rel_v)
 
-            # Download Image / Thumbnail
+            # Download Image / Thumbnail (30s timeout)
             img_url = c.get("image_url") or c.get("thumbnail_url")
             if img_url:
                 img_path = target_dir / f"image_{idx}.jpg"
                 if not img_path.exists():
-                    try:
-                        resp = self.collector.client.session.get(img_url, timeout=20)
-                        if resp.status_code == 200 and len(resp.content) > 500:
-                            img_path.write_bytes(resp.content)
-                            downloaded_files.append(str(img_path))
-                            logger.info(f"  [+] Imagen descargada: {img_path.name}")
-                    except Exception as e:
-                        logger.warning(f"  [!] Error descargando imagen {idx} para ad {ad_id}: {e}")
+                    success = self._download_file_streaming(
+                        url=img_url,
+                        dest_path=img_path,
+                        timeout=30,
+                        min_bytes=500,
+                    )
+                    if success:
+                        rel_img = img_path.relative_to(self.output_dir).as_posix()
+                        downloaded_files.append(rel_img)
+                else:
+                    rel_img = img_path.relative_to(self.output_dir).as_posix()
+                    downloaded_files.append(rel_img)
 
         # Save metadata.json
         ad_data["downloaded_files"] = downloaded_files

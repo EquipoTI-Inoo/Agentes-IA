@@ -99,7 +99,7 @@ def run_massive_sweep():
                         v_file = next((Path(f) for f in ad.get("downloaded_files", []) if f.endswith(".mp4")), None)
                         if v_file and v_file.exists():
                             try:
-                                f_report = forensics.analyze_video(video_path=v_file, fps_sample=1.0)
+                                f_report = forensics.analyze_video(video_path=v_file)
                                 ad["forensics"] = f_report
                                 logger.info(f"      [✓] Forense OK: {f_report.get('duration_seconds', 0):.1f}s | {f_report.get('total_frames_extracted', 0)} frames")
                             except Exception as e:
