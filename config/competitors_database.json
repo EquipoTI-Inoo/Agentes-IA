@@ -678,10 +678,13 @@
             "ES",
             "US"
           ],
-          "page_ids": [],
-          "resolved_at": "2026-10-21T19:13:53.920573+00:00",
-          "resolution_confidence": "baja",
-          "needs_review": true
+          "page_ids": [
+            "111465748993235"
+          ],
+          "resolved_at": "2026-10-21T20:31:20.898552+00:00",
+          "resolution_confidence": "alta",
+          "needs_review": false,
+          "notes": "Página global (Zenvia). Anuncios en portugués, ~41 activos en BR. Pendiente verificar si anuncia en PE/MX y si existe página LatAm hispana."
         },
         {
           "name": "Leadsales",
@@ -795,10 +798,13 @@
             "ES",
             "US"
           ],
-          "page_ids": [],
-          "resolved_at": "2026-10-21T19:14:01.243748+00:00",
-          "resolution_confidence": "baja",
-          "needs_review": true
+          "page_ids": [
+            "417689861931253"
+          ],
+          "resolved_at": "2026-10-21T20:31:20.898552+00:00",
+          "resolution_confidence": "alta",
+          "needs_review": false,
+          "notes": "Detectado solo en CO (~12 resultados). La página 'Alcaldía de Medellín' NO es B2Chat, solo menciona la marca: no agregarla."
         },
         {
           "name": "Chatwoot",
