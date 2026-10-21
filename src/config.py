@@ -1,6 +1,7 @@
 """
 Jinora Central Configuration Module
 Loads settings from .env file using pydantic-settings.
+Supports Gemini Free Tier guardrails and automated bi-weekly execution batches.
 """
 
 from __future__ import annotations
@@ -35,7 +36,7 @@ class Settings(BaseSettings):
         description="Directory for storing scraped creative assets",
     )
 
-    # LLM Providers & Models
+    # LLM Providers & Models (Gemini-only in Free Tier mode)
     LLM_PROVIDER: Literal["gemini", "anthropic", "openai"] = Field(
         default="gemini",
         description="Primary LLM provider for evaluation and intelligence",
@@ -56,11 +57,11 @@ class Settings(BaseSettings):
     )
     ANTHROPIC_API_KEY: Optional[str] = Field(
         default=None,
-        description="Anthropic Claude API Key",
+        description="Anthropic Claude API Key (optional/legacy)",
     )
     OPENAI_API_KEY: Optional[str] = Field(
         default=None,
-        description="OpenAI API Key",
+        description="OpenAI API Key (optional/legacy)",
     )
 
     # Forensics & Transcription
@@ -93,6 +94,80 @@ class Settings(BaseSettings):
         description="Weight assigned to market score in jinora_score (0.0 to 1.0)",
     )
 
+    # --- Fase 0.1: Gemini Free Tier & Quota Control ---
+    FREE_TIER_MODE: bool = Field(
+        default=True,
+        description="Enable Gemini Free Tier quotas, batching and rate-limiting guardrails",
+    )
+    GEMINI_RPM: int = Field(
+        default=5,
+        description="Requests per minute rate limit for Gemini Free Tier",
+    )
+    GEMINI_RPD: int = Field(
+        default=20,
+        description="Requests per day limit for Gemini Free Tier (confirmed in Google AI Studio)",
+    )
+    GEMINI_TPM: int = Field(
+        default=250000,
+        description="Tokens per minute rate limit for Gemini Free Tier",
+    )
+    GEMINI_RPD_MAIN: Optional[int] = Field(
+        default=None,
+        description="Specific RPD limit for LLM_MODEL (if None, falls back to GEMINI_RPD)",
+    )
+    GEMINI_RPD_CHEAP: Optional[int] = Field(
+        default=None,
+        description="Specific RPD limit for LLM_MODEL_CHEAP (if None, falls back to GEMINI_RPD)",
+    )
+    RESERVE_REQUESTS: int = Field(
+        default=2,
+        description="Daily requests reserved for manual queries, testing or retries",
+    )
+
+    # Batching & Evaluation Volume
+    EVAL_BATCH_VIDEOS: int = Field(
+        default=3,
+        description="Number of video ads evaluated per single multimodal request",
+    )
+    EVAL_BATCH_STATICS: int = Field(
+        default=6,
+        description="Number of static image ads evaluated per single LLM request",
+    )
+    RELEVANCE_BATCH_SIZE: int = Field(
+        default=20,
+        description="Number of candidate ads classified in one cheap text LLM call",
+    )
+    FIRST_RUN_PRIORITY_ONLY: bool = Field(
+        default=True,
+        description="Prioritize evaluating only priority=1 competitors on initial sweeps",
+    )
+    MAX_EVALS_PER_RUN: int = Field(
+        default=0,
+        description="Maximum evaluations to process in a single run (0 = unlimited until quota)",
+    )
+    VIDEO_MAX_SECONDS_FOR_LLM: int = Field(
+        default=90,
+        description="Max video duration in seconds sent to LLM for creative audit",
+    )
+    GEMINI_MEDIA_RESOLUTION: Literal["low", "medium"] = Field(
+        default="low",
+        description="Media resolution for video/image processing in Gemini API",
+    )
+
+    @field_validator(
+        "GEMINI_RPD_MAIN",
+        "GEMINI_RPD_CHEAP",
+        "GEMINI_API_KEY",
+        "ANTHROPIC_API_KEY",
+        "OPENAI_API_KEY",
+        mode="before",
+    )
+    @classmethod
+    def empty_str_to_none(cls, v):
+        if v == "" or (isinstance(v, str) and not v.strip()):
+            return None
+        return v
+
     @field_validator("DEFAULT_COUNTRIES", mode="after")
     @classmethod
     def parse_countries(cls, v: Union[List[str], str]) -> List[str]:
@@ -111,6 +186,14 @@ class Settings(BaseSettings):
         """Absolute Path to the downloads directory."""
         p = Path(self.DOWNLOADS_DIR)
         return p if p.is_absolute() else (BASE_DIR / p)
+
+    def get_rpd_for_model(self, model: str) -> int:
+        """Return the effective RPD limit for a specific model."""
+        if model == self.LLM_MODEL and self.GEMINI_RPD_MAIN is not None:
+            return self.GEMINI_RPD_MAIN
+        if model == self.LLM_MODEL_CHEAP and self.GEMINI_RPD_CHEAP is not None:
+            return self.GEMINI_RPD_CHEAP
+        return self.GEMINI_RPD
 
 
 settings = Settings()

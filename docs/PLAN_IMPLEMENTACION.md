@@ -1,6 +1,19 @@
 # Jinora — Plan de Implementación de Mejoras
 
 > **Para el agente de Antigravity:** ejecuta este plan **una fase a la vez**, en orden. Al terminar cada fase: marca las casillas `[x]`, corre los criterios de aceptación y detente para revisión antes de pasar a la siguiente. No borres datos sin hacer backup (Fase 0). Mantén el código en Python 3.11, comentarios en español y nombres de variables en inglés.
+>
+> **Importante sobre este archivo:** antes de tildar casillas, **relee la versión actual** de `docs/PLAN_IMPLEMENTACION.md` y modifica solo las líneas de esa casilla (edición puntual). **No reescribas el archivo completo ni restaures una copia anterior**: el usuario y su asistente lo actualizan por fuera y se perderían cambios. Después de cada fase, haz commit de `docs/` junto con el código.
+
+### Estado y decisiones vigentes
+| Decisión | Valor |
+|---|---|
+| Proveedor de IA | **Solo Gemini** (nivel gratuito, 20 solicitudes/día). Sin Claude ni OpenAI. |
+| Audio | **Sin Whisper**: Gemini transcribe el audio dentro de la misma solicitud de evaluación. |
+| Video | **Sin FFmpeg**: Gemini recibe el video completo (con rango de tiempo si hace falta). |
+| Se conserva (local, gratis) | `phash`/`imagehash` + Pillow para duplicados; `pymediainfo` para duración y proporción. |
+| Frecuencia | Barrido cada 15 días + recuperación diaria de pendientes. |
+| Fase 0 | ✅ **Hecha** (config.py, .env.example, backup, rama, requirements). |
+| Siguiente | Fase 0.1 → Fase 0.2 → Fase 1 → Fase 2 → Fase 4 (ver “Orden recomendado” al final). |
 
 ---
 
@@ -45,7 +58,7 @@ Jinora rastrea la Meta Ads Library para obtener anuncios de competidores de **Co
                 └──────┬───────┘
                        ▼
                 ┌──────────────┐
-                │ 4. FORENSICS │  Whisper+VAD, keyframes por escena, gancho 0–3 s
+                │ 4. MEDIA     │  duración, proporción, phash (sin Whisper ni FFmpeg)
                 └──────┬───────┘
                        ▼
                 ┌──────────────┐
@@ -72,10 +85,10 @@ src/
     relevance.py         # reglas + clasificador LLM
   media/
     downloader.py        # descarga en streaming
-    forensics.py         # Whisper+VAD, keyframes, gancho
+    media_info.py        # duración, proporción (pymediainfo); sin Whisper ni FFmpeg
     fingerprint.py       # hash de creativo para variantes
   ai/
-    llm_client.py        # abstracción Gemini / Claude / OpenAI
+    llm_client.py        # cliente Gemini (google-genai)
     evaluator.py         # evaluación creativa (reemplaza el actual)
     schemas.py           # Pydantic: EvaluationResult, RelevanceResult
   scoring/
@@ -122,49 +135,63 @@ tests/
 
 > **Nota:** esta fase se agregó **después** de ejecutar la Fase 0. No rehagas la Fase 0: solo **extiende** el `src/config.py` y el `.env.example` que ya existen.
 
-**Decisión del usuario:** usar la **API gratuita de Gemini** y lanzar el barrido **una vez cada 15 días**.
+**Decisión del usuario:** usar **solo la API gratuita de Gemini** (para video, estáticos y relevancia) y lanzar el barrido **una vez cada 15 días**.
+
+> **Alcance Gemini-only:** `LLM_PROVIDER=gemini` es el único proveedor a implementar. **No** crear `AnthropicClient` ni `OpenAIClient`; las variables `ANTHROPIC_API_KEY`/`OPENAI_API_KEY` y el paquete `anthropic` del `requirements.txt` quedan sin usar (se pueden retirar). Si en el futuro se quisiera otro proveedor, la interfaz de `llm_client.py` lo permite, pero hoy está fuera de alcance. Si la cuota se agota, los anuncios quedan **pendientes** (no hay proveedor de respaldo).
 
 **Contexto de límites:** el nivel gratuito tiene límites por minuto (RPM), por día (RPD, se reinicia a medianoche hora del Pacífico) y por tokens (TPM), **por proyecto**. Google ya no publica una tabla fija: el usuario debe revisar los valores reales en el panel de *Rate limits* de AI Studio y copiarlos al `.env`. Solo usar modelos **Flash / Flash-Lite** (los Pro recientes no tienen nivel gratuito). En el nivel gratuito Google puede usar el contenido para mejorar sus productos → **nunca enviar datos de clientes**, solo anuncios públicos.
 
 **Límite confirmado por el usuario: 20 solicitudes diarias (RPD)** en su proyecto. El cuello de botella son las **solicitudes**, no los tokens → la estrategia central es **evaluar varios anuncios por solicitud (lotes)**.
 
-**Volumen esperado (estimado, se medirá con `llm_usage`):** primera corrida ~300–500 anuncios; corridas siguientes ~50–150 anuncios nuevos (lo ya evaluado queda en caché).
+**Volumen esperado (estimado, se medirá con `llm_usage`):** primera corrida ~300–500 anuncios; corridas siguientes ~50–150 anuncios nuevos (lo ya evaluado queda en caché). Supuesto de mezcla: ~60–65 % videos, ~35–40 % estáticos/carruseles.
 
-**Capacidad con 20 RPD:**
-| Estrategia | Anuncios/día | Primera corrida (~400) | Cada 15 días (~100) |
-|---|---|---|---|
-| 1 anuncio por solicitud | 20 | ~20 días ❌ | ~5 días |
-| Lotes (3 videos o 6 estáticos por solicitud) | ~60–100 | ~5–7 días | 1–2 días ✅ |
-| Lotes + filtro de “vale la pena evaluar” + primera corrida solo prioridad 1 | ~60–100 | ~3–4 días | 1 día ✅ |
+**Capacidad con 20 RPD, todo en Gemini** (videos + estáticos + relevancia comparten la cuota; se reservan 2 solicitudes → ~18 útiles/día):
+| Concepto | Primera corrida (~400 anuncios) | Cada 15 días (~100 anuncios) |
+|---|---|---|
+| Videos (3 por solicitud) | ~250 videos → ~84 solicitudes | ~65 videos → ~22 solicitudes |
+| Estáticos (6 por solicitud) | ~150 → ~25 solicitudes | ~35 → ~6 solicitudes |
+| Relevancia (20 por solicitud) | ~10–15 solicitudes | ~3–5 solicitudes |
+| **Total** | **~120 solicitudes ≈ 7 días** | **~32 solicitudes ≈ 2 días** |
+| Con `FIRST_RUN_PRIORITY_ONLY` y filtro “vale la pena evaluar” | ~3–4 días | ~1–2 días |
+
+Si Flash-Lite tiene cuota propia (verificar en AI Studio), relevancia y estáticos pasan a Flash-Lite y los videos quedan solos en Flash: ~1–2 días por corrida quincenal.
 
 Tokens estimados por llamada (verificar con la documentación vigente): video 90 s en resolución baja ≈ 13.500; imagen ≈ 5.500; carrusel 10 tarjetas ≈ 17.000. Un lote de 3 videos ≈ 40.000 tokens, muy por debajo del TPM.
 
 ### 0.1.1 Configuración (extender `src/config.py` y `.env.example`)
-- [ ] `GEMINI_RPM` (default 5), `GEMINI_RPD` (default **20**, valor real del usuario), `GEMINI_TPM` (default 250000) — el usuario los ajusta según AI Studio.
-- [ ] **Cuota por modelo:** en el nivel gratuito cada modelo suele tener su propio límite. Permitir límites separados: `GEMINI_RPD_MAIN` (para `LLM_MODEL`) y `GEMINI_RPD_CHEAP` (para `LLM_MODEL_CHEAP`). El usuario verifica en AI Studio si Flash-Lite tiene cuota propia; si es así, relevancia y estáticos simples van por Flash-Lite y los videos por Flash.
-- [ ] `EVAL_BATCH_VIDEOS` (default 3) y `EVAL_BATCH_STATICS` (default 6): anuncios por solicitud.
-- [ ] `RESERVE_REQUESTS` (default 2): solicitudes diarias que no se usan en el barrido (para pruebas manuales o reintentos).
-- [ ] `FIRST_RUN_PRIORITY_ONLY` (default `true`): la primera corrida solo evalúa competidores `priority=1`.
-- [ ] `MAX_EVALS_PER_RUN` (default 0 = sin tope; útil para pruebas).
-- [ ] `VIDEO_MAX_SECONDS_FOR_LLM` (default 90) y `GEMINI_MEDIA_RESOLUTION` (`low` | `medium`, default `low`).
-- [ ] `RELEVANCE_BATCH_SIZE` (default 20).
-- [ ] `FREE_TIER_MODE` (bool, default `true`).
-- [ ] Verificar que `DEFAULT_COUNTRIES=PE,MX,CO` (texto separado por comas) en `.env` se lea bien: pydantic-settings intenta decodificar como JSON los campos tipo lista; si falla, anotar el campo con `NoDecode` o declararlo como `str` y exponer una propiedad que devuelva la lista. Agregar un test.
+- [x] `GEMINI_RPM` (default 5), `GEMINI_RPD` (default **20**, valor real del usuario), `GEMINI_TPM` (default 250000) — el usuario los ajusta según AI Studio.
+- [x] **Cuota por modelo:** en el nivel gratuito cada modelo suele tener su propio límite. Permitir límites separados: `GEMINI_RPD_MAIN` (para `LLM_MODEL`) y `GEMINI_RPD_CHEAP` (para `LLM_MODEL_CHEAP`). El usuario verifica en AI Studio si Flash-Lite tiene cuota propia; si es así, relevancia y estáticos simples van por Flash-Lite y los videos por Flash.
+- [x] `EVAL_BATCH_VIDEOS` (default 3) y `EVAL_BATCH_STATICS` (default 6): anuncios por solicitud.
+- [x] `RESERVE_REQUESTS` (default 2): solicitudes diarias que no se usan en el barrido (para pruebas manuales o reintentos).
+- [x] `FIRST_RUN_PRIORITY_ONLY` (default `true`): la primera corrida solo evalúa competidores `priority=1`.
+- [x] `MAX_EVALS_PER_RUN` (default 0 = sin tope; útil para pruebas).
+- [x] `VIDEO_MAX_SECONDS_FOR_LLM` (default 90) y `GEMINI_MEDIA_RESOLUTION` (`low` | `medium`, default `low`).
+- [x] `RELEVANCE_BATCH_SIZE` (default 20).
+- [x] `FREE_TIER_MODE` (bool, default `true`).
+- [x] Verificar que `DEFAULT_COUNTRIES=PE,MX,CO` (texto separado por comas) en `.env` se lea bien: pydantic-settings intenta decodificar como JSON los campos tipo lista; si falla, anotar el campo con `NoDecode` o declararlo como `str` y exponer una propiedad que devuelva la lista. Agregar un test.
 
 ### 0.1.2 Control de cuota — `src/ai/quota.py`
-- [ ] Tabla `llm_usage(day_pt, model, requests, tokens_in, tokens_out)` en la DB (día calculado en hora del Pacífico, que es cuando Google reinicia el RPD).
-- [ ] `QuotaGuard.acquire(model, est_tokens)`: espera lo necesario para respetar RPM/TPM; si se alcanzó `GEMINI_RPD` del día lanza `QuotaExhausted`.
-- [ ] Ante error **429** de la API: backoff exponencial (30 s, 60 s, 120 s); si persiste o el mensaje indica cuota diaria agotada → `QuotaExhausted`.
-- [ ] Registrar uso real (tokens de la respuesta) tras cada llamada.
+- [x] Tabla `llm_usage(day_pt, model, requests, tokens_in, tokens_out)` en la DB (día calculado en hora del Pacífico, que es cuando Google reinicia el RPD).
+- [x] `QuotaGuard.acquire(model, est_tokens)`: espera lo necesario para respetar RPM/TPM; si se alcanzó `GEMINI_RPD` del día lanza `QuotaExhausted`.
+- [x] Ante error **429** de la API: backoff exponencial (30 s, 60 s, 120 s); si persiste o el mensaje indica cuota diaria agotada → `QuotaExhausted`.
+- [x] Registrar uso real (tokens de la respuesta) tras cada llamada.
 
 ### 0.1.3 Comportamiento del pipeline con cuota
 - [ ] Al capturar `QuotaExhausted`: guardar estado, dejar los anuncios restantes como `pending_evaluation`, imprimir resumen (“evaluados X, pendientes Y, se retoma en la próxima corrida”) y salir con código 0 (no es error).
 - [ ] **Cola priorizada** de evaluación: 1) competidores `priority=1` (WhatsApp/CRM LatAm), 2) `is_active=true`, 3) mayor `market_score`, 4) más reciente. Así, si la cuota se acaba, lo importante ya quedó evaluado.
-- [ ] Las etapas sin LLM (scraping, descarga, Whisper, FFmpeg, features de imagen, `market_score`) **siempre** se completan; solo la evaluación queda pendiente.
+- [ ] Las etapas sin LLM (scraping, descarga, metadata del video, `phash`, `market_score`) **siempre** se completan; solo la evaluación queda pendiente.
 
 ### 0.1.4 Ahorro de cuota y tokens
+- [ ] **Evaluación en lote (palanca principal):** una solicitud evalúa hasta `EVAL_BATCH_VIDEOS` videos o `EVAL_BATCH_STATICS` estáticos.
+  - Cada anuncio va precedido por un separador con su `ad_id` (`=== ANUNCIO <ad_id> ===`) y sus propios medios y textos.
+  - La respuesta es `{"results": [{"ad_id": "...", ...EvaluationResult}]}`; se valida **por anuncio**: los válidos se guardan, los inválidos vuelven a la cola (no se pierde el lote completo).
+  - Instrucción explícita en el prompt: evaluar cada anuncio de forma independiente, sin comparar entre ellos ni mezclar evidencias.
+  - Lotes homogéneos: videos con videos, estáticos con estáticos; los carruseles van solos o máximo 2 por lote.
+  - Si el lote supera ~150.000 tokens estimados, partirlo.
+  - **Calibración obligatoria:** evaluar 10 anuncios en lote y también individualmente; si la diferencia media por anuncio es > 5 puntos, bajar el tamaño del lote (3 → 2 → 1 en videos).
+- [ ] **Filtro “vale la pena evaluar”** (por código, sin LLM): no evaluar anuncios con < 3 días activos, ni creativos cuyo competidor ya tenga ≥ 10 creativos evaluados en los últimos 90 días con el mismo `visual_style`/formato, salvo que su `market_score` esté en el top 20 % del competidor. Quedan como `skipped_low_value` y pueden evaluarse luego si sobra cuota.
 - [ ] **Relevancia en lote:** el clasificador recibe `RELEVANCE_BATCH_SIZE` anuncios (solo texto: página, copy, titular, dominio) en **una** llamada y devuelve una lista JSON. Los anuncios de competidores mapeados por `page_id` no gastan llamada.
-- [ ] **Video liviano:** enviar a Gemini solo los primeros `VIDEO_MAX_SECONDS_FOR_LLM` segundos (recorte con FFmpeg sin recodificar si es posible) y con `media_resolution=low` (≈100 tokens/s en lugar de ≈300 tokens/s; verificar en la documentación vigente).
+- [ ] **Video liviano:** enviar a Gemini solo los primeros `VIDEO_MAX_SECONDS_FOR_LLM` segundos (con el `video_metadata` de `google-genai` —`start_offset`/`end_offset`—; verificar en la documentación vigente; si el rango no es aceptado, enviar el video completo con `media_resolution=low`) y con `media_resolution=low` (≈100 tokens/s en lugar de ≈300 tokens/s). Videos pequeños van inline; los grandes por la Files API.
 - [ ] Borrar los archivos subidos a la Files API de Gemini después de evaluarlos.
 - [ ] Caché estricta por `creative_hash`: variantes del mismo creativo **heredan** la evaluación (1 llamada por creativo, no por anuncio).
 - [ ] Una sola llamada por anuncio (evaluación completa); sin llamadas de “resumen” extra durante el barrido. El resumen ejecutivo por pilar (Fase 8) se genera al final con 1 llamada por pilar, solo si queda cuota.
@@ -175,17 +202,43 @@ Tokens estimados por llamada (verificar con la documentación vigente): video 90
   - `python -m src.cli evaluate --pending` → solo evalúa lo pendiente (no hace scraping).
 - [ ] `scripts/schedule_windows.ps1` que registre con el Programador de tareas:
   - **Barrido:** días **1 y 15** de cada mes, 09:00 → `run --all`.
-  - **Recuperación de pendientes:** días **2, 3, 4, 16, 17 y 18**, 09:00 → `evaluate --pending` (termina sin hacer nada si no hay pendientes).
+  - **Recuperación de pendientes: TODOS los días**, 09:30 → `evaluate --pending`. Si no hay pendientes termina en segundos sin consumir cuota. (Con 20 RPD los días fijos no alcanzan: la primera corrida puede tomar ~1 semana.)
+  - Cuando `FIRST_RUN_PRIORITY_ONLY=true` y ya no quedan pendientes de prioridad 1, la recuperación diaria sigue con prioridad 2 y luego con `skipped_low_value`, hasta agotar la cuota de cada día.
   - Opción “ejecutar lo antes posible si se omitió el inicio programado” activada (por si la PC estaba apagada).
   - Usar la ruta absoluta del Python del entorno virtual y el directorio del proyecto como carpeta de inicio.
 - [ ] Log por corrida en `logs/run_YYYYMMDD.log` + línea resumen en `logs/history.csv` (fecha, anuncios nuevos, evaluados, pendientes, requests usadas).
 
 **Criterio de aceptación:**
-- Con `GEMINI_RPD=3` y 10 anuncios, el pipeline evalúa 3, deja 7 pendientes, sale sin error; `evaluate --pending` al día siguiente continúa sin repetir los ya evaluados.
+- Con `GEMINI_RPD=3`, `EVAL_BATCH_VIDEOS=3` y 12 videos, el pipeline evalúa 9 en 3 solicitudes, deja 3 pendientes y sale sin error; `evaluate --pending` al día siguiente continúa sin repetir los ya evaluados.
+- Un lote donde 1 de 3 resultados tiene JSON inválido guarda los 2 válidos y devuelve 1 a la cola.
 - Un 429 simulado activa el backoff y no rompe la corrida.
 - Las tareas aparecen en el Programador de tareas de Windows.
 
 > **Prompt para Antigravity:** “Ejecuta la FASE 0.1 de docs/PLAN_IMPLEMENTACION.md. La Fase 0 ya está hecha: extiende el src/config.py y el .env.example existentes con las nuevas variables (no los reescribas). Crea src/ai/quota.py y deja preparada la cola priorizada y el manejo de QuotaExhausted para conectarlos en las Fases 4 y 7. Crea scripts/schedule_windows.ps1 pero NO lo ejecutes hasta que el pipeline (Fase 7) esté listo.”
+
+---
+
+## FASE 0.2 — Gemini reemplaza a Whisper y FFmpeg (½ día) 🆕
+
+> **Decisión del usuario:** simplificar. Gemini transcribe el audio y analiza el video completo, así que se **eliminan Whisper y FFmpeg** del flujo. Se conservan solo dos utilidades locales, gratis y sin equivalente en Gemini: `phash` (duplicados) y lectura de metadata (duración/proporción).
+
+**Por qué:** menos dependencias frágiles en Windows, cero solicitudes extra (la transcripción viaja en el mismo JSON de evaluación), y se evita que Whisper invente texto en videos de solo música (caso Attio).
+
+### 0.2.1 Qué se quita y qué se agrega
+- [ ] `src/config.py` y `.env.example`: quitar `WHISPER_MODEL` y `WHISPER_DEVICE` (extender el archivo existente; no reescribirlo).
+- [ ] `requirements.txt`: quitar `faster-whisper`; agregar `pymediainfo`. Mantener `Pillow` e `imagehash`.
+- [ ] `Dockerfile`: quitar la instalación de `ffmpeg`. Si `pymediainfo` no trae `libmediainfo` en la imagen, instalar `libmediainfo0v5` (verificar).
+- [ ] Crear `src/media/media_info.py` con `get_video_info(path) -> {duration_s, width, height, aspect_ratio, has_audio_track}` y `get_image_info(path)`.
+- [ ] `src/video_forensics.py`: **no borrarlo todavía** (ver 0.2.2); marcarlo como obsoleto (`# DEPRECATED`) y no usarlo en código nuevo.
+
+### 0.2.2 Verificación antes de borrar Whisper (se hace en la calibración de la Fase 4.6)
+- [ ] Elegir 3 videos: uno con voz clara en inglés, uno con solo música (p. ej. Attio) y uno en español con acento.
+- [ ] Comparar la transcripción de Gemini contra la de Whisper (`video_forensics.py` actual). Criterio: Gemini igual o mejor en los 3 casos, y marca `has_voiceover=false` en el de solo música.
+- [ ] Si se cumple: borrar `src/video_forensics.py` y las carpetas `frames/` y `full_forensic_analysis.json` de `downloads/` (con backup previo). Si no se cumple: reabrir esta decisión con el usuario.
+
+**Criterio de aceptación:** el proyecto instala y corre (`python -m pytest`, arranque del servidor) **sin** `faster-whisper` ni FFmpeg instalados; `get_video_info` devuelve duración y proporción correctas para `downloads/Bland AI/1763243594393368/video_0.mp4`.
+
+> **Prompt para Antigravity:** “Ejecuta la FASE 0.2 de docs/PLAN_IMPLEMENTACION.md. Relee el archivo antes de tildar casillas y edita solo esas líneas. Extiende (no reescribas) config.py y .env.example para quitar WHISPER_*, actualiza requirements.txt y Dockerfile, crea src/media/media_info.py con pymediainfo y marca video_forensics.py como DEPRECATED sin borrarlo.”
 
 ---
 
@@ -199,7 +252,7 @@ Tokens estimados por llamada (verificar con la documentación vigente): video 90
 - [ ] `src/scraper.py` → descarga en **streaming** a archivo temporal y `rename` al terminar; timeout configurable (120 s para video); reintentos con `tenacity`; límite de tamaño (ej. 200 MB).
 - [ ] `start_server.py`: host desde env (`0.0.0.0` en Docker), `reload` solo si `ENV=dev`.
 - [ ] `main.py` → `generate_markdown_report`: usar `datetime.now()` en lugar de `Path.cwd()`.
-- [ ] Whisper como **singleton** (cargar una vez por proceso), no en cada request de la API.
+- [ ] ~~Whisper como singleton~~ → no aplica: Whisper se elimina en la Fase 0.2. Si `video_forensics.py` se usa antes, cargar el modelo una sola vez por proceso.
 - [ ] Script `scripts/cleanup_irrelevant.py`: re-evalúa todas las filas con el filtro corregido y mueve las irrelevantes a una tabla/archivo `rejected_ads` (no borrar archivos aún; listar para revisión).
 
 **Criterio de aceptación:**
@@ -241,29 +294,30 @@ Tokens estimados por llamada (verificar con la documentación vigente): video 90
 
 ---
 
-## FASE 3 — Análisis forense multimodal (2 días)
+## FASE 3 — Preparación de media y comprensión multimodal con Gemini (1 día)
 
-**Objetivo:** que la IA reciba evidencia real de audio **y** video, sin basura.
+**Objetivo:** que Gemini reciba el video completo y devuelva, en **una sola solicitud**, transcripción, detección de voz y análisis visual, sin Whisper ni FFmpeg.
 
-### 3.1 Audio
-- [ ] Whisper con `vad_filter=True`, `condition_on_previous_text=False`, modelo `small` por defecto.
-- [ ] Detectar **“sin voz”**: si no hay segmentos o `no_speech_prob` promedio > 0.6 → `has_voiceover=false`, transcript vacío (no alucinaciones).
-- [ ] Guardar `language`, `language_probability`; si la probabilidad < 0.5, re-transcribir forzando `es` y `en` y quedarse con la de mejor log-prob.
+### 3.1 Preparación local (sin LLM, gratis)
+- [ ] Por cada video: `get_video_info()` (Fase 0.2): duración, ancho/alto, proporción (9:16 / 1:1 / 16:9), si tiene pista de audio.
+- [ ] Hash exacto del archivo (`sha256`) para detectar el mismo video descargado dos veces; `phash` de la miniatura `image_0.jpg` para agrupar variantes.
+- [ ] Si el video **no tiene pista de audio** (`has_audio_track=false`), se marca `has_voiceover=false` por código y se le indica a Gemini que no busque diálogo.
+- [ ] Videos > 20 MB se suben por la **Files API** de Gemini y se borran tras evaluar; los pequeños van inline.
 
-### 3.2 Video
-- [ ] **Keyframes por cambio de escena** con FFmpeg: `select='gt(scene,0.3)'`, máximo 20 frames, redimensionados a 768 px de ancho.
-- [ ] **Gancho:** frames a 4 fps en los primeros 3 s (12 frames) → carpeta `hook/`.
-- [ ] Métricas objetivas por código: duración, nº de cortes de escena, cortes por minuto, ratio de aspecto (9:16 / 1:1 / 16:9), si tiene subtítulos quemados (lo detecta el LLM en 3.3).
-- [ ] Borrar la extracción a 1 fps del video completo (ocupa disco y no se usa).
+### 3.2 Qué devuelve Gemini (todo en el mismo JSON de la Fase 4)
+- [ ] `transcript` con segmentos y tiempos aproximados (±2 s), `language`, `has_voiceover` (false si solo hay música/efectos).
+- [ ] Estimaciones: `scene_cuts_estimate`, `speech_pace_wpm_estimate`, `burned_in_subtitles` (sí/no), `format` (ugc, demo_pantalla, talking_head, animación…).
+- [ ] Observación explícita de **0–3 s** (gancho): qué se ve y qué se oye.
+- [ ] Reglas del prompt: transcribir solo lo que se oye de verdad; si no hay habla, `transcript=[]`; no inventar diálogo.
 
-### 3.3 Comprensión visual
-- [ ] Si `LLM_PROVIDER=gemini`: subir el video (Gemini procesa audio+imagen nativamente) además de la transcripción. En `FREE_TIER_MODE`: recortado a `VIDEO_MAX_SECONDS_FOR_LLM` y con `media_resolution` baja (Fase 0.1.4).
-- [ ] Si `anthropic`/`openai`: enviar keyframes + frames del gancho como imágenes + transcripción con timestamps.
-- [ ] La salida de esta etapa se guarda en `forensics.json` (reemplaza `full_forensic_analysis.json`).
+### 3.3 Qué se guarda
+- [ ] La salida se guarda en la tabla `Analysis` (Fase 6) y como `analysis.json` junto al anuncio (reemplaza a `full_forensic_analysis.json`).
+- [ ] Para el dashboard (Fase 8): usar la miniatura que ya descarga Meta (`image_0.jpg`); no se generan fotogramas.
+- [ ] Los anuncios aún no evaluados (cuota agotada) muestran “Pendiente de análisis” en lugar de transcripción.
 
-**Criterio de aceptación:** el video de Attio (solo música) queda con `has_voiceover=false` y sin transcripción inventada; un video de Bland AI produce ≤20 keyframes y 12 frames de gancho.
+**Criterio de aceptación:** el video de Attio (solo música) sale con `has_voiceover=false` y `transcript=[]`; un video de Bland AI sale con transcripción y tiempos coherentes; ningún proceso local de Whisper/FFmpeg se ejecuta.
 
-> **Prompt para Antigravity:** “Ejecuta la FASE 3. Refactoriza video_forensics.py a src/media/forensics.py con VAD, detección de ‘sin voz’, keyframes por escena y frames del gancho. Pruébalo con downloads/Attio/1698707541211279/video_0.mp4 y un video de Bland AI.”
+> **Prompt para Antigravity:** “Ejecuta la FASE 3 (versión Gemini-only). No uses Whisper ni FFmpeg. Implementa la preparación local (media_info, sha256, phash, subida por Files API) y deja que el evaluador de la Fase 4 devuelva transcripción, has_voiceover y análisis visual en el mismo JSON. Pruébalo con el video de Attio y uno de Bland AI.”
 
 ---
 
@@ -294,7 +348,17 @@ class DimensionScore(BaseModel):
     reasoning: str          # 2–4 frases, específicas a ESTE anuncio
     evidence: list[Evidence] = Field(min_length=1)
 
+class TranscriptSegment(BaseModel):
+    start_s: float          # tiempo aproximado (±2 s)
+    end_s: float
+    text: str
+
 class EvaluationResult(BaseModel):
+    transcript: list[TranscriptSegment] = []   # vacío si no hay habla
+    has_voiceover: bool
+    scene_cuts_estimate: int | None
+    speech_pace_wpm_estimate: int | None
+    burned_in_subtitles: bool | None
     hook: DimensionScore
     mechanism: DimensionScore
     narrative: DimensionScore
@@ -318,11 +382,11 @@ class EvaluationResult(BaseModel):
   - Si no hay voz, evaluar texto en pantalla y visual; no inventar diálogo.
   - **Prohibido** usar los días activos para puntuar (esa señal va en `market_score`). No enviar `days_active` al modelo.
   - Usar todo el rango 0–25; un anuncio promedio debería caer en 10–15.
-- [ ] Temperatura 0, salida JSON con schema (Gemini `response_schema`, Claude tool-use / JSON, OpenAI `response_format`).
+- [ ] Temperatura 0, salida JSON con schema (`response_schema` de Gemini).
 
 ### 4.4 Cliente LLM — `src/ai/llm_client.py`
-- [ ] Interfaz única: `evaluate(media: ForensicsBundle, copy: AdCopy) -> EvaluationResult`.
-- [ ] Implementaciones `GeminiClient` (video nativo) y `AnthropicClient` (imágenes); seleccionadas por `LLM_PROVIDER`.
+- [ ] Interfaz única: `evaluate(media: MediaBundle, copy: AdCopy) -> EvaluationResult` (`MediaBundle` = ruta del video/imágenes + metadata local de la Fase 3.1).
+- [ ] Implementación única `GeminiClient` (video nativo, imágenes y texto). Sin otros proveedores (decisión del usuario, ver Fase 0.1).
 - [ ] **Toda** llamada pasa por `QuotaGuard.acquire()` (Fase 0.1.2); el 429 se maneja ahí, no con reintentos ciegos.
 - [ ] Si el JSON no valida, 1 reintento con el error de validación en el prompt (también consume cuota: contarlo).
 - [ ] Registro de tokens por llamada en `llm_usage`.
@@ -343,7 +407,7 @@ class EvaluationResult(BaseModel):
 - Cada evaluación tiene evidencia con timestamps y razonamiento distinto por anuncio.
 - `calibrate.py` reporta las métricas.
 
-> **Prompt para Antigravity:** “Ejecuta la FASE 4. Crea rubric.yaml, schemas.py, prompts/evaluator_v1.md y llm_client.py con soporte Gemini y Claude, y reemplaza evaluator.py. El LLM nunca debe recibir days_active ni sumar el puntaje. Luego crea scripts/calibrate.py y prepara calibration/manual_scores.csv con 20 ad_ids variados para que yo los puntúe.”
+> **Prompt para Antigravity:** “Ejecuta la FASE 4. Crea rubric.yaml, schemas.py, prompts/evaluator_v1.md y llm_client.py con soporte solo para Gemini (no crees clientes de Claude ni OpenAI), y reemplaza evaluator.py. El LLM nunca debe recibir days_active ni sumar el puntaje. Luego crea scripts/calibrate.py y prepara calibration/manual_scores.csv con 20 ad_ids variados para que yo los puntúe.”
 
 ---
 
@@ -351,7 +415,7 @@ class EvaluationResult(BaseModel):
 
 **Objetivo:** separar “qué tan bueno es el creativo” de “qué tanto le está funcionando al competidor”.
 
-- [ ] `src/media/fingerprint.py`: `creative_hash` = hash perceptual de 3 frames (inicio/medio/fin) + hash del copy normalizado. Agrupa variantes del mismo creativo.
+- [ ] `src/media/fingerprint.py`: `creative_hash` = `phash` de la miniatura/imagen (+ `sha256` del archivo de video para duplicados exactos) + hash del copy normalizado. Agrupa variantes del mismo creativo sin extraer fotogramas.
 - [ ] `src/scoring/market.py` → `market_score` 0–100 con pesos en `config/scoring.yaml`:
   - Longevidad (log de días activo, tope 180 días) — 40 %
   - Nº de variantes/duplicados del creativo (escalado) — 25 %
@@ -373,7 +437,7 @@ class EvaluationResult(BaseModel):
   - `Competitor(id, name, website, pillar, priority, markets, page_ids)`
   - `Ad(id, competitor_id, page_id, page_name, country_list, start_date, stop_date, is_active, platforms, copy fields, creative_hash, relevance_json, status)`
   - `Media(ad_id, kind, rel_path, size, sha256)`
-  - `Forensics(ad_id, duration, has_voiceover, language, transcript, timeline_json, keyframes_json, cuts_per_min, aspect_ratio)`
+  - `MediaInfo(ad_id, duration_s, width, height, aspect_ratio, has_audio_track, sha256, phash)` (local); la transcripción, `has_voiceover`, `language` y `scene_cuts_estimate` viven en `Analysis.result_json` (Gemini)
   - `Analysis(...)` (Fase 4), `MarketSignal(ad_id, market_score, breakdown_json)`
   - `Job(id, type, payload, status, error, created_at, finished_at)`
 - [ ] `src/db/migrate.py`: migra la tabla `ads` actual → nuevo esquema (las evaluaciones viejas NO se migran; se re-evalúan).
@@ -385,11 +449,11 @@ class EvaluationResult(BaseModel):
 
 ## FASE 7 — Pipeline unificado y cola de trabajos (2 días)
 
-- [ ] `src/pipeline.py` con etapas `discover → filter → download → forensics → evaluate → signals`. Cada etapa es **idempotente** (se salta lo ya procesado) y registra estado en `Ad.status`.
+- [ ] `src/pipeline.py` con etapas `discover → filter → download → media → evaluate → signals`. Cada etapa es **idempotente** (se salta lo ya procesado) y registra estado en `Ad.status`.
 - [ ] `src/cli.py`:
   ```bash
   python -m src.cli run --pillar conversacional --countries PE,MX,CO --limit 20
-  python -m src.cli run --competitor "Kommo" --stages download,forensics,evaluate
+  python -m src.cli run --competitor "Kommo" --stages download,media,evaluate
   python -m src.cli evaluate --force --prompt-version v2
   python -m src.cli report --pillar crm --top 10
   ```
@@ -422,9 +486,9 @@ class EvaluationResult(BaseModel):
   - `test_relevance.py` (casos Air Wick, novelas, Kommo vs “cómo”).
   - `test_schemas.py` (JSON inválido se rechaza).
   - `test_market_score.py` (valores límite).
-  - `test_forensics.py` (video sin voz → `has_voiceover=false`).
+  - `test_media_info.py` (duración/proporción correctas; video sin pista de audio → `has_audio_track=false`).
   - `test_pipeline_idempotent.py`.
-- [ ] Dockerfile: ffmpeg, usuario no-root, `HOST=0.0.0.0`, healthcheck; servicio `worker` en `docker-compose.yml`.
+- [ ] Dockerfile: sin ffmpeg (Fase 0.2), usuario no-root, `HOST=0.0.0.0`, healthcheck; servicio `worker` en `docker-compose.yml`.
 - [ ] README actualizado.
 
 ---
@@ -443,8 +507,9 @@ class EvaluationResult(BaseModel):
 ---
 
 ## Costos del LLM
-- **Modo elegido: nivel gratuito de Gemini (costo $0)**, con corrida cada 15 días. El límite real es la **cuota diaria**, no el dinero (ver Fase 0.1).
-- Primera corrida: puede tomar varios días en evaluarse completa (se retoma sola con las tareas de recuperación).
+- **Modo elegido: solo Gemini, nivel gratuito (costo $0), 20 solicitudes diarias**, con corrida cada 15 días. El límite real es la **cuota diaria**, no el dinero (ver Fase 0.1).
+- Primera corrida: ~3–7 días en evaluarse completa con lotes (se retoma sola con la tarea diaria de recuperación). Corridas quincenales: ~1–2 días.
+- Si la cuota se queda corta: activar facturación en el **mismo** proyecto de Google (solo cambian los valores del `.env`) o usar la Batch API de Gemini. No crear varios proyectos para multiplicar la cuota gratuita (riesgo con los términos de Google).
 - Corridas siguientes: solo anuncios/creativos nuevos; la caché por `creative_hash` evita gastar cuota en lo ya evaluado.
 - Si en el futuro se necesita más volumen: activar facturación en el mismo proyecto de Google (sin cambiar código) y subir `GEMINI_RPM/RPD`; en el nivel de pago Google no usa el contenido para mejorar sus productos.
 
@@ -463,8 +528,21 @@ class EvaluationResult(BaseModel):
 ## Definición de “terminado”
 - [ ] ≥90 % de anuncios en DB son de competidores relevantes.
 - [ ] Pilar conversacional y CRM tienen al menos tantos anuncios como voz; PE/MX/CO cubiertos.
-- [ ] 100 % de anuncios con video tienen forense sin alucinaciones y evaluación LLM con evidencia.
+- [ ] 100 % de anuncios con video evaluados tienen transcripción de Gemini (o `has_voiceover=false`) y evaluación con evidencia; el proyecto corre sin Whisper ni FFmpeg.
 - [ ] Calibración con Spearman ≥ 0.6 frente a puntajes humanos.
 - [ ] Dashboard muestra creative / market / jinora score y evidencias clicables.
 - [ ] Un solo comando corre todo el pipeline de forma reanudable.
 - [ ] Funciona dentro del nivel gratuito de Gemini y se ejecuta solo los días 1 y 15 (más recuperación de pendientes).
+
+---
+
+## Orden recomendado desde el estado actual (Fase 0 hecha)
+1. **Fase 0.1** — modo Gemini gratuito, `QuotaGuard`, lotes, programación.
+2. **Fase 0.2** — quitar Whisper/FFmpeg (deja `video_forensics.py` como DEPRECATED hasta la verificación).
+3. **Fase 1** — correcciones rápidas (relevance, rutas, streaming, Docker).
+4. **Fase 2** — datos limpios por `page_id` y competidores LatAm.
+5. **Fase 3** — preparación de media (versión Gemini).
+6. **Fase 4** — evaluador Gemini + **calibración** (incluye la verificación de transcripción de la Fase 0.2.2).
+7. Después: Fases 5, 6, 7, 8, 9 y el plan de estáticos (`PLAN_ADS_ESTATICOS.md`).
+
+**Atajo para ver puntajes reales pronto:** 0.1 → 0.2 → 1 → 4 sobre los anuncios ya filtrados, y luego la Fase 2.
