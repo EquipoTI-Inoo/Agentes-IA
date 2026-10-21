@@ -284,20 +284,22 @@ class QuotaGuard:
 def sort_ads_for_evaluation(ads: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
     Sorts candidate ads by strategic business priority:
-    1. priority == 1 (LatAm WhatsApp & CRM core competitors)
-    2. is_active == True (currently running in market)
+    1. Active ads (is_active == True) strictly precede inactive ads (inactives have lowest priority)
+    2. priority == 1 (LatAm WhatsApp & CRM core competitors)
     3. market_score (descending)
     4. days_active / recency (descending)
     """
     def _sort_key(ad: Dict[str, Any]) -> Tuple[int, int, float, int]:
+        is_active = bool(ad.get("is_active", True))
+        active_rank = 0 if is_active else 1  # 0 = active first, 1 = inactive at lowest priority
+
         priority = int(ad.get("priority", 2))
         is_p1 = 0 if priority == 1 else 1
 
-        is_active = 0 if ad.get("is_active", False) else 1
         market_score = float(ad.get("market_score", 0.0) or 0.0)
         days_active = int(ad.get("days_active", 0) or 0)
 
-        return (is_p1, is_active, -market_score, -days_active)
+        return (active_rank, is_p1, -market_score, -days_active)
 
     return sorted(ads, key=_sort_key)
 
@@ -309,12 +311,21 @@ def should_evaluate_ad(
 ) -> Tuple[bool, str]:
     """
     Heuristic filter (no LLM tokens spent):
-    - Rejects ads with < 3 active days (unproven tests).
+    - Rejects active ads with < 3 active days (unproven tests).
+    - Inactive ads: data only; only eligible for evaluation if days_active > 60.
     - Skips ads from competitors with >= 10 evaluated ads in the last 90 days,
       unless market_score is in the top 20% for that competitor.
     """
+    is_active = bool(ad.get("is_active", True))
     days = int(ad.get("days_active", 0) or 0)
-    if days < 3:
+
+    # Inactive ads: collected as data only; never evaluated unless duration was > 60 days
+    if not is_active:
+        if days <= 60:
+            return False, "skipped_data_only: inactive ad <= 60 days (data only, no LLM)"
+        # Inactive ads with > 60 days can be evaluated at lowest priority if quota permits
+
+    if is_active and days < 3:
         return False, "skipped_low_value: days_active < 3"
 
     if competitor_eval_count >= 10 and not is_top_market_score:

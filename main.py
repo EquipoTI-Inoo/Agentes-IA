@@ -10,6 +10,8 @@ Supports keyword queries as well as specialized business pillars:
 import argparse
 from datetime import datetime
 import json
+import math
+import sqlite3
 import sys
 from pathlib import Path
 from typing import Any, Dict, List
@@ -17,9 +19,89 @@ from typing import Any, Dict, List
 # Ensure src is importable
 sys.path.insert(0, str(Path(__file__).parent))
 
+if sys.platform == "win32":
+    try:
+        sys.stdout.reconfigure(encoding="utf-8")
+        sys.stderr.reconfigure(encoding="utf-8")
+    except Exception:
+        pass
+
+from src.ai.quota import get_quota_guard
+from src.config import settings
+from src.media.fingerprint import detect_ad_format, route_ad_for_evaluation
 from src.pillars import PILLARS
 from src.scraper import MetaAdsHunter
 from src.video_forensics import VideoForensicsEngine
+
+
+def show_queue_status() -> None:
+    """Displays current evaluation queue status, today's LLM consumption, and ETA to empty queue."""
+    db_path = Path("data/meta_ads.db")
+    if not db_path.exists():
+        print("❌ Base de datos no encontrada en data/meta_ads.db")
+        return
+
+    conn = sqlite3.connect(str(db_path))
+    conn.row_factory = sqlite3.Row
+    cur = conn.cursor()
+    cur.execute("SELECT id, page_name, has_video, video_path, image_path, headline, body_text FROM ads")
+    rows = cur.fetchall()
+    conn.close()
+
+    total_ads = len(rows)
+    video_count = 0
+    static_count = 0
+
+    for r in rows:
+        ad_dict = {
+            "ad_id": str(r["id"]),
+            "video_path": r["video_path"],
+            "image_path": r["image_path"],
+            "creatives": [{
+                "has_video": bool(r["has_video"] or r["video_path"]),
+                "has_image": bool(r["image_path"]),
+                "title": r["headline"] or "",
+                "body": r["body_text"] or "",
+            }],
+        }
+        fmt = detect_ad_format(ad_dict)
+        if fmt == "video":
+            video_count += 1
+        else:
+            static_count += 1
+
+    quota_guard = get_quota_guard()
+    main_usage = quota_guard.get_daily_usage(settings.LLM_MODEL)
+    cheap_usage = quota_guard.get_daily_usage(settings.LLM_MODEL_CHEAP)
+    total_today_requests = main_usage["requests"] + cheap_usage["requests"]
+
+    usable_rpd = max(1, settings.GEMINI_RPD - settings.RESERVE_REQUESTS)
+    # Decision vigente: 1 video por solicitud para máxima precisión sin recorte
+    eval_batch = 1
+    requests_needed_videos = math.ceil(video_count / eval_batch)
+    days_to_clear_videos = math.ceil(requests_needed_videos / usable_rpd) if video_count > 0 else 0
+
+    print("=" * 70)
+    print("📊 ESTADO DE LA COLA DE EVALUACIÓN (FASE 7.x)")
+    print("=" * 70)
+    print(f"Total anuncios en cola (pending_evaluation): {total_ads}")
+    print(f"  - 🎥 Videos en cola (Gemini Free Tier):    {video_count}")
+    print(f"  - 🖼️ Estáticos en cola (Claude API):       {static_count}")
+    print(f"Total evaluados con nueva rúbrica IA:       0 (Fase 4 pendiente)")
+    print("-" * 70)
+    print("📈 CONSUMO Y CUOTA DE HOY (GEMINI):")
+    print(f"  - Solicitudes usadas hoy (PT):             {total_today_requests} / {settings.GEMINI_RPD} RPD")
+    print(f"    * Modelo principal ({settings.LLM_MODEL}): {main_usage['requests']} req ({main_usage['tokens_in'] + main_usage['tokens_out']} tokens)")
+    print(f"    * Modelo barato ({settings.LLM_MODEL_CHEAP}):  {cheap_usage['requests']} req ({cheap_usage['tokens_in'] + cheap_usage['tokens_out']} tokens)")
+    print(f"  - Reserva técnica de seguridad:            {settings.RESERVE_REQUESTS} solicitudes")
+    print(f"  - Solicitudes útiles efectivas por día:    {usable_rpd} solicitudes/día")
+    print("-" * 70)
+    print("⏱️ ESTIMACIÓN DE TIEMPO PARA VACIAR LA COLA:")
+    print(f"  - Política de evaluación:                  1 video por solicitud ({settings.GEMINI_MEDIA_RESOLUTION} resolution)")
+    print(f"  - Solicitudes Gemini requeridas:           {requests_needed_videos} solicitudes")
+    print(f"  - Días estimados para vaciar videos:       ~{days_to_clear_videos} días (~{days_to_clear_videos * 24} horas)")
+    print(f"  - Estáticos ({static_count} anuncios):                Vía Claude prepago con tope de ${settings.CLAUDE_BUDGET_USD} USD")
+    print("=" * 70)
 
 
 def generate_markdown_report(
@@ -95,6 +177,11 @@ def generate_markdown_report(
 
 
 def main():
+    # Subcommand: queue --status (Fase 7.x)
+    if len(sys.argv) > 1 and sys.argv[1] == "queue":
+        show_queue_status()
+        return
+
     parser = argparse.ArgumentParser(
         description="Meta Ads Hunter: Espionaje y descarga de creativos para CRMs y Agentes de IA."
     )

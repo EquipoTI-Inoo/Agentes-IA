@@ -199,6 +199,7 @@ def test_scraper_search_page_vs_keyword_dispatch():
         page_ids=["192993730741131"],
         search_type="PAGE",
         country="PE",
+        status="ACTIVE",
         max_results=10,
         filter_config=mock_collector.collect.call_args[1]["filter_config"],
     )
@@ -214,6 +215,7 @@ def test_scraper_search_page_vs_keyword_dispatch():
         query="agente de voz ia",
         search_type="KEYWORD_UNORDERED",
         country="MX",
+        status="ACTIVE",
         max_results=10,
         filter_config=mock_collector.collect.call_args[1]["filter_config"],
     )

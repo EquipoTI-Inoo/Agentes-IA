@@ -101,13 +101,20 @@ class MetaAdsHunter:
 
         # Calculate active days if possible
         if ad.delivery_start_time and isinstance(ad.delivery_start_time, datetime):
-            now = datetime.now(timezone.utc)
             start = (
                 ad.delivery_start_time
                 if ad.delivery_start_time.tzinfo
                 else ad.delivery_start_time.replace(tzinfo=timezone.utc)
             )
-            data["days_active"] = max(0, (now - start).days)
+            if not ad.is_active and ad.delivery_stop_time and isinstance(ad.delivery_stop_time, datetime):
+                end = (
+                    ad.delivery_stop_time
+                    if ad.delivery_stop_time.tzinfo
+                    else ad.delivery_stop_time.replace(tzinfo=timezone.utc)
+                )
+            else:
+                end = datetime.now(timezone.utc)
+            data["days_active"] = max(0, (end - start).days)
         else:
             data["days_active"] = 0
 
@@ -142,6 +149,7 @@ class MetaAdsHunter:
         page_ids: Optional[List[str]] = None,
         competitor: Optional[Dict[str, Any]] = None,
         use_two_layer_relevance: bool = True,
+        status: str = "ACTIVE",
     ) -> List[Dict[str, Any]]:
         """
         Search ads either by page_id (official competitor mode) or keyword (discovery mode).
@@ -170,23 +178,25 @@ class MetaAdsHunter:
         if resolved_page_ids:
             logger.info(
                 f"Buscando por PAGE_ID={resolved_page_ids} (competidor='{competitor.get('name') if competitor else 'N/A'}'), "
-                f"country='{target_country}', media='{media_filter}', limit={limit}"
+                f"country='{target_country}', status='{status}', media='{media_filter}', limit={limit}"
             )
             raw_results = self.collector.collect(
                 page_ids=resolved_page_ids,
                 search_type=SEARCH_PAGE,
                 country=target_country,
+                status=status,
                 max_results=limit,
                 filter_config=filter_cfg,
             )
         else:
             logger.info(
-                f"Buscando por KEYWORD DISCOVERY: query='{query}', country='{target_country}', media='{media_filter}', limit={limit}"
+                f"Buscando por KEYWORD DISCOVERY: query='{query}', country='{target_country}', status='{status}', media='{media_filter}', limit={limit}"
             )
             raw_results = self.collector.collect(
                 query=query,
                 search_type=SEARCH_KEYWORD,
                 country=target_country,
+                status=status,
                 max_results=limit,
                 filter_config=filter_cfg,
             )
@@ -206,10 +216,22 @@ class MetaAdsHunter:
             # Filter through modern Two-Layer Relevance System (Layer 1 rules + Layer 2 Gemini Flash-Lite)
             filtered_pairs = self.relevance_filter.filter_ads(raw_parsed_ads)
             for ad_dict, rel_res in filtered_pairs:
-                if rel_res.is_relevant or rel_res.pending_relevance:
+                if not ad_dict.get("is_active", True):
+                    # Inactive ads: data only (dates, copy, platforms, country, page, is_active=false; no LLM calls)
+                    ad_dict["relevance_result"] = rel_res.model_dump()
+                    if ad_dict.get("days_active", 0) > 60 and rel_res.is_relevant:
+                        ad_dict["status"] = "pending_evaluation"  # eligible at lowest priority
+                    else:
+                        ad_dict["status"] = "inactive_data_only"
+                    parsed_ads.append(ad_dict)
+                    continue
+
+                if rel_res.is_relevant or rel_res.pending_relevance or rel_res.needs_manual_review:
                     ad_dict["relevance_result"] = rel_res.model_dump()
                     if rel_res.pending_relevance:
                         ad_dict["status"] = "pending_relevance"
+                    elif rel_res.needs_manual_review:
+                        ad_dict["status"] = "needs_manual_review"
                     parsed_ads.append(ad_dict)
                 else:
                     logger.warning(

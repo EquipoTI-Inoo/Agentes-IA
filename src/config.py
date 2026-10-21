@@ -55,6 +55,18 @@ class Settings(BaseSettings):
         default=None,
         description="Google Gemini API Key",
     )
+    ANTHROPIC_API_KEY: Optional[str] = Field(
+        default=None,
+        description="Anthropic Claude API Key for static ad evaluations",
+    )
+    CLAUDE_BUDGET_USD: float = Field(
+        default=8.0,
+        description="Spending cap in USD for Claude static evaluations",
+    )
+    CLAUDE_MODEL_STATIC: str = Field(
+        default="claude-sonnet-5-5",
+        description="Claude model for static ad evaluations",
+    )
 
     # Geographical Markets (comma-separated string or list)
     DEFAULT_COUNTRIES: Union[List[str], str] = Field(
@@ -108,32 +120,36 @@ class Settings(BaseSettings):
 
     # Batching & Evaluation Volume
     EVAL_BATCH_VIDEOS: int = Field(
-        default=3,
-        description="Number of video ads evaluated per single multimodal request",
+        default=1,
+        description="Number of video ads evaluated per single multimodal request (1 video per request)",
     )
     EVAL_BATCH_STATICS: int = Field(
-        default=6,
-        description="Number of static image ads evaluated per single LLM request",
+        default=1,
+        description="Number of static image ads evaluated per single LLM request (1 ad per request; carousel/DCO = all cards in 1 request)",
     )
     RELEVANCE_BATCH_SIZE: int = Field(
         default=20,
         description="Number of candidate ads classified in one cheap text LLM call",
     )
     FIRST_RUN_PRIORITY_ONLY: bool = Field(
-        default=True,
-        description="Prioritize evaluating only priority=1 competitors on initial sweeps",
+        default=False,
+        description="Prioritize evaluating only priority=1 competitors on initial sweeps (false = all competitors)",
     )
     MAX_EVALS_PER_RUN: int = Field(
         default=0,
         description="Maximum evaluations to process in a single run (0 = unlimited until quota)",
     )
     VIDEO_MAX_SECONDS_FOR_LLM: int = Field(
-        default=90,
-        description="Max video duration in seconds sent to LLM for creative audit",
+        default=0,
+        description="Max video duration in seconds sent to LLM for creative audit (0 = full video without clipping)",
     )
-    GEMINI_MEDIA_RESOLUTION: Literal["low", "medium"] = Field(
-        default="low",
+    GEMINI_MEDIA_RESOLUTION: Literal["low", "medium", "high"] = Field(
+        default="medium",
         description="Media resolution for video/image processing in Gemini API",
+    )
+    COLLECT_INACTIVE: bool = Field(
+        default=False,
+        description="Enable collection of inactive competitor ads for historical data only (no LLM calls)",
     )
 
     @field_validator(

@@ -104,12 +104,12 @@ def test_sort_ads_for_evaluation():
 
     sorted_ads = sort_ads_for_evaluation(sample_ads)
     order = [a["ad_id"] for a in sorted_ads]
-    # Expect:
+    # Expect: Active ads first (P1 then P2), followed by Inactive ads at lowest priority
     # 1. P1 Active: "3"
-    # 2. P1 Inactive: "2"
-    # 3. P2 Active: "1"
+    # 2. P2 Active: "1"
+    # 3. P1 Inactive: "2"
     # 4. P2 Inactive: "4"
-    assert order == ["3", "2", "1", "4"]
+    assert order == ["3", "1", "2", "4"]
 
 
 def test_should_evaluate_ad_heuristics():

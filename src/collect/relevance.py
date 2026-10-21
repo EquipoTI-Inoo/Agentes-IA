@@ -40,6 +40,7 @@ class RelevanceResult(BaseModel):
     confidence: float = Field(default=1.0, ge=0.0, le=1.0)
     reason: str
     pending_relevance: bool = False
+    needs_manual_review: bool = False
 
 
 class RelevanceBatchResult(BaseModel):
@@ -411,14 +412,46 @@ class TwoLayerRelevanceFilter:
                         pending_relevance=True,
                     ),
                 )
+                # If doubtful (moderate confidence or uncertain), route to manual review rather than dropping
+                if not res.is_relevant and 0.3 <= res.confidence < 0.7:
+                    res.needs_manual_review = True
+                    logger.info(f"  [?] Anuncio dudoso marcado para revisión manual: {ad.get('page_name')} ({ad_id})")
+
                 results.append((ad, res))
 
-        # Check and record candidate competitors for relevant non-official pages
+        # Check and record candidate competitors for relevant non-official pages, and audit files
+        review_file = BASE_DIR / "data" / "review_queue.csv"
+        rejected_file = BASE_DIR / "data" / "rejected_ads.csv"
+        review_file.parent.mkdir(parents=True, exist_ok=True)
+
         for ad, res in results:
+            ad_id = str(ad.get("ad_id") or "")
+            page_name = str(ad.get("page_name") or "")
+
             if res.is_relevant and not res.pending_relevance:
                 page_id = str(ad.get("page_id") or "")
-                page_name = str(ad.get("page_name") or "")
-                ad_id = str(ad.get("ad_id") or "")
                 self.record_candidate_page(page_id, page_name, ad_id, res.pillar)
+            elif res.needs_manual_review:
+                # Append to review_queue.csv
+                try:
+                    exists = review_file.exists()
+                    with open(review_file, "a", encoding="utf-8") as rf:
+                        if not exists:
+                            rf.write("ad_id,page_name,reason\n")
+                        clean_reason = res.reason.replace(",", " ")
+                        rf.write(f"{ad_id},{page_name},{clean_reason}\n")
+                except Exception:
+                    pass
+            elif not res.is_relevant and not res.pending_relevance:
+                # Clearly rejected: append to rejected_ads.csv (never delete files)
+                try:
+                    exists = rejected_file.exists()
+                    with open(rejected_file, "a", encoding="utf-8") as rjf:
+                        if not exists:
+                            rjf.write("ad_id,page_name,motivo\n")
+                        clean_reason = res.reason.replace(",", " ")
+                        rjf.write(f"{ad_id},{page_name},{clean_reason}\n")
+                except Exception:
+                    pass
 
         return results
