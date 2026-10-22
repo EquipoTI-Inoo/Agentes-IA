@@ -389,4 +389,4 @@ def test_dashboard_never_calls_an_evaluator_and_never_writes(world):
 def test_server_listens_on_localhost_by_default():
     text = Path("start_server.py").read_text(encoding="utf-8")
     assert 'os.getenv("HOST", "127.0.0.1")' in text
-    assert "HOST=0.0.0.0" in Path("docker-compose.yml").read_text(encoding="utf-8")  # Docker opts in explicitly
+    assert "HOST=0.0.0.0" in Path("Dockerfile").read_text(encoding="utf-8")  # only inside the container image

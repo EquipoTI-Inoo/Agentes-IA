@@ -46,3 +46,26 @@ def test_must_approve_real_competitors(page_name, headline, body, query):
     relevant, reason = is_ad_relevant(ad_data, target_query=query)
     assert relevant is True, f"Expected '{page_name}' to be approved, but was rejected: {reason}"
     assert "Aprobado" in reason
+
+
+# --- "Kommo" is not the Spanish word "cómo" ---------------------------------------------------
+
+@pytest.mark.parametrize(
+    "page_name, headline, body",
+    [
+        ("Tienda Hogar", "Cómo organizar tu cocina", "Descubre cómo ordenar tu hogar paso a paso y como ahorrar espacio"),
+        ("Como Hogar SA", "Como cuidar tus plantas", "Cómo regar, cómo podar y cómo abonar"),
+        ("Recetas Express", "¿Cómo cocinar rápido?", "Cómo preparar la cena en 10 minutos"),
+    ],
+)
+def test_como_is_never_mistaken_for_kommo(page_name, headline, body):
+    ad = {"page_name": page_name, "headline": headline, "body_text": body, "link_url": ""}
+    relevant, reason = is_ad_relevant(ad, target_query="Kommo")
+    assert relevant is False, f"'cómo' was taken for the competitor Kommo: {reason}"
+
+
+def test_real_kommo_still_passes_when_its_copy_says_como():
+    ad = {"page_name": "Kommo", "headline": "Descubre cómo vender más por WhatsApp",
+          "body_text": "Cómo automatizar tu pipeline comercial con Kommo CRM", "link_url": ""}
+    relevant, reason = is_ad_relevant(ad, target_query="Kommo")
+    assert relevant is True, reason

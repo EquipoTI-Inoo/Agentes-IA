@@ -1,0 +1,32 @@
+# Secrets and runtime state never enter the image (they are mounted / injected at run time)
+.env
+.env.*
+!.env.example
+data/
+downloads/
+logs/
+reports/
+*.db
+*.log
+
+# Version control, caches, local tooling
+.git
+.gitignore
+.github
+.agents
+__pycache__/
+**/__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+.vscode/
+.idea/
+
+# Calibration sample videos are large and not needed to run the app
+calibration/videos*
+calibration/**/*.mp4
+
+# Not needed at run time
+tests/
+docs/

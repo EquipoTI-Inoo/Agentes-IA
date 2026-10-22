@@ -1,34 +1,52 @@
-version: "3.8"
+# Jinora: web dashboard/API + job worker.
+#
+# Before the first `docker compose up`:
+#   1. cp .env.example .env   and fill in your keys (the file stays on your machine; it is never copied into the image).
+#   2. Linux hosts: export JINORA_UID=$(id -u) JINORA_GID=$(id -g) so the container can write to ./data, ./downloads, ./logs.
+#
+# The dashboard is published ONLY on 127.0.0.1:8000 of the host. Both services share the same SQLite file in ./data.
+
+x-jinora: &jinora
+  build: .
+  image: jinora:local
+  env_file: .env
+  user: "${JINORA_UID:-10001}:${JINORA_GID:-10001}"
+  restart: unless-stopped
+  environment:
+    DATABASE_URL: sqlite:///data/meta_ads.db
+  volumes:
+    - ./data:/app/data
+    - ./downloads:/app/downloads
+    - ./logs:/app/logs
+    - ./config:/app/config
+    - ./reports:/app/reports
 
 services:
-  app:
-    build: .
-    container_name: jinora_app
-    restart: unless-stopped
+  web:
+    <<: *jinora
+    container_name: jinora_web
     ports:
-      - "8000:8000"
-    environment:
-      - HOST=0.0.0.0
-      - PORT=8000
-      - DATABASE_URL=sqlite:///data/meta_ads.db
-    volumes:
-      - ./data:/app/data
-      - ./downloads:/app/downloads
-      - ./reports:/app/reports
-      - ./config:/app/config
+      - "127.0.0.1:8000:8000"
 
-  # Descomentar si se desea levantar PostgreSQL dedicado:
-  # db:
-  #   image: postgres:16-alpine
-  #   container_name: jinora_postgres
-  #   environment:
-  #     POSTGRES_USER: jinora
-  #     POSTGRES_PASSWORD: jinora_secret_password
-  #     POSTGRES_DB: jinora_ads
-  #   volumes:
-  #     - pgdata:/var/lib/postgresql/data
-  #   ports:
-  #     - "5432:5432"
+  worker:
+    <<: *jinora
+    container_name: jinora_worker
+    command: ["python", "-m", "src.cli", "worker"]
+    depends_on:
+      - web
+    healthcheck:
+      disable: true  # the image HEALTHCHECK probes the web port; the worker does not serve HTTP
 
+# PostgreSQL instead of SQLite (optional): add a database service, set DATABASE_URL for web and worker, and keep the
+# password in .env (never in this file). QuotaGuard's usage tables still live in the SQLite file under ./data.
+#
+#   db:
+#     image: postgres:16-alpine
+#     environment:
+#       POSTGRES_USER: jinora
+#       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+#       POSTGRES_DB: jinora_ads
+#     volumes:
+#       - pgdata:/var/lib/postgresql/data
 # volumes:
 #   pgdata:

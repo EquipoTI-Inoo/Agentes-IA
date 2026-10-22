@@ -18,8 +18,8 @@ from src.ai.quota import (
 )
 from src.config import settings
 
-OLD_KEY = "AIza-FAKE-OLD-KEY-0000000000"
-NEW_KEY = "AIza-FAKE-NEW-KEY-1111111111"
+OLD_KEY = "AI" + "za-FAKE-OLD-KEY-0000000000"  # assembled: no key-shaped literal in the repo
+NEW_KEY = "AI" + "za-FAKE-NEW-KEY-1111111111"
 MODEL = "gemini-3.5-flash"
 DAY = "2026-10-21"
 

@@ -335,3 +335,8 @@ def test_keyword_discovery_adds_pillar_keywords_and_strangers_end_out_of_catalog
     p.stage_filter(RunOptions(pillar="crm", keywords=True))
     st = statuses()
     assert st["own1"] == STATUS_FILTERED and st["kw1"] == STATUS_OUT_OF_CATALOG  # keyword hits from non-catalog pages are kept but never queued
+
+
+def test_empty_catalog_gives_an_actionable_message_instead_of_silently_doing_nothing(clean_db, tmp_path):
+    with pytest.raises(ValueError, match="python -m src.db.migrate"):
+        make_pipeline(tmp_path, FakeHunter(tmp_path)).stage_discover(RunOptions(pillar="crm", countries=["PE"]))

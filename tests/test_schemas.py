@@ -2,6 +2,8 @@
 Unit tests for AI Evaluation Pydantic Schemas (Video and Static).
 """
 
+import json
+
 import pytest
 from pydantic import ValidationError
 
@@ -147,3 +149,30 @@ def test_static_low_score_validation():
         evidence=[ev_ok]
     )
     assert ds_ok.score == 4
+
+
+# --- invalid JSON is rejected (what a model reply that breaks the contract looks like) ---------
+
+@pytest.mark.parametrize("raw", [
+    "esto no es JSON",
+    "",
+    "{",
+    "[]",
+    "null",
+    '{"hook": {"score": 10}}',  # valid JSON, required fields missing
+])
+def test_invalid_json_is_rejected_by_both_schemas(raw):
+    from src.ai.schemas import EvaluationResult, StaticEvaluationResult
+
+    with pytest.raises(ValidationError):
+        EvaluationResult.model_validate_json(raw)
+    with pytest.raises(ValidationError):
+        StaticEvaluationResult.model_validate_json(raw)
+
+
+def test_valid_structure_with_a_forbidden_value_is_rejected():
+    """Right shape, wrong values: score above 25 and an unknown anchor level must not pass."""
+    ev = {"timestamp": "00:01", "source": "visual", "quote": "demo"}
+    for bad in ({"score": 26, "anchor_level": "20-25"}, {"score": 10, "anchor_level": "50-99"}):
+        with pytest.raises(ValidationError):
+            DimensionScore.model_validate_json(json.dumps({**bad, "reasoning": "r", "evidence": [ev]}))

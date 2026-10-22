@@ -16,6 +16,7 @@ from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.responses import FileResponse, Response, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+from sqlalchemy import text
 
 from src import dashboard_data, jobs
 from src.config import settings
@@ -44,6 +45,17 @@ async def security_headers(request: Request, call_next):
     response.headers["X-Frame-Options"] = "DENY"
     response.headers["Referrer-Policy"] = "no-referrer"
     return response
+
+
+@app.get("/health", include_in_schema=False)
+def health() -> Dict[str, str]:
+    """Lightweight liveness/readiness probe for the container HEALTHCHECK: the app is up and the database answers."""
+    try:
+        with SessionLocal() as db:
+            db.execute(text("SELECT 1"))
+    except Exception:
+        raise HTTPException(status_code=503, detail="database unavailable")
+    return {"status": "ok"}
 
 
 @app.get("/", include_in_schema=False)

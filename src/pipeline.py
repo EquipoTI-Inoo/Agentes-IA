@@ -239,6 +239,8 @@ class Pipeline:
             if not use_competitors and not opts.keywords:
                 raise ValueError("Indica --pillar, --competitor, --query o --all.")
             if use_competitors:
+                if db.query(Competitor).count() == 0:
+                    raise ValueError("El catálogo de competidores está vacío. Ejecuta primero: python -m src.db.migrate")
                 q = db.query(Competitor)
                 if opts.competitor:
                     q = q.filter(Competitor.id == self._find_competitor(db, opts.competitor).id)

@@ -1,4 +1,5 @@
-# Jinora Development & Forensics Validation Dependencies
-# Install with: pip install -r requirements-dev.txt
+# Jinora development and validation dependencies. Install with: pip install -r requirements-dev.txt
 -r requirements.txt
-faster-whisper>=1.0.0
+pytest==9.1.1
+httpx==0.28.1               # FastAPI TestClient
+faster-whisper==1.2.1       # local Whisper (transcript comparison, --forensics); also pulls PyAV used by the media tests

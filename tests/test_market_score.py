@@ -152,3 +152,59 @@ def test_market_score_ignores_creative_content_and_ai_fields():
         now=NOW,
     )
     assert base == noisy
+
+
+# --- boundary values --------------------------------------------------------------------------
+
+ALL_COUNTRIES = ["PE", "MX", "CO", "AR", "CL", "ES", "US", "BR", "EC"]
+ALL_PLATFORMS = ["FACEBOOK", "INSTAGRAM", "MESSENGER", "AUDIENCE_NETWORK"]
+
+
+def _used(result, name):
+    return result["market_components"]["used"][name]["value"]
+
+
+def test_longevity_boundaries_around_zero_and_the_180_day_cap():
+    def at(days):
+        start = datetime.fromtimestamp(NOW.timestamp() - days * 86400, tz=timezone.utc).isoformat()
+        return compute_market_score(_ad(delivery_start_time=start), CONFIG, now=NOW)
+
+    assert _used(at(0), "longevity") == 0.0  # started today
+    assert 0.0 < _used(at(1), "longevity") < _used(at(179), "longevity") < 1.0
+    assert _used(at(180), "longevity") == 1.0
+    assert _used(at(181), "longevity") == 1.0 and _used(at(5000), "longevity") == 1.0  # beyond the cap adds nothing
+    assert at(5000)["market_score"] == at(180)["market_score"]
+
+
+def test_variant_boundaries_around_the_cap():
+    cap = CONFIG["market_score"]["variants_cap"]
+    values = {n: _used(compute_market_score(_ad(variant_count=n), CONFIG, now=NOW), "variants") for n in (1, 2, cap - 1, cap, cap + 1, 500)}
+    assert values[1] == 0.0 and 0.0 < values[2] < values[cap - 1] < 1.0
+    assert values[cap] == values[cap + 1] == values[500] == 1.0
+
+
+def test_country_and_platform_boundaries():
+    cap = CONFIG["market_score"]["countries_cap"]
+    countries = lambda n: _used(compute_market_score(_ad(countries=ALL_COUNTRIES[:n]), CONFIG, now=NOW), "countries")
+    assert countries(1) == pytest.approx(1 / cap, abs=1e-4) and countries(cap) == 1.0 and countries(len(ALL_COUNTRIES)) == 1.0
+    platforms = lambda p: compute_market_score(_ad(publisher_platforms=p), CONFIG, now=NOW)
+    assert _used(platforms(ALL_PLATFORMS[:1]), "platforms") == 0.25 and _used(platforms(ALL_PLATFORMS), "platforms") == 1.0
+    assert _used(platforms(ALL_PLATFORMS + ["WHATSAPP", "THREADS"]), "platforms") == 1.0  # uncounted platforms add nothing
+    assert _used(platforms(["WHATSAPP"]), "platforms") == 0.0  # only uncounted platforms: present but worth nothing
+
+
+def test_score_extremes_are_exactly_0_and_100_with_no_cap_in_between():
+    best = compute_market_score(
+        _ad(delivery_start_time="2018-01-01T00:00:00+00:00", variant_count=999, countries=ALL_COUNTRIES, publisher_platforms=ALL_PLATFORMS, is_active=True),
+        CONFIG, now=NOW)
+    assert best["market_score"] == 100.0
+    worst = compute_market_score(
+        _ad(delivery_start_time=NOW.isoformat(), variant_count=1, countries=None, publisher_platforms=None, is_active=False,
+            delivery_stop_time=NOW.isoformat()),
+        CONFIG, now=NOW)
+    assert worst["market_score"] == 0.0 and set(worst["market_components"]["missing"]) == {"countries", "platforms"}
+    mid = compute_market_score(_ad(variant_count=5, countries=ALL_COUNTRIES[:3]), CONFIG, now=NOW)["market_score"]
+    assert 0.0 < mid < 100.0
+    for n in (1, 3, 9, 50):  # more of anything never lowers the score and never exceeds 100
+        score = compute_market_score(_ad(variant_count=n, countries=ALL_COUNTRIES), CONFIG, now=NOW)["market_score"]
+        assert 0.0 <= score <= 100.0

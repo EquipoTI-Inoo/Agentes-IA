@@ -1,5 +1,7 @@
-# Environment variables
+# Environment variables (real secrets never enter git; only .env.example does)
 .env
+.env.*
+!.env.example
 
 # Python cache
 __pycache__/
@@ -16,9 +18,9 @@ env/
 # Media downloads & database backups
 downloads/
 calibration/**/*.mp4
-calibration/videos_scrape/
-calibration/videos20/
+calibration/videos*/
 data/*.db
+*.db
 data/backup/
 logs/
 *.log
