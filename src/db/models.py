@@ -33,10 +33,21 @@ from sqlalchemy.orm import declarative_base, relationship, synonym
 
 Base = declarative_base()
 
-# Ads that run through the evaluation queue
-STATUS_PENDING = "pending_evaluation"
-STATUS_EVALUATED = "evaluated"
-STATUS_REJECTED = "rejected"  # flagged irrelevant (data/rejected_ads.csv); kept, never deleted
+# Ad.status: how far an ad got in the pipeline (src/pipeline.py). Each stage only moves ads forward.
+#   discovered -> filtered -> downloaded -> pending_evaluation -> evaluated -> scored
+STATUS_DISCOVERED = "discovered"  # saved from Meta, relevance not decided yet
+STATUS_FILTERED = "filtered"  # relevant and in the catalog; waiting for its media
+STATUS_DOWNLOADED = "downloaded"  # media files on disk
+STATUS_PENDING = "pending_evaluation"  # media ready: this is the evaluation queue (also after a deferral/failure)
+STATUS_EVALUATED = "evaluated"  # has a creative_score
+STATUS_SCORED = "scored"  # market signal and jinora_score computed
+# Terminal states, never queued and never deleted
+STATUS_REJECTED = "rejected"  # judged irrelevant (relevance filter / data/rejected_ads.csv)
+STATUS_OUT_OF_CATALOG = "out_of_catalog"  # page is not one of the catalogued competitors
+STATUS_NEEDS_REVIEW = "needs_manual_review"  # doubtful relevance: a person decides
+STATUS_INACTIVE_DATA_ONLY = "inactive_data_only"  # inactive <= 60 days: data only, no LLM
+
+EXCLUDED_FROM_QUEUE = (STATUS_REJECTED, STATUS_OUT_OF_CATALOG)
 
 # Analysis.analysis_type values that carry a creative_score
 SCORED_ANALYSIS_TYPES = ("video", "static")
@@ -267,12 +278,15 @@ class Job(Base):
     __tablename__ = "jobs"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    type = Column(String(32), nullable=False)  # e.g. evaluate
+    type = Column(String(32), nullable=False)  # run | evaluate | forensics (worker) | download (pipeline internal)
     ad_id = Column(String(64), ForeignKey("ads.id", ondelete="CASCADE"), nullable=True)
     payload = Column(Text, nullable=True)  # JSON
-    status = Column(String(32), nullable=False, default="pending")  # pending | done | failed
+    status = Column(String(32), nullable=False, default="pending")  # pending | running | done | failed
     error = Column(Text, nullable=True)
+    result = Column(Text, nullable=True)  # JSON summary written when the job ends
+    attempts = Column(Integer, nullable=True, default=0)
     created_at = Column(DateTime, nullable=False, default=utcnow)
+    started_at = Column(DateTime, nullable=True)
     finished_at = Column(DateTime, nullable=True)
 
     ad = relationship("Ad", back_populates="jobs")

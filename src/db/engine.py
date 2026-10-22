@@ -61,3 +61,28 @@ def schema_version(engine: Engine) -> str:
     with engine.connect() as conn:
         row = conn.execute(text("SELECT value FROM schema_meta WHERE key = 'schema_version'")).fetchone()
     return row[0] if row else ""
+
+
+def add_missing_columns(engine: Engine, metadata) -> list:
+    """
+    Additive schema upgrade: ALTER TABLE ... ADD COLUMN for every model column that an existing table lacks.
+    Only nullable (or defaulted) columns can be added; nothing is ever dropped or altered. Idempotent and
+    portable (plain SQLAlchemy DDL types). Returns the list of 'table.column' added.
+    """
+    from sqlalchemy import text
+
+    insp = inspect(engine)
+    added = []
+    with engine.begin() as conn:
+        for table in metadata.sorted_tables:
+            if not insp.has_table(table.name):
+                continue
+            existing = {c["name"] for c in insp.get_columns(table.name)}
+            for col in table.columns:
+                if col.name in existing:
+                    continue
+                if not col.nullable and col.server_default is None:
+                    raise RuntimeError(f"No se puede añadir {table.name}.{col.name}: NOT NULL sin valor por defecto")
+                conn.execute(text(f'ALTER TABLE "{table.name}" ADD COLUMN "{col.name}" {col.type.compile(dialect=engine.dialect)}'))
+                added.append(f"{table.name}.{col.name}")
+    return added

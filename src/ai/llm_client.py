@@ -133,8 +133,9 @@ class GeminiClient(BaseLLMClient):
         if is_too_long:
             raise ValueError(f"No se puede evaluar el video: {reason}")
 
-        # 2. Acquire QuotaGuard slot (enforces Pacific Time daily RPD & RPM/TPM sliding windows)
-        self.quota_guard.acquire(self.model, est_tokens=est_tokens, key_fingerprint=self.key_fingerprint)
+        # 2. Pre-flight: do not upload the video if today's quota is already gone. The slot itself is
+        # acquired right before EACH request (retries included) in _call_with_transient_retry.
+        self.quota_guard.check_available(self.model, key_fingerprint=self.key_fingerprint)
 
         from google.genai import types
 
@@ -191,7 +192,7 @@ class GeminiClient(BaseLLMClient):
 
             # 5. Execute generation with progressive backoff and attempt tracking
             logger.info(f"Generando evaluación con {self.model} (temperatura=0.0)...")
-            response = self._call_with_transient_retry([uploaded_file, user_content], config=config)
+            response = self._call_with_transient_retry([uploaded_file, user_content], config=config, est_tokens=est_tokens)
             raw_text = response.text or ""
 
             # 6. Validate with Pydantic with 1 retry on ValidationError
@@ -199,14 +200,13 @@ class GeminiClient(BaseLLMClient):
                 eval_result = EvaluationResult.model_validate_json(raw_text)
             except ValidationError as val_err:
                 logger.warning(f"Error de validación Pydantic en primera respuesta: {val_err}. Iniciando único reintento...")
-                self.quota_guard.acquire(self.model, est_tokens=500, key_fingerprint=self.key_fingerprint)
                 retry_prompt = (
                     f"{user_content}\n\n"
                     f"ATENCIÓN: Tu respuesta anterior generó el siguiente error de validación:\n{val_err}\n"
                     f"Recuerda que si una dimensión recibe menos de 8 puntos (< 8), debes justificar explícitamente qué buscaste y no encontraste con tiempo y canal.\n"
                     f"Corrige los campos y responde estrictamente con el JSON corregido."
                 )
-                retry_resp = self._call_with_transient_retry([uploaded_file, retry_prompt], config=config)
+                retry_resp = self._call_with_transient_retry([uploaded_file, retry_prompt], config=config, est_tokens=500)
                 eval_result = EvaluationResult.model_validate_json(retry_resp.text or "")
                 response = retry_resp
 
@@ -216,12 +216,18 @@ class GeminiClient(BaseLLMClient):
             logger.error(f"Fallo durante la evaluación del anuncio en Gemini: {e}")
             raise
 
-    def _call_with_transient_retry(self, cnts: list, config: Any = None):
-        """Execute Gemini API call with progressive backoff and attempt tracking."""
+    def _call_with_transient_retry(self, cnts: list, config: Any = None, est_tokens: int = 0):
+        """
+        Execute Gemini API call with progressive backoff and attempt tracking.
+        Every attempt sent to the API goes through QuotaGuard.acquire() first, so retries count against the
+        daily cap (RPD minus RESERVE_REQUESTS) and the session budget. When the cap is reached QuotaExhausted
+        is raised (it is not an API failure and is never recorded as an attempt).
+        """
         delays = settings.GEMINI_RETRY_DELAYS or [5.0, 15.0, 45.0, 120.0]
         max_attempts = len(delays)
 
         for attempt_idx, base_delay in enumerate(delays, 1):
+            self.quota_guard.acquire(self.model, est_tokens=est_tokens, key_fingerprint=self.key_fingerprint)
             try:
                 resp = self.client.models.generate_content(
                     model=self.model,

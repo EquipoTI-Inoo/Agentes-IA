@@ -320,11 +320,10 @@ class QuotaGuard:
             ).fetchone()
         return int(row["total"])
 
-    def acquire(self, model: str, est_tokens: int = 0, key_fingerprint: Optional[str] = None) -> None:
+    def check_available(self, model: str, key_fingerprint: Optional[str] = None) -> None:
         """
-        Reserve an API request slot.
-        - Enforces RPD: raises QuotaExhausted if daily cap reached or marked exhausted.
-        - Enforces RPM/TPM: sleeps if rate limits are momentarily saturated.
+        Raises QuotaExhausted if the daily cap (RPD minus RESERVE_REQUESTS, per model and key) is reached
+        or the key is marked exhausted. Read-only: reserves nothing and does not touch the RPM/TPM windows.
         """
         if not settings.FREE_TIER_MODE:
             return
@@ -357,6 +356,17 @@ class QuotaGuard:
                 limit=effective_limit,
                 reason=f"Reached daily usable limit ({effective_limit} requests)",
             )
+
+    def acquire(self, model: str, est_tokens: int = 0, key_fingerprint: Optional[str] = None) -> None:
+        """
+        Reserve an API request slot. Call it before EVERY request sent to the API, retries included:
+        - Enforces RPD: raises QuotaExhausted if daily cap reached or marked exhausted.
+        - Enforces RPM/TPM: sleeps if rate limits are momentarily saturated.
+        """
+        if not settings.FREE_TIER_MODE:
+            return
+
+        self.check_available(model, key_fingerprint)
 
         # Sliding window for RPM (Requests Per Minute)
         now = time.time()
@@ -501,14 +511,14 @@ class QuotaGuard:
     ) -> T:
         """
         Executes a callable with QuotaGuard acquisition and 429 exponential backoff.
+        Every attempt (retries included) goes through acquire(), so no attempt can exceed the daily cap.
         Raises QuotaExhausted if 429 persists or indicates daily quota exhaustion.
         """
-        self.acquire(model=model, est_tokens=est_tokens)
-
         total_attempts = len(backoff_delays) + 1
         last_exception: Optional[Exception] = None
 
         for attempt in range(1, total_attempts + 1):
+            self.acquire(model=model, est_tokens=est_tokens)
             try:
                 res = func(*args, **kwargs)
                 self.record_attempt(model=model, provider="gemini", status="success")

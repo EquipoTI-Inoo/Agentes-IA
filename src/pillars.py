@@ -32,6 +32,7 @@ PILLARS: Dict[str, Dict[str, Any]] = {
             "voicebot inteligencia artificial",
             "ai phone agent",
             "voice sdr",
+            "voice ai agent",  # search term kept from the retired scripts/mass_global_harvester.py
         ],
         "top_competitors": [c["name"] for c in RAW_DB.get("pillars", {}).get("voz", {}).get("competitors", [])],
         "competitors_data": RAW_DB.get("pillars", {}).get("voz", {}).get("competitors", []),
@@ -63,6 +64,7 @@ PILLARS: Dict[str, Dict[str, Any]] = {
             "automatizar seguimiento clientes",
             "pipeline de ventas automatizado",
             "ai crm sales",
+            "crm whatsapp ventas",  # search term kept from the retired scripts/mass_global_harvester.py
         ],
         "top_competitors": [c["name"] for c in RAW_DB.get("pillars", {}).get("crm", {}).get("competitors", [])],
         "competitors_data": RAW_DB.get("pillars", {}).get("crm", {}).get("competitors", []),

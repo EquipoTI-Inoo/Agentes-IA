@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
     Configures Windows Task Scheduler for Jinora Autonomous Competitor Sweeps and Evaluation Queue.
     
@@ -69,7 +69,18 @@ $Action1 = New-ScheduledTaskAction `
     -Argument "-m src.cli run --all" `
     -WorkingDirectory $ProjectRoot
 
-$Trigger1A = New-ScheduledTaskTrigger -Daily -At "09:00"
+# New-ScheduledTaskTrigger has no monthly mode, so build the CIM monthly trigger: days 1 and 15 of every month.
+# DaysOfMonth is a bitmask (bit 0 = day 1, bit 14 = day 15); MonthOfYear 4095 = all 12 months.
+$MonthlyTriggerClass = Get-CimClass -ClassName MSFT_TaskMonthlyTrigger -Namespace Root/Microsoft/Windows/TaskScheduler
+$SweepDaysMask = [uint16]((1 -shl 0) -bor (1 -shl 14))
+$Trigger1A = New-CimInstance -CimClass $MonthlyTriggerClass -ClientOnly -Property @{
+    Enabled       = $true
+    DaysOfMonth   = $SweepDaysMask
+    MonthOfYear   = [uint16]4095
+    StartBoundary = (Get-Date -Hour 9 -Minute 0 -Second 0).ToString("yyyy-MM-dd'T'HH:mm:ss")
+}
+$SweepDays = (1..31 | Where-Object { $SweepDaysMask -band (1 -shl ($_ - 1)) }) -join " y "
+if ($SweepDays -ne "1 y 15") { throw "Monthly trigger misconfigured: days = $SweepDays (expected 1 y 15)" }
 $Settings1 = New-ScheduledTaskSettingsSet `
     -StartWhenAvailable `
     -AllowStartIfOnBatteries `
@@ -90,6 +101,10 @@ $Settings2 = New-ScheduledTaskSettingsSet `
     -DontStopIfGoingOnBatteries `
     -MultipleInstances IgnoreNew
 
+# Validate (in memory, nothing is registered) that Task Scheduler accepts the monthly trigger inside a task definition
+$SweepDefinition = New-ScheduledTask -Action $Action1 -Trigger $Trigger1A -Settings $Settings1
+if ($SweepDefinition.Triggers[0].CimClass.CimClassName -ne "MSFT_TaskMonthlyTrigger") { throw "Sweep task does not use a monthly trigger" }
+
 if (-not $Register) {
     Write-Host "[DRY RUN] Script is validated. To register tasks in Task Scheduler, run:" -ForegroundColor Yellow
     Write-Host "powershell -ExecutionPolicy Bypass -File .\scripts\schedule_windows.ps1 -Register" -ForegroundColor White
@@ -97,6 +112,7 @@ if (-not $Register) {
     Write-Host " 1. $TaskEvalName -> cmd.exe /c python main.py queue --run --respect-hours >> logs\nightly_eval.log 2>&1 (Diario 01:30 Lima)"
     Write-Host " 2. $Task1Name -> $PythonExe -m src.cli run --all (1 y 15 de cada mes a las 09:00)"
     Write-Host " 3. $Task2Name -> $PythonExe -m src.cli evaluate --pending (Diario 09:30)"
+    Write-Host " Trigger de la tarea 2 validado: MONTHLY, dias $SweepDays de todos los meses (DaysOfMonth=$SweepDaysMask), 09:00."
     Write-Host " Option 'StartWhenAvailable' enabled for battery & offline recovery."
     exit 0
 }

@@ -192,7 +192,7 @@ def test_gemini_prompt_excludes_days_variants_and_brand(tmp_path, monkeypatch):
         name="files/x", state=types.SimpleNamespace(name="ACTIVE")
     )
 
-    def _capture_call(cnts, config=None):
+    def _capture_call(cnts, config=None, est_tokens=0):
         captured["gemini"] = str(cnts[1]) + str(config.system_instruction)
         raise Capture()
 

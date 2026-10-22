@@ -30,6 +30,26 @@ python main.py --query "Hubspot" --no-download --limit 20
 
 ---
 
+## ⚙️ Pipeline unificado (CLI nuevo)
+
+Etapas idempotentes `discover → filter → download → media → evaluate → signals`; una corrida interrumpida se reanuda ejecutando el mismo comando (no repite descargas ni evaluaciones). El estado de cada anuncio queda en `Ad.status`.
+
+```bash
+python -m src.cli run --pillar conversacional --countries PE,MX,CO --limit 20
+python -m src.cli run --competitor "Kommo" --stages download,media,evaluate
+python -m src.cli run --all --countries US,ES,MX --limit 15 --download-min-days 15 --max-ads 1000
+python -m src.cli evaluate --pending                      # cola priorizada (videos → Gemini, estáticos → Claude)
+python -m src.cli evaluate --force --prompt-version v2    # requiere prompts/evaluator_v2.md y evaluator_static_v2.md
+python -m src.cli report --pillar crm --top 10
+python -m src.cli cleanup --dry-run                       # lista anuncios de páginas fuera del catálogo; --apply los marca
+python -m src.cli queue --status
+python -m src.worker                                      # worker de la cola de trabajos (API: POST /api/search → job_id)
+```
+
+Orden de la cola: competidores de prioridad 1, mayor longevidad, más variantes; `rejected` y `out_of_catalog` nunca entran. Si Gemini responde 429 diario, el anuncio sigue en `pending_evaluation` (no cuenta como fallo) y la corrida se detiene hasta el día siguiente. Logs en `logs/jinora.log` (con rotación) y resumen de costo LLM al final de cada corrida. `main.py` sigue aceptando `queue --status`, `queue --run [--respect-hours] [--now]` y `rescore`.
+
+---
+
 ## 📁 Estructura de Salida
 
 Cada anuncio descargado genera su propia subcarpeta:

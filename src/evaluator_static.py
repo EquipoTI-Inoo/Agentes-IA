@@ -14,7 +14,8 @@ import logging
 from pathlib import Path
 from typing import Any, Dict, Optional
 
-from src.ai.claude_client import BudgetExceededError, ClaudeClient, MissingApiKeyError
+from src.ai.prompts import prompt_path
+from src.ai.claude_client import BudgetExceededError, ClaudeClient, MissingApiKeyError, WorkspaceRequiredError
 from src.ai.schemas import AdCopy, MediaBundle, StaticEvaluationResult
 from src.config import settings
 from src.database import AnalysisRecord, SessionLocal, ensure_ad, mark_evaluated
@@ -44,12 +45,16 @@ def evaluate_static_ad(
     ad_dict: Dict[str, Any],
     client: Optional[ClaudeClient] = None,
     force: bool = False,
+    prompt_version: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Evaluates a static image, carousel, or DCO ad using Claude.
     Gracefully handles missing API keys by marking status as pending_evaluation.
     """
     ad_id = str(ad_dict.get("ad_id") or ad_dict.get("id"))
+    version = prompt_version or PROMPT_VERSION
+    if client is None and version != PROMPT_VERSION:
+        client = ClaudeClient(prompt_path=prompt_path("static", version))  # fails early if the prompt does not exist
 
     # 1. Locate local image or carousel files
     image_path_str = ad_dict.get("image_path")
@@ -95,7 +100,7 @@ def evaluate_static_ad(
                 .filter(
                     AnalysisRecord.ad_id == ad_id,
                     AnalysisRecord.model == model_name,
-                    AnalysisRecord.prompt_version == PROMPT_VERSION,
+                    AnalysisRecord.prompt_version == version,
                 )
                 .first()
             )
@@ -129,7 +134,7 @@ def evaluate_static_ad(
 
         try:
             eval_result: StaticEvaluationResult = eval_client.evaluate(media_bundle, copy_bundle)
-        except (MissingApiKeyError, BudgetExceededError) as safe_err:
+        except (MissingApiKeyError, BudgetExceededError, WorkspaceRequiredError) as safe_err:
             logger.warning(f"⚠️ {safe_err}. El anuncio {ad_id} queda en pending_evaluation.")
             return {
                 "ad_id": ad_id,
@@ -169,7 +174,7 @@ def evaluate_static_ad(
         analysis_record = AnalysisRecord(
             ad_id=ad_id,
             model=model_name,
-            prompt_version=PROMPT_VERSION,
+            prompt_version=version,
             rubric_version=RUBRIC_VERSION,
             creative_hash=c_hash,
             analysis_type="static",

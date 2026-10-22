@@ -17,6 +17,8 @@ from pathlib import Path
 from typing import Any, Dict, Optional
 
 from src.ai.llm_client import GeminiClient
+from src.ai.prompts import prompt_path
+from src.ai.quota import QuotaExhausted
 from src.ai.schemas import AdCopy, EvaluationResult, MediaBundle
 from src.config import settings
 from src.database import AnalysisRecord, SessionLocal, ensure_ad, mark_evaluated, mark_evaluation_failed
@@ -47,6 +49,7 @@ def evaluate_video_ad(
     ad_dict: Dict[str, Any],
     client: Optional[GeminiClient] = None,
     force: bool = False,
+    prompt_version: Optional[str] = None,
 ) -> Dict[str, Any]:
     """
     Evaluates a video ad using Gemini, calculating creative_score by code
@@ -54,6 +57,9 @@ def evaluate_video_ad(
     """
     ad_id = str(ad_dict.get("ad_id") or ad_dict.get("id"))
     page_name = ad_dict.get("page_name") or "general"
+    version = prompt_version or PROMPT_VERSION
+    if client is None and version != PROMPT_VERSION:
+        client = GeminiClient(prompt_path=prompt_path("video", version))  # fails early if the prompt does not exist
 
     # 1. Locate local video file
     video_path_str = ad_dict.get("video_path")
@@ -98,7 +104,7 @@ def evaluate_video_ad(
                 .filter(
                     AnalysisRecord.ad_id == ad_id,
                     AnalysisRecord.model == model_name,
-                    AnalysisRecord.prompt_version == PROMPT_VERSION,
+                    AnalysisRecord.prompt_version == version,
                 )
                 .first()
             )
@@ -134,6 +140,9 @@ def evaluate_video_ad(
         eval_client = client or GeminiClient()
         try:
             eval_result: EvaluationResult = eval_client.evaluate(media_bundle, copy_bundle)
+        except QuotaExhausted:
+            # Daily quota is gone: NOT a failure. The ad simply stays pending_evaluation (nothing is recorded).
+            raise
         except Exception as eval_err:
             # Leave ad in pending_evaluation with retry_after and last error (Paso 2): ads.status + jobs row
             mark_evaluation_failed(db, {**ad_dict, "ad_id": ad_id}, str(eval_err))
@@ -167,7 +176,7 @@ def evaluate_video_ad(
         analysis_record = AnalysisRecord(
             ad_id=ad_id,
             model=model_name,
-            prompt_version=PROMPT_VERSION,
+            prompt_version=version,
             rubric_version=RUBRIC_VERSION,
             creative_hash=c_hash,
             analysis_type="video",

@@ -22,6 +22,7 @@ from tenacity import retry, retry_if_exception, stop_after_attempt, wait_exponen
 
 import random
 import time
+from src.collect.ratelimit import MetaRateLimiter
 from src.collect.relevance import TwoLayerRelevanceFilter
 from src.relevance import is_ad_relevant
 
@@ -48,7 +49,9 @@ class MetaAdsHunter:
         self,
         output_dir: str = "downloads",
         relevance_filter: Optional[TwoLayerRelevanceFilter] = None,
+        limiter: Optional[MetaRateLimiter] = None,
     ) -> None:
+        self.limiter = limiter or MetaRateLimiter()  # 1-3 s between queries, backoff when Meta blocks
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.collector = MetaAdsCollector()
@@ -150,6 +153,7 @@ class MetaAdsHunter:
         competitor: Optional[Dict[str, Any]] = None,
         use_two_layer_relevance: bool = True,
         status: str = "ACTIVE",
+        filter_relevance: bool = True,
     ) -> List[Dict[str, Any]]:
         """
         Search ads either by page_id (official competitor mode) or keyword (discovery mode).
@@ -172,15 +176,15 @@ class MetaAdsHunter:
         elif page_ids:
             resolved_page_ids = [str(pid) for pid in page_ids if pid]
 
-        # Rate-limiting polite delay with random jitter (1.0 to 2.5s)
-        time.sleep(random.uniform(1.0, 2.5))
+        # Rate limiting (random 1-3 s pause + backoff on blocks) is applied by self.limiter.call below
 
         if resolved_page_ids:
             logger.info(
                 f"Buscando por PAGE_ID={resolved_page_ids} (competidor='{competitor.get('name') if competitor else 'N/A'}'), "
                 f"country='{target_country}', status='{status}', media='{media_filter}', limit={limit}"
             )
-            raw_results = self.collector.collect(
+            raw_results = self.limiter.call(
+                self.collector.collect,
                 page_ids=resolved_page_ids,
                 search_type=SEARCH_PAGE,
                 country=target_country,
@@ -192,7 +196,8 @@ class MetaAdsHunter:
             logger.info(
                 f"Buscando por KEYWORD DISCOVERY: query='{query}', country='{target_country}', status='{status}', media='{media_filter}', limit={limit}"
             )
-            raw_results = self.collector.collect(
+            raw_results = self.limiter.call(
+                self.collector.collect,
                 query=query,
                 search_type=SEARCH_KEYWORD,
                 country=target_country,
@@ -212,7 +217,10 @@ class MetaAdsHunter:
 
         parsed_ads: List[Dict[str, Any]] = []
 
-        if use_two_layer_relevance:
+        if not filter_relevance:
+            # Pipeline discover stage: keep everything; the separate filter stage decides relevance later
+            parsed_ads = list(raw_parsed_ads)
+        elif use_two_layer_relevance:
             # Filter through modern Two-Layer Relevance System (Layer 1 rules + Layer 2 Gemini Flash-Lite)
             filtered_pairs = self.relevance_filter.filter_ads(raw_parsed_ads)
             for ad_dict, rel_res in filtered_pairs:

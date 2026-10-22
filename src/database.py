@@ -22,7 +22,7 @@ from sqlalchemy.orm import selectinload, sessionmaker
 
 from src.config import settings
 from src.db.competitors import CompetitorIndex
-from src.db.engine import DATA_DIR, default_database_url, is_legacy_schema, make_engine
+from src.db.engine import DATA_DIR, add_missing_columns, default_database_url, is_legacy_schema, make_engine
 from src.db.models import (
     STATUS_EVALUATED,
     STATUS_PENDING,
@@ -63,6 +63,9 @@ def init_db() -> None:
         )
         return
     Base.metadata.create_all(bind=engine)
+    added = add_missing_columns(engine, Base.metadata)  # additive upgrades (e.g. Phase 7 jobs.result)
+    if added:
+        logger.info(f"Esquema actualizado, columnas añadidas: {', '.join(added)}")
 
 
 init_db()
@@ -88,6 +91,24 @@ def _upsert_media(db, ad: Ad, kind: str, rel_path: str) -> None:
     ad.media.append(Media(kind=kind, rel_path=rel_path, size=size))
 
 
+def register_downloaded_media(db, ad: Ad, files: List[str]) -> int:
+    """Creates/updates Media rows for downloaded files (.mp4 = video, .jpg = image). Returns how many were stored."""
+    stored = 0
+    for f in files:
+        kind = "video" if str(f).endswith(".mp4") else ("image" if str(f).endswith(".jpg") else None)
+        if kind is None:
+            continue
+        rel = normalize_rel_path(f)
+        if rel is None:
+            logger.warning(f"Ruta de media no relativizable, no se guarda: {f}")
+            continue
+        _upsert_media(db, ad, kind, rel)
+        if kind == "video":
+            ad.has_video = True
+        stored += 1
+    return stored
+
+
 def save_forensics(db, ad: Ad, report: Dict[str, Any]) -> None:
     """Stores a local forensic (Whisper) report as an Analysis row + media duration; no columns."""
     payload = {
@@ -110,8 +131,17 @@ def save_forensics(db, ad: Ad, report: Dict[str, Any]) -> None:
         ad.media_info.duration_s = report["duration_seconds"]
 
 
-def save_or_update_ad_record(ad_data: Dict[str, Any], pillar: str = "general", search_query: str = "") -> Ad:
-    """Insert or update ad (and its media / forensics) in the DB from a scraper dict."""
+def save_or_update_ad_record(
+    ad_data: Dict[str, Any],
+    pillar: str = "general",
+    search_query: str = "",
+    status: Optional[str] = None,
+    country: Optional[str] = None,
+) -> Ad:
+    """
+    Insert or update ad (and its media / forensics) in the DB from a scraper dict.
+    `status` applies only to NEW ads (existing ads keep theirs); `country` is merged into country_list.
+    """
     db = SessionLocal()
     try:
         ad_id = str(ad_data.get("ad_id"))
@@ -120,15 +150,18 @@ def save_or_update_ad_record(ad_data: Dict[str, Any], pillar: str = "general", s
         c0 = creatives[0] if creatives else {}
 
         if existing is None:
-            existing = Ad(id=ad_id, status=STATUS_PENDING)
+            existing = Ad(id=ad_id, status=status or STATUS_PENDING)
             db.add(existing)
 
         existing.page_id = str(ad_data.get("page_id") or "") or None
         existing.page_name = ad_data.get("page_name") or "Desconocido"
         existing.start_date = parse_dt(ad_data.get("delivery_start_time"))
         existing.stop_date = parse_dt(ad_data.get("delivery_stop_time"))
-        if ad_data.get("countries"):
-            existing.country_list = json.dumps(ad_data.get("countries"))
+        seen_in = set(json.loads(existing.country_list or "[]")) | set(ad_data.get("countries") or [])
+        if country:
+            seen_in.add(country.upper())
+        if seen_in:
+            existing.country_list = json.dumps(sorted(seen_in))
         existing.days_active = ad_data.get("days_active", 0)
         existing.is_active = ad_data.get("is_active", True)
         existing.has_video = any(c.get("has_video") for c in creatives) or existing.has_video or any(
@@ -146,12 +179,7 @@ def save_or_update_ad_record(ad_data: Dict[str, Any], pillar: str = "general", s
         if competitor_id:
             existing.competitor_id = competitor_id
 
-        for f in ad_data.get("downloaded_files", []):
-            kind = "video" if str(f).endswith(".mp4") else ("image" if str(f).endswith(".jpg") else None)
-            if kind and (rel := normalize_rel_path(f)):
-                _upsert_media(db, existing, kind, rel)
-            elif kind:
-                logger.warning(f"Ruta de media no relativizable, no se guarda: {f}")
+        register_downloaded_media(db, existing, ad_data.get("downloaded_files", []))
 
         if ad_data.get("forensics"):
             save_forensics(db, existing, ad_data["forensics"])

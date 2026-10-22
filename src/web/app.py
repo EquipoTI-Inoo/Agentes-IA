@@ -18,12 +18,11 @@ from pydantic import BaseModel
 
 from sqlalchemy.orm import selectinload
 
-from src.database import AdRecord, SessionLocal, get_ads_from_db, save_forensics, save_or_update_ad_record
+from src import jobs
+from src.database import AdRecord, SessionLocal, get_ads_from_db
 from src.evaluator import evaluate_ad_cognitively
 from src.pillars import PILLARS, RAW_DB
 from src.relevance import is_ad_relevant
-from src.scraper import MetaAdsHunter
-from src.video_forensics import VideoForensicsEngine
 
 BASE_DIR = Path(__file__).parent.parent.parent
 DOWNLOADS_DIR = BASE_DIR / "downloads"
@@ -256,53 +255,50 @@ async def get_competitors():
 
 @app.post("/api/search")
 async def execute_search(req: SearchRequest):
-    """Execute live search in Meta Ads Library, download media and update database."""
-    forensics_engine = VideoForensicsEngine("base") if req.forensics else None
-
-    with MetaAdsHunter(output_dir=str(DOWNLOADS_DIR)) as hunter:
-        ads = hunter.search_ads(
-            query=req.query,
-            country=req.country,
-            media_filter="video",
-            limit=req.limit,
-        )
-
-        saved_records = []
-        for ad in ads:
-            # Download files
-            hunter.download_ad(ad, subfolder=req.query)
-
-            # Optional forensics
-            if forensics_engine:
-                for f in ad.get("downloaded_files", []):
-                    if f.endswith(".mp4"):
-                        try:
-                            f_report = forensics_engine.analyze_video(Path(f))
-                            ad["forensics"] = f_report
-                        except Exception as e:
-                            pass
-
-            rec = save_or_update_ad_record(ad, pillar="general", search_query=req.query)
-            saved_records.append(rec.id)
-
-    return {"status": "success", "total_found": len(saved_records), "ad_ids": saved_records}
+    """Queue a pipeline run (discover -> ... -> signals) for a brand/keyword. Returns the job_id immediately."""
+    payload = {
+        "query": req.query, "countries": [req.country], "limit": req.limit, "forensics": req.forensics,
+        "media_filter": "video",
+    }
+    return {"status": "queued", "job_id": jobs.enqueue("run", payload)}
 
 
 @app.post("/api/forensics/{ad_id}")
 async def run_forensics_on_demand(ad_id: str):
-    """Run Whisper transcription and frame extraction on an existing downloaded ad."""
+    """Queue local Whisper transcription for an already downloaded ad."""
     db = SessionLocal()
     try:
-        ad = db.query(AdRecord).filter(AdRecord.id == ad_id).first()
+        ad = db.get(AdRecord, ad_id)
         video_file = DOWNLOADS_DIR / ad.video_path if ad and ad.video_path else None
         if not video_file or not video_file.exists():
             raise HTTPException(status_code=404, detail="Video local no disponible para este anuncio")
-
-        engine = VideoForensicsEngine("base")
-        report = engine.analyze_video(video_file)
-
-        save_forensics(db, ad, report)
-        db.commit()
-        return {"status": "success", "report": report}
     finally:
         db.close()
+    return {"status": "queued", "job_id": jobs.enqueue("forensics", ad_id=ad_id)}
+
+
+class EvaluateRequest(BaseModel):
+    ad_ids: Optional[List[str]] = None
+    force: bool = False
+    prompt_version: Optional[str] = None
+    limit: Optional[int] = None
+
+
+@app.post("/api/evaluate")
+async def enqueue_evaluation(req: EvaluateRequest):
+    """Queue an evaluation of the pending queue (or of specific ads). The worker respects quota and budget."""
+    return {"status": "queued", "job_id": jobs.enqueue("evaluate", req.model_dump(exclude_none=True))}
+
+
+@app.get("/api/jobs/{job_id}")
+async def get_job_status(job_id: int):
+    """State of a queued job: pending | running | done | failed (+ result / error)."""
+    job = jobs.get_job(job_id)
+    if job is None:
+        raise HTTPException(status_code=404, detail="Job no encontrado")
+    return job
+
+
+@app.get("/api/jobs")
+async def list_recent_jobs(status: Optional[str] = None, limit: int = 50):
+    return jobs.list_jobs(status=status, limit=min(max(limit, 1), 200))

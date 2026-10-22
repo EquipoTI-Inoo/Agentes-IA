@@ -30,13 +30,13 @@ if sys.platform == "win32":
         pass
 
 from src.database import AnalysisRecord, SessionLocal
+from src.db.migrate import current_rubric_versions
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
 logger = logging.getLogger("Jinora.Calibrate")
 
 MANUAL_SCORES_PATH = ROOT_DIR / "calibration" / "manual_scores.csv"
 MANIFEST_PATH = ROOT_DIR / "calibration" / "videos_scrape" / "lista.csv"
-DOWNLOADS_DIR = ROOT_DIR / "downloads"
 
 
 def load_manifest(manifest_path: Path = MANIFEST_PATH) -> Dict[int, Dict[str, Any]]:
@@ -256,52 +256,41 @@ def load_manual_scores(csv_path: Path = MANUAL_SCORES_PATH) -> List[Dict[str, An
 
 
 def load_ai_evaluation(ad_id: str, db: Any) -> Optional[Dict[str, Any]]:
-    """Fetches the latest AI analysis for an ad from DB or analysis.json."""
-    record = (
-        db.query(AnalysisRecord)
-        .filter(AnalysisRecord.ad_id == ad_id, AnalysisRecord.analysis_type.in_(("video", "static")))
-        .order_by(AnalysisRecord.id.desc())
-        .first()
-    )
-
-    if record and record.result_json:
+    """
+    Latest AI analysis of an ad FROM THE DATABASE (analyses table), restricted to the rubric version in force
+    (config/rubric.yaml for video, config/rubric_static.yaml for static). Evaluations made with an older rubric
+    and analysis.json files on disk are ignored: they would measure a rubric that no longer exists.
+    """
+    versions = current_rubric_versions()
+    for analysis_type in ("video", "static"):
+        record = (
+            db.query(AnalysisRecord)
+            .filter(
+                AnalysisRecord.ad_id == ad_id,
+                AnalysisRecord.analysis_type == analysis_type,
+                AnalysisRecord.rubric_version == versions[analysis_type],
+                AnalysisRecord.creative_score.isnot(None),
+            )
+            .order_by(AnalysisRecord.id.desc())
+            .first()
+        )
+        if record is None:
+            continue
         try:
             data = json.loads(record.result_json)
-            # Ensure total score is extracted
-            total_score = record.creative_score or data.get("creative_score") or data.get("total_score")
-            hook = data.get("hook", {}).get("score") if isinstance(data.get("hook"), dict) else None
-            mechanism = data.get("mechanism", {}).get("score") if isinstance(data.get("mechanism"), dict) else None
-            narrative = data.get("narrative", {}).get("score") if isinstance(data.get("narrative"), dict) else None
-            offer = data.get("offer", {}).get("score") if isinstance(data.get("offer"), dict) else None
-            ad_format = data.get("format", "otro")
-
-            return {
-                "total": float(total_score) if total_score is not None else None,
-                "hook": float(hook) if hook is not None else None,
-                "mechanism": float(mechanism) if mechanism is not None else None,
-                "narrative": float(narrative) if narrative is not None else None,
-                "offer": float(offer) if offer is not None else None,
-                "format": ad_format,
-            }
-        except Exception as e:
-            logger.debug(f"Error parsing result_json for {ad_id}: {e}")
-
-    # Fallback to local analysis.json
-    for p in DOWNLOADS_DIR.glob(f"**/{ad_id}/analysis.json"):
-        if p.exists():
-            try:
-                data = json.loads(p.read_text(encoding="utf-8"))
-                return {
-                    "total": float(data.get("creative_score", 0)),
-                    "hook": float(data.get("hook", {}).get("score", 0)),
-                    "mechanism": float(data.get("mechanism", {}).get("score", 0)),
-                    "narrative": float(data.get("narrative", {}).get("score", 0)),
-                    "offer": float(data.get("offer", {}).get("score", 0)),
-                    "format": data.get("format", "otro"),
-                }
-            except Exception:
-                pass
-
+        except ValueError:
+            continue
+        dims = ("hook", "mechanism", "narrative", "offer") if analysis_type == "video" else (
+            "stop_power", "message_clarity", "proof", "offer_cta")
+        scores = [data.get(d, {}).get("score") if isinstance(data.get(d), dict) else None for d in dims]
+        return {
+            "total": float(record.creative_score),
+            "hook": float(scores[0]) if scores[0] is not None else None,
+            "mechanism": float(scores[1]) if scores[1] is not None else None,
+            "narrative": float(scores[2]) if scores[2] is not None else None,
+            "offer": float(scores[3]) if scores[3] is not None else None,
+            "format": data.get("format") or data.get("visual_style") or "otro",
+        }
     return None
 
 

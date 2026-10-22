@@ -28,6 +28,16 @@ class MissingApiKeyError(Exception):
     pass
 
 
+class WorkspaceRequiredError(Exception):
+    """Raised when Anthropic rejects the request because the API key is not scoped to a workspace."""
+    pass
+
+
+def _redact(text: str, secret: Optional[str]) -> str:
+    """Never let the API key reach logs or error messages."""
+    return text.replace(secret, "<redacted>") if secret else text
+
+
 class BudgetExceededError(Exception):
     """Raised when cumulative Claude spending reaches or exceeds CLAUDE_BUDGET_USD."""
     pass
@@ -188,13 +198,24 @@ class ClaudeClient:
         if settings.ANTHROPIC_WORKSPACE_ID:
             extra_args["workspace_id"] = settings.ANTHROPIC_WORKSPACE_ID
 
-        response = client.messages.create(
-            **extra_args,
-            model=self.model,
-            max_tokens=2500,
-            system=self.prompt_template,
-            messages=[{"role": "user", "content": content_blocks}],
-        )
+        try:
+            response = client.messages.create(
+                **extra_args,
+                model=self.model,
+                max_tokens=2500,
+                system=self.prompt_template,
+                messages=[{"role": "user", "content": content_blocks}],
+            )
+        except Exception as exc:
+            detail = _redact(str(exc), self.api_key)
+            if getattr(exc, "status_code", None) == 400 and "workspace" in detail.lower():
+                raise WorkspaceRequiredError(
+                    "Anthropic rechazó la solicitud (400): la clave ANTHROPIC_API_KEY no está asociada a un workspace. "
+                    "Acción: copia el ID de tu workspace desde la consola de Anthropic y ponlo en .env como "
+                    "ANTHROPIC_WORKSPACE_ID=<id> (o usa una clave creada dentro de un workspace). "
+                    "El anuncio queda en pending_evaluation y no cuenta como fallo."
+                ) from None
+            raise
 
         # Extract text response
         raw_text = ""

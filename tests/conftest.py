@@ -28,3 +28,20 @@ def _isolated_database():
     yield
     engine.dispose()
     shutil.rmtree(_TMP_DIR, ignore_errors=True)
+
+
+@pytest.fixture
+def clean_db():
+    """Empties every model table of the shared temporary database (children first). Opt-in per test."""
+    from src.database import SessionLocal
+    from src.db.models import Base
+
+    def wipe():
+        with SessionLocal() as s:
+            for table in reversed(Base.metadata.sorted_tables):
+                s.execute(table.delete())
+            s.commit()
+
+    wipe()
+    yield
+    wipe()
