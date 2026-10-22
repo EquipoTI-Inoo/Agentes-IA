@@ -693,11 +693,14 @@
             "US"
           ],
           "page_ids": [
-            "1354596307740913"
+            "1354596307740913",
+            "100533854758063",
+            "110478898825239"
           ],
           "resolved_at": "2026-10-21T19:13:43.291500+00:00",
           "resolution_confidence": "media",
-          "needs_review": false
+          "needs_review": false,
+          "notes": "page_ids 100533854758063 (WATI - WhatsApp Team Inbox) y 110478898825239 (Wati Brasil) añadidos el 2026-10-22 desde anuncios de la base."
         },
         {
           "name": "Respond.io",
