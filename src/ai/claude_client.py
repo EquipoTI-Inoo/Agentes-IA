@@ -61,6 +61,7 @@ class ClaudeClient:
             self.prompt_template = self.prompt_path.read_text(encoding="utf-8")
 
         self.pricing = self._load_pricing()
+        self.last_usage: Dict[str, Any] = {}
 
     def _load_pricing(self) -> Dict[str, Any]:
         if not self.pricing_path.exists():
@@ -182,10 +183,15 @@ class ClaudeClient:
 
         # Call Claude
         logger.info(f"Enviando solicitud estática a Claude ({self.model})...")
+        # Keys not scoped to a workspace must name the workspace explicitly
+        extra_args: Dict[str, Any] = {}
+        if settings.ANTHROPIC_WORKSPACE_ID:
+            extra_args["workspace_id"] = settings.ANTHROPIC_WORKSPACE_ID
+
         response = client.messages.create(
+            **extra_args,
             model=self.model,
             max_tokens=2500,
-            temperature=0.0,
             system=self.prompt_template,
             messages=[{"role": "user", "content": content_blocks}],
         )
@@ -209,6 +215,7 @@ class ClaudeClient:
         tokens_in = response.usage.input_tokens
         tokens_out = response.usage.output_tokens
         cost_usd = self._calculate_cost(tokens_in, tokens_out)
+        self.last_usage = {"tokens_in": tokens_in, "tokens_out": tokens_out, "cost_usd": cost_usd}
 
         self.quota_guard.record_usage(
             model=self.model,

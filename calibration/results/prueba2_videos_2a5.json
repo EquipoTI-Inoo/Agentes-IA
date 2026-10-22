@@ -1,0 +1,740 @@
+{
+  "test": "prueba2_videos_2a5",
+  "runs": [
+    {
+      "label": "P2-video2",
+      "ad_id": "1605980027649675",
+      "page_name": "Manychat",
+      "model": "gemini-3.5-flash",
+      "prompt_version": "v1",
+      "rubric_version": "1.1",
+      "requests_used": 3,
+      "creative_score": 88,
+      "dimensions": {
+        "hook": 22,
+        "mechanism": 21,
+        "narrative": 23,
+        "offer": 22
+      },
+      "format": "ugc",
+      "has_voiceover": true,
+      "language": "en",
+      "transcript": [
+        {
+          "start_s": 0.0,
+          "end_s": 3.0,
+          "text": "Here are 3 simple Manychat tricks that literally make your Instagram work for you while you sleep."
+        },
+        {
+          "start_s": 3.0,
+          "end_s": 9.0,
+          "text": "First, comment-to-DM automation. You can have Manychat automatically message anyone who comments a keyword on your post."
+        },
+        {
+          "start_s": 9.0,
+          "end_s": 15.0,
+          "text": "I started using this recently and instantly noticed more engagement, because the more people that comment, the more Instagram pushes out your content."
+        },
+        {
+          "start_s": 15.0,
+          "end_s": 25.0,
+          "text": "Second, automated FAQ replies. Think of all the DMs you get asking the same thing: tutorials, product links, post details. Manychat can answer all of those instantly with AI-powered responses."
+        },
+        {
+          "start_s": 25.0,
+          "end_s": 31.0,
+          "text": "And third, story reply automation. Someone replies to your story and they instantly get a personalized DM."
+        },
+        {
+          "start_s": 31.0,
+          "end_s": 35.0,
+          "text": "And the best part is the new quick automation setup makes all this super fast and beginner friendly to do."
+        },
+        {
+          "start_s": 35.0,
+          "end_s": 39.0,
+          "text": "Comment DM below and I'll send you a free month so you can try out all of this for yourself."
+        }
+      ],
+      "evaluation": {
+        "transcript": [
+          {
+            "start_s": 0.0,
+            "end_s": 3.0,
+            "text": "Here are 3 simple Manychat tricks that literally make your Instagram work for you while you sleep."
+          },
+          {
+            "start_s": 3.0,
+            "end_s": 9.0,
+            "text": "First, comment-to-DM automation. You can have Manychat automatically message anyone who comments a keyword on your post."
+          },
+          {
+            "start_s": 9.0,
+            "end_s": 15.0,
+            "text": "I started using this recently and instantly noticed more engagement, because the more people that comment, the more Instagram pushes out your content."
+          },
+          {
+            "start_s": 15.0,
+            "end_s": 25.0,
+            "text": "Second, automated FAQ replies. Think of all the DMs you get asking the same thing: tutorials, product links, post details. Manychat can answer all of those instantly with AI-powered responses."
+          },
+          {
+            "start_s": 25.0,
+            "end_s": 31.0,
+            "text": "And third, story reply automation. Someone replies to your story and they instantly get a personalized DM."
+          },
+          {
+            "start_s": 31.0,
+            "end_s": 35.0,
+            "text": "And the best part is the new quick automation setup makes all this super fast and beginner friendly to do."
+          },
+          {
+            "start_s": 35.0,
+            "end_s": 39.0,
+            "text": "Comment DM below and I'll send you a free month so you can try out all of this for yourself."
+          }
+        ],
+        "has_voiceover": true,
+        "scene_cuts_estimate": 9,
+        "speech_pace_wpm_estimate": 160,
+        "burned_in_subtitles": true,
+        "hook": {
+          "score": 22,
+          "anchor_level": "20-25",
+          "reasoning": "El video inicia con una perspectiva en primera persona sosteniendo un celular con edición VFX atractiva. El copy verbal y visual plantea inmediatamente un beneficio de alto deseo ('hacer que tu Instagram trabaje por ti mientras duermes') en los primeros 3 segundos, captando la atención del público objetivo.",
+          "evidence": [
+            {
+              "timestamp": "00:00-00:03",
+              "source": "audio",
+              "quote": "Here are 3 simple Manychat tricks that literally make your Instagram work for you while you sleep."
+            },
+            {
+              "timestamp": "00:00-00:03",
+              "source": "visual",
+              "quote": "Mano sosteniendo un smartphone en primer plano con texto emergente 3D '3 Simple Manychat Tricks'."
+            }
+          ]
+        },
+        "mechanism": {
+          "score": 21,
+          "anchor_level": "20-25",
+          "reasoning": "Demuestra la interfaz real del producto y las automatizaciones en pantalla mediante composiciones visuales creativas (a escala mini, notificaciones simuladas e interfaz de configuración). Explica el flujo exacto de funcionamiento paso a paso para comentarios, FAQs y Stories.",
+          "evidence": [
+            {
+              "timestamp": "00:04-00:15",
+              "source": "visual",
+              "quote": "Demostración gráfica de notificaciones de Instagram activadas por comentarios con palabras clave y vista previa de la pantalla de configuración de automatización."
+            },
+            {
+              "timestamp": "00:16-00:25",
+              "source": "audio",
+              "quote": "Manychat can answer all of those instantly with AI-powered responses."
+            }
+          ]
+        },
+        "narrative": {
+          "score": 23,
+          "anchor_level": "20-25",
+          "reasoning": "La estructura tipo lista ('3 trucos') mantiene una progresión clara y ágil sin momentos muertos. Los efectos visuales surrealistas (efectos de pantalla sobre mesa, manos saliendo del teléfono) sostienen la retención visual durante los 39 segundos de duración.",
+          "evidence": [
+            {
+              "timestamp": "00:04-00:35",
+              "source": "visual",
+              "quote": "Cortes rítmicos entre 3 secciones claramente delimitadas (1. Comment-to-DM, 2. Automated FAQ, 3. Story Reply) con VFX dinámicos en cada transición."
+            }
+          ]
+        },
+        "offer": {
+          "score": 22,
+          "anchor_level": "20-25",
+          "reasoning": "El llamado a la acción es de muy baja fricción e incluye reversión de riesgo (un mes gratis de prueba). Además, utiliza el mismo mecanismo demostrado en el video como canal de entrega (comentar en la publicación para recibir el beneficio directo por DM).",
+          "evidence": [
+            {
+              "timestamp": "00:35-00:39",
+              "source": "audio",
+              "quote": "Comment DM below and I'll send you a free month so you can try out all of this for yourself."
+            },
+            {
+              "timestamp": "00:36-00:39",
+              "source": "cta",
+              "quote": "Muestra a la creadora en pantalla rodeada de smartphones sosteniendo las pantallas de automatización enquanto pide comentar 'DM'."
+            }
+          ]
+        },
+        "hook_description": "Una mano en primer plano sostiene un celular donde aparece la creadora de contenido mientras aparece el texto en pantalla '3 Simple Manychat Tricks' y la locutora promete hacer trabajar a Instagram mientras duermes.",
+        "value_proposition": "Automatiza las respuestas a comentarios, FAQs y respuestas de Stories en Instagram para aumentar las ventas y el engagement 24/7.",
+        "feature_focus": [
+          "automatizacion",
+          "atencion_omnicanal",
+          "agentes_ia"
+        ],
+        "ai_mention": "mencionada",
+        "format": "ugc",
+        "language": "en",
+        "target_niche": "Creadores de contenido, marcas personales y dueños de e-commerce en Instagram",
+        "what_to_model": "El mecanismo de 'demostrar el producto con la oferta' (dogfooding): pedir al usuario que comente una palabra clave para recibir el mes de prueba gratis via automatización directa.",
+        "what_to_beat": "La dependencia de efectos visuales pesados de postproducción; Cosmiq puede replicar la misma estructura de 3 trucos de valor con ejecuciones de demostración de pantalla más directas y accesibles.",
+        "cosmiq_adaptation_idea": "Anuncio '3 trucos de Cosmiq para que tu WhatsApp venda mientras duermes': Muestra un teléfono con 3 automatizaciones rápidas (Auto-respuesta a comentarios de Instagram, Bot de FAQs por WhatsApp y Agendamiento de citas), cerrando con 'Comenta COSMIQ abajo y te enviamos 1 mes gratis por DM para probarlo'.",
+        "confidence": 0.98,
+        "creative_score": 88,
+        "total_score": 88
+      }
+    },
+    {
+      "label": "P2-video3",
+      "ad_id": "3172443476285076",
+      "page_name": "Leadsales",
+      "model": "gemini-3.5-flash",
+      "prompt_version": "v1",
+      "rubric_version": "1.1",
+      "requests_used": 2,
+      "creative_score": 66,
+      "dimensions": {
+        "hook": 15,
+        "mechanism": 18,
+        "narrative": 17,
+        "offer": 16
+      },
+      "format": "ugc",
+      "has_voiceover": true,
+      "language": "es",
+      "transcript": [
+        {
+          "start_s": 0.0,
+          "end_s": 3.0,
+          "text": "Si vendes por redes sociales tienes que probar Leadsales. Esta plataforma..."
+        },
+        {
+          "start_s": 3.0,
+          "end_s": 7.0,
+          "text": "...te va a ayudar a crecer tus ventas por WhatsApp, Facebook e Instagram."
+        },
+        {
+          "start_s": 7.0,
+          "end_s": 13.0,
+          "text": "Deja de perder tus conversaciones en una lista infinita y mejor ordénalas en columnas como si fuera un Excel."
+        },
+        {
+          "start_s": 13.0,
+          "end_s": 19.0,
+          "text": "Y no solo eso, cada vez que alguien te escriba vas a poder asignar esas conversaciones a las personas de tu equipo de ventas."
+        },
+        {
+          "start_s": 19.0,
+          "end_s": 25.0,
+          "text": "Mandar mensajes masivos segmentados de manera oficial para atender a tus mejores prospectos."
+        },
+        {
+          "start_s": 25.0,
+          "end_s": 30.0,
+          "text": "Y tener a la mano una herramienta de analítica para tener visibilidad total de todo tu equipo de ventas."
+        },
+        {
+          "start_s": 30.0,
+          "end_s": 36.0,
+          "text": "Y todo en un mismo lugar. ¿Cuántas ventas más estás dispuesto a perder antes de que sea demasiado tarde?"
+        },
+        {
+          "start_s": 36.0,
+          "end_s": 43.0,
+          "text": "Agenda hoy mismo tu demo, triplica tus ventas con Leadsales y no te olvides de seguirme para más tips sobre impuestos y negocios."
+        }
+      ],
+      "evaluation": {
+        "transcript": [
+          {
+            "start_s": 0.0,
+            "end_s": 3.0,
+            "text": "Si vendes por redes sociales tienes que probar Leadsales. Esta plataforma..."
+          },
+          {
+            "start_s": 3.0,
+            "end_s": 7.0,
+            "text": "...te va a ayudar a crecer tus ventas por WhatsApp, Facebook e Instagram."
+          },
+          {
+            "start_s": 7.0,
+            "end_s": 13.0,
+            "text": "Deja de perder tus conversaciones en una lista infinita y mejor ordénalas en columnas como si fuera un Excel."
+          },
+          {
+            "start_s": 13.0,
+            "end_s": 19.0,
+            "text": "Y no solo eso, cada vez que alguien te escriba vas a poder asignar esas conversaciones a las personas de tu equipo de ventas."
+          },
+          {
+            "start_s": 19.0,
+            "end_s": 25.0,
+            "text": "Mandar mensajes masivos segmentados de manera oficial para atender a tus mejores prospectos."
+          },
+          {
+            "start_s": 25.0,
+            "end_s": 30.0,
+            "text": "Y tener a la mano una herramienta de analítica para tener visibilidad total de todo tu equipo de ventas."
+          },
+          {
+            "start_s": 30.0,
+            "end_s": 36.0,
+            "text": "Y todo en un mismo lugar. ¿Cuántas ventas más estás dispuesto a perder antes de que sea demasiado tarde?"
+          },
+          {
+            "start_s": 36.0,
+            "end_s": 43.0,
+            "text": "Agenda hoy mismo tu demo, triplica tus ventas con Leadsales y no te olvides de seguirme para más tips sobre impuestos y negocios."
+          }
+        ],
+        "has_voiceover": true,
+        "scene_cuts_estimate": 1,
+        "speech_pace_wpm_estimate": 160,
+        "burned_in_subtitles": true,
+        "hook": {
+          "score": 15,
+          "anchor_level": "13-19",
+          "reasoning": "El anuncio inicia segmentando directamente a su nicho objetivo ('Si vendes por redes sociales...') con una creadora sosteniendo un micrófono de solapa estilo UGC. Identifica un dolor claro de inmediato sobre la pérdida de ventas en chats.",
+          "evidence": [
+            {
+              "timestamp": "00:00-00:03",
+              "source": "audio",
+              "quote": "Si vendes por redes sociales tienes que probar Leadsales."
+            },
+            {
+              "timestamp": "00:00-00:03",
+              "source": "visual",
+              "quote": "Creadora hablando a cámara sosteniendo micrófono con subtítulos resaltados en pantalla 'Si vendes por redes'."
+            }
+          ]
+        },
+        "mechanism": {
+          "score": 18,
+          "anchor_level": "13-19",
+          "reasoning": "Muestra visualmente la interfaz y funcionalidades clave mediante overlays sincronizados con la locución: tablero tipo Kanban ('columnas como si fuera un Excel'), autoasignación de leads a asesores, envíos masivos y gráfica de analíticas.",
+          "evidence": [
+            {
+              "timestamp": "00:10-00:13",
+              "source": "visual",
+              "quote": "Overlay gráfico mostrando conversaciones organizadas en columnas estilo Kanban tipo CRM."
+            },
+            {
+              "timestamp": "00:16-00:19",
+              "source": "visual",
+              "quote": "Insignia gráfica de 'Auto asignación' con iniciales de los agentes de venta."
+            },
+            {
+              "timestamp": "00:27-00:30",
+              "source": "visual",
+              "quote": "Gráfica de reporte de analítica de ventas apareciendo en la parte inferior."
+            }
+          ]
+        },
+        "narrative": {
+          "score": 17,
+          "anchor_level": "13-19",
+          "reasoning": "Sigue una estructura clásica y pulida de respuesta directa: Filtro de audiencia -> Dolor (lista infinita de chats) -> Solución (Kanban, asignación, masivos, analítica) -> Agitación del riesgo de inacción -> Cierre con llamado a la acción.",
+          "evidence": [
+            {
+              "timestamp": "00:07-00:10",
+              "source": "audio",
+              "quote": "Deja de perder tus conversaciones en una lista infinita"
+            },
+            {
+              "timestamp": "00:33-00:36",
+              "source": "audio",
+              "quote": "¿Cuántas ventas más estás dispuesto a perder antes de que sea demasiado tarde?"
+            }
+          ]
+        },
+        "offer": {
+          "score": 16,
+          "anchor_level": "13-19",
+          "reasoning": "Presenta un CTA claro apoyado por un sticker gráfico flotante ('Agenda tu demo') y vincula la acción con un beneficio cuantitativo ('triplica tus ventas'). La fricción se mantiene baja al solicitar agendar una demostración.",
+          "evidence": [
+            {
+              "timestamp": "00:37-00:40",
+              "source": "cta",
+              "quote": "Agenda hoy mismo tu demo, triplica tus ventas con Leadsales"
+            },
+            {
+              "timestamp": "00:37-00:41",
+              "source": "visual",
+              "quote": "Overlay de botón púrpura con la leyenda 'Agenda tu demo'."
+            }
+          ]
+        },
+        "hook_description": "Una creadora sostiene un micrófono miniatura mirando a cámara y dice 'Si vendes por redes sociales tienes que probar Leadsales', acompañado de subtítulos dinámicos en pantalla.",
+        "value_proposition": "Ayuda a empresas que venden por WhatsApp, Instagram y Facebook a organizar sus chats en un CRM tipo Kanban y gestionar mejor a su equipo de ventas para no perder clientes.",
+        "feature_focus": [
+          "gestion_leads_crm",
+          "mensajes_masivos_campanas",
+          "atencion_omnicanal"
+        ],
+        "ai_mention": "ninguna",
+        "format": "ugc",
+        "language": "es",
+        "target_niche": "Empresas y equipos comerciales de LatAm que venden por redes sociales y WhatsApp",
+        "what_to_model": "El uso dinámico de overlays visuales de la interfaz del producto (estilo UI stickers) sincronizados perfectamente con cada característica descrita por la creadora UGC.",
+        "what_to_beat": "El remate final incluye una distracción fuera de lugar ('no te olvides de seguirme para más tips sobre impuestos y negocios'), lo cual resta efectividad directa al CTA comercial principal.",
+        "cosmiq_adaptation_idea": "Grabar a un creador UGC mostrando en pantalla cómo pasan sus chats de WhatsApp de una lista caótica a un embudo organizado en Cosmiq, usando el overlay del panel de chat multiagente y campañas masivas, cerrando enfáticamente con un solo CTA a probar la plataforma gratis.",
+        "confidence": 0.98,
+        "creative_score": 66,
+        "total_score": 66
+      }
+    },
+    {
+      "label": "P2-video4",
+      "ad_id": "1748258599843733",
+      "page_name": "Manychat",
+      "model": "gemini-3.5-flash",
+      "prompt_version": "v1",
+      "rubric_version": "1.1",
+      "requests_used": 2,
+      "creative_score": 89,
+      "dimensions": {
+        "hook": 22,
+        "mechanism": 23,
+        "narrative": 22,
+        "offer": 22
+      },
+      "format": "mixto",
+      "has_voiceover": true,
+      "language": "en",
+      "transcript": [
+        {
+          "start_s": 0.0,
+          "end_s": 10.0,
+          "text": "Have you ever heard content creators say comment the word burgers below and I'll send you over something for free? And then when you comment the word burgers you instantly receive a DM automatically within just a few seconds?"
+        },
+        {
+          "start_s": 10.0,
+          "end_s": 12.0,
+          "text": "So how do you do that? Using Manychat, of course."
+        },
+        {
+          "start_s": 13.0,
+          "end_s": 20.0,
+          "text": "Manychat helps automate your direct messages, not in a spammy way, but in a way that helps your followers get whatever they're looking for faster."
+        },
+        {
+          "start_s": 21.0,
+          "end_s": 36.0,
+          "text": "And here's how I use it. I set up a trigger word, and when someone comments that word on my post, they instantly get a reply right after they receive a personalized DM with a product link, landing page, lead magnet, or even my secret TikTok dances."
+        },
+        {
+          "start_s": 36.0,
+          "end_s": 47.0,
+          "text": "And thanks to Manychat's automations, I'm able to actually talk to my customers and get them what they're looking for faster. Manychat brings everything together, and honestly, I couldn't imagine running my business without it."
+        },
+        {
+          "start_s": 48.0,
+          "end_s": 52.0,
+          "text": "Manychat helps us grow the right audience and post with a purpose. You don't need more views, you just need the right ones."
+        },
+        {
+          "start_s": 53.0,
+          "end_s": 59.0,
+          "text": "Oh, and by the way, over a million businesses use Manychat, and it's an official Meta Business Partner, so you know you're in good hands."
+        },
+        {
+          "start_s": 60.0,
+          "end_s": 62.0,
+          "text": "Try it out for free today. Trust me, future you will thank..."
+        }
+      ],
+      "evaluation": {
+        "transcript": [
+          {
+            "start_s": 0.0,
+            "end_s": 10.0,
+            "text": "Have you ever heard content creators say comment the word burgers below and I'll send you over something for free? And then when you comment the word burgers you instantly receive a DM automatically within just a few seconds?"
+          },
+          {
+            "start_s": 10.0,
+            "end_s": 12.0,
+            "text": "So how do you do that? Using Manychat, of course."
+          },
+          {
+            "start_s": 13.0,
+            "end_s": 20.0,
+            "text": "Manychat helps automate your direct messages, not in a spammy way, but in a way that helps your followers get whatever they're looking for faster."
+          },
+          {
+            "start_s": 21.0,
+            "end_s": 36.0,
+            "text": "And here's how I use it. I set up a trigger word, and when someone comments that word on my post, they instantly get a reply right after they receive a personalized DM with a product link, landing page, lead magnet, or even my secret TikTok dances."
+          },
+          {
+            "start_s": 36.0,
+            "end_s": 47.0,
+            "text": "And thanks to Manychat's automations, I'm able to actually talk to my customers and get them what they're looking for faster. Manychat brings everything together, and honestly, I couldn't imagine running my business without it."
+          },
+          {
+            "start_s": 48.0,
+            "end_s": 52.0,
+            "text": "Manychat helps us grow the right audience and post with a purpose. You don't need more views, you just need the right ones."
+          },
+          {
+            "start_s": 53.0,
+            "end_s": 59.0,
+            "text": "Oh, and by the way, over a million businesses use Manychat, and it's an official Meta Business Partner, so you know you're in good hands."
+          },
+          {
+            "start_s": 60.0,
+            "end_s": 62.0,
+            "text": "Try it out for free today. Trust me, future you will thank..."
+          }
+        ],
+        "has_voiceover": true,
+        "scene_cuts_estimate": 18,
+        "speech_pace_wpm_estimate": 165,
+        "burned_in_subtitles": true,
+        "hook": {
+          "score": 22,
+          "anchor_level": "20-25",
+          "reasoning": "El anuncio abre apelando inmediatamente a un patrón hiperreconocible en redes sociales ('Comenta la palabra X y te envío Y por DM'). La pregunta inicial genera curiosidad instantánea y conecta directo con la técnica de conversión más popular entre creadores y marcas.",
+          "evidence": [
+            {
+              "timestamp": "00:00-00:03",
+              "source": "audio",
+              "quote": "Have you ever heard content creators say comment the word burgers below and I'll send you over something for free?"
+            },
+            {
+              "timestamp": "00:00-00:02",
+              "source": "visual",
+              "quote": "Texto grande animado 'AUTOMATE YOUR DM' superpuesto al creador hablando a micrófono."
+            }
+          ]
+        },
+        "mechanism": {
+          "score": 23,
+          "anchor_level": "20-25",
+          "reasoning": "Demuestra con claridad impecable la interfaz del producto, configurando palabras clave disparadoras y mostrando el flujo exacto de mensajes automatizados recibidos en la bandeja de entrada de Instagram. Además, incluye prueba social masiva con métricas y respaldo oficial.",
+          "evidence": [
+            {
+              "timestamp": "00:21-00:35",
+              "source": "visual",
+              "quote": "Captura de pantalla mostrando la configuración de 'Trigger Specific Keywords' y la respuesta automatizada en DM con link de producto."
+            },
+            {
+              "timestamp": "00:53-00:57",
+              "source": "audio",
+              "quote": "Over a million businesses use Manychat, and it's an official Meta Business Partner."
+            }
+          ]
+        },
+        "narrative": {
+          "score": 22,
+          "anchor_level": "20-25",
+          "reasoning": "La estructura utiliza múltiples creadores (estilo compilado UGC) que se van turnando dinámicamente para explicar el problema, mostrar la solución paso a paso y dar validez social. Mantiene un ritmo impecable de edición con transiciones fluidas que evitan la fuga de retención.",
+          "evidence": [
+            {
+              "timestamp": "00:10-00:21",
+              "source": "visual",
+              "quote": "Transición rápida de un creador masculino a una creadora respondiendo 'Using Manychat, of course' sin perder continuidad en el audio."
+            }
+          ]
+        },
+        "offer": {
+          "score": 22,
+          "anchor_level": "20-25",
+          "reasoning": "Llamado a la acción claro de baja fricción al ofrecer prueba gratuita ('Try it for free!'), reforzado visualmente con una flecha explícita señalando hacia el botón inferior de la plataforma.",
+          "evidence": [
+            {
+              "timestamp": "01:00-01:02",
+              "source": "cta",
+              "quote": "Try it for Free! Just Click Below con flecha gráfica apuntando al botón de 'Sign Up'."
+            }
+          ]
+        },
+        "hook_description": "Un creador frente a su micrófono pregunta si has visto a otros creadores pedir que comentes palabras clave para recibir DMs gratis, acompañado del texto en pantalla 'AUTOMATE YOUR DM'.",
+        "value_proposition": "Automatizar respuestas y entregas de enlaces por mensaje directo en Instagram cuando los usuarios comentan una palabra clave en tus publicaciones.",
+        "feature_focus": [
+          "automatizacion",
+          "atencion_omnicanal"
+        ],
+        "ai_mention": "ninguna",
+        "format": "mixto",
+        "language": "en",
+        "target_niche": "Creadores de contenido, marcas de e-commerce y negocios digitales en Instagram",
+        "what_to_model": "El estilo de gancho basado en desmitificar una táctica viral que el usuario ya ha visto ('¿Has visto cuando dicen comenta X...?') y el cambio fluido de testimonio entre múltiples usuarios/creadores.",
+        "what_to_beat": "Agregar métricas financieras concretas (ej. incremento de ventas o leads capturados en porcentaje) en lugar de enfocarse solo en el volumen de usuarios o la interacción.",
+        "cosmiq_adaptation_idea": "Un video en español donde un emprendedor de LatAm diga: '¿Has notado como las marcas te dicen escribe VENTAS en Instagram y te responden al segundo por WhatsApp?'. Mostrar cómo Cosmiq automatiza ese flujo entre comentarios de Instagram y conversaciones de WhatsApp sin perder leads.",
+        "confidence": 0.98,
+        "creative_score": 89,
+        "total_score": 89
+      }
+    },
+    {
+      "label": "P2-video5",
+      "ad_id": "2027131318676452",
+      "page_name": "Manychat",
+      "model": "gemini-3.5-flash",
+      "prompt_version": "v1",
+      "rubric_version": "1.1",
+      "requests_used": 3,
+      "creative_score": 73,
+      "dimensions": {
+        "hook": 16,
+        "mechanism": 18,
+        "narrative": 18,
+        "offer": 21
+      },
+      "format": "mixto",
+      "has_voiceover": true,
+      "language": "en",
+      "transcript": [
+        {
+          "start_s": 0.0,
+          "end_s": 1.0,
+          "text": "Meet Mia."
+        },
+        {
+          "start_s": 1.0,
+          "end_s": 4.0,
+          "text": "She's building a fitness business, and I help her spot every opportunity to grow it."
+        },
+        {
+          "start_s": 4.0,
+          "end_s": 7.0,
+          "text": "You made that look so easy! I need your routine."
+        },
+        {
+          "start_s": 8.0,
+          "end_s": 9.0,
+          "text": "Sounds like a new client."
+        },
+        {
+          "start_s": 9.0,
+          "end_s": 10.0,
+          "text": "Really?"
+        },
+        {
+          "start_s": 10.0,
+          "end_s": 11.0,
+          "text": "I wonder what her fitness goals are."
+        },
+        {
+          "start_s": 11.0,
+          "end_s": 12.0,
+          "text": "On it!"
+        }
+      ],
+      "evaluation": {
+        "transcript": [
+          {
+            "start_s": 0.0,
+            "end_s": 1.0,
+            "text": "Meet Mia."
+          },
+          {
+            "start_s": 1.0,
+            "end_s": 4.0,
+            "text": "She's building a fitness business, and I help her spot every opportunity to grow it."
+          },
+          {
+            "start_s": 4.0,
+            "end_s": 7.0,
+            "text": "You made that look so easy! I need your routine."
+          },
+          {
+            "start_s": 8.0,
+            "end_s": 9.0,
+            "text": "Sounds like a new client."
+          },
+          {
+            "start_s": 9.0,
+            "end_s": 10.0,
+            "text": "Really?"
+          },
+          {
+            "start_s": 10.0,
+            "end_s": 11.0,
+            "text": "I wonder what her fitness goals are."
+          },
+          {
+            "start_s": 11.0,
+            "end_s": 12.0,
+            "text": "On it!"
+          }
+        ],
+        "has_voiceover": true,
+        "scene_cuts_estimate": 6,
+        "speech_pace_wpm_estimate": 140,
+        "burned_in_subtitles": true,
+        "hook": {
+          "score": 16,
+          "anchor_level": "13-19",
+          "reasoning": "El anuncio arranca presentando a una creadora de contenido de fitness en su entorno de trabajo, conectando rápidamente con la audiencia objetivo mediante una narrativa de acompañamiento y crecimiento de negocio.",
+          "evidence": [
+            {
+              "timestamp": "00:00-00:03",
+              "source": "audio",
+              "quote": "Meet Mia. She's building a fitness business, and I help her spot every opportunity to grow it."
+            },
+            {
+              "timestamp": "00:00-00:02",
+              "source": "visual",
+              "quote": "Texto superpuesto 'MEET Mia' con destellos sobre el plano de la protagonista."
+            }
+          ]
+        },
+        "mechanism": {
+          "score": 18,
+          "anchor_level": "13-19",
+          "reasoning": "Demuestra con claridad el mecanismo de respuesta automatizada por mensaje directo cuando un cliente potencial expresa interés, mostrando la interfaz del chat con opciones interactivas de calificación de leads.",
+          "evidence": [
+            {
+              "timestamp": "00:11-00:13",
+              "source": "visual",
+              "quote": "Animación de chat desplegando opciones automáticas de encuesta: 'What's your main goal? Tone muscles, Consistency, Improve nutrition'."
+            }
+          ]
+        },
+        "narrative": {
+          "score": 18,
+          "anchor_level": "13-19",
+          "reasoning": "Estructura fluida y dinámica de situación cotidiana -> detección de oportunidad -> automatización inmediata -> cierre con llamado a la acción. Mantiene un ritmo constante de 14 segundos sin pausas muertas.",
+          "evidence": [
+            {
+              "timestamp": "00:04-00:11",
+              "source": "audio",
+              "quote": "Diálogo entre el cliente ('I need your routine'), la voz en off ('Sounds like a new client') y la creadora ('On it!')."
+            }
+          ]
+        },
+        "offer": {
+          "score": 21,
+          "anchor_level": "20-25",
+          "reasoning": "Presenta una propuesta de valor de baja fricción al ofrecer inicio gratuito inmediato ('Get Started For Free Today') vinculada a la promesa de no perder ninguna conexión o cliente potencial.",
+          "evidence": [
+            {
+              "timestamp": "00:14-00:14",
+              "source": "cta",
+              "quote": "Pantalla final con el texto 'NEVER MISS A CONNECTION THAT MATTERS' y botón 'GET STARTED FOR FREE TODAY'."
+            }
+          ]
+        },
+        "hook_description": "Aparece una mujer en ropa deportiva con el texto 'MEET Mia' mientras la voz en off la presenta como creadora de un negocio de fitness y promete ayudarla a aprovechar oportunidades de crecimiento.",
+        "value_proposition": "Automatiza las respuestas e interacciones por mensajes directos en Instagram para calificar clientes potenciales y cerrar más ventas al instante.",
+        "feature_focus": [
+          "automatizacion",
+          "gestion_leads_crm",
+          "atencion_omnicanal"
+        ],
+        "ai_mention": "ninguna",
+        "format": "mixto",
+        "language": "en",
+        "target_niche": "Entrenadores de fitness, creadores de contenido y coaches de estilo de vida",
+        "what_to_model": "La personificación del software como un copiloto invisible que le habla al usuario y lo guía en tiempo real para convertir comentarios/mensajes en ventas.",
+        "what_to_beat": "Incluir métricas numéricas concretas de conversión directamente en la demo visual del video para aumentar la prueba social demostrable.",
+        "cosmiq_adaptation_idea": "Un video dramatizado donde un consultor o negocio en LatAm recibe un mensaje de WhatsApp pidiendo información, y Cosmiq responde automáticamente desplegando un flujo de agendamiento e integración a CRM en menos de 5 segundos.",
+        "confidence": 0.95,
+        "creative_score": 73,
+        "total_score": 73
+      }
+    }
+  ],
+  "session": {
+    "key_fingerprint": "7b423d59",
+    "requests_used_total": 19,
+    "budget": 18
+  }
+}

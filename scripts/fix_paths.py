@@ -45,6 +45,13 @@ def run_fix_paths(apply_changes: bool = False, db_path: Path = DB_PATH) -> int:
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
 
+    # Superseded by the Phase 6 migration: paths now live in media.rel_path (always relative).
+    ads_columns = {r["name"] for r in cur.execute("PRAGMA table_info(ads)")}
+    if "video_path" not in ads_columns:
+        print("ℹ️ La base ya usa el esquema de la Fase 6 (media.rel_path, siempre relativa). Nada que corregir.")
+        conn.close()
+        return 0
+
     cur.execute("SELECT id, video_path, image_path FROM ads")
     rows = cur.fetchall()
 

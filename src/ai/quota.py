@@ -6,11 +6,13 @@ Enforces Google Gemini Free Tier constraints:
 - Immediate halt upon daily 429 RPD exhaustion until midnight PT
 - Requests Per Minute (RPM) & Tokens Per Minute (TPM) sliding window pacing
 - Exponential backoff on HTTP 429 errors
+- Daily usage counted per API key (key_fingerprint = sha256(key)[:8]); a new key starts at 0
 - Prioritized evaluation queue and low-value ad skipping
 """
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import sqlite3
 import time
@@ -29,6 +31,17 @@ try:
     PACIFIC_TZ = ZoneInfo("America/Los_Angeles")
 except Exception:
     PACIFIC_TZ = timezone.utc
+
+
+NO_KEY_FINGERPRINT = "sinclave"  # not hex, never collides with a real fingerprint
+LEGACY_KEY_FINGERPRINT = ""  # rows recorded before per-key tracking, and non-Gemini providers
+
+
+def compute_key_fingerprint(api_key: Optional[str]) -> str:
+    """First 8 hex chars of sha256(api_key). The key itself is never stored or printed."""
+    if not api_key or not api_key.strip():
+        return NO_KEY_FINGERPRINT
+    return hashlib.sha256(api_key.strip().encode("utf-8")).hexdigest()[:8]
 
 
 def get_current_day_pt(current_dt: Optional[datetime] = None) -> str:
@@ -67,7 +80,8 @@ class QuotaExhausted(Exception):
 class QuotaGuard:
     """Guards Gemini API calls against RPM, TPM, and daily RPD quotas."""
 
-    def __init__(self, db_path: Optional[str] = None) -> None:
+    def __init__(self, db_path: Optional[str] = None, api_key: Optional[str] = None) -> None:
+        self._api_key = api_key
         if db_path:
             self.db_path = Path(db_path)
         else:
@@ -84,34 +98,88 @@ class QuotaGuard:
         self._request_timestamps: List[float] = []
         self._token_timestamps: List[Tuple[float, int]] = []
 
+    @property
+    def key_fingerprint(self) -> str:
+        """Fingerprint of the Gemini key in use (explicit key, else GEMINI_API_KEY from settings)."""
+        return compute_key_fingerprint(self._api_key if self._api_key is not None else settings.GEMINI_API_KEY)
+
+    def _resolve_fp(self, key_fingerprint: Optional[str], provider: str = "gemini") -> str:
+        if key_fingerprint is not None:
+            return key_fingerprint
+        return self.key_fingerprint if provider == "gemini" else LEGACY_KEY_FINGERPRINT
+
     def _get_connection(self) -> sqlite3.Connection:
         conn = sqlite3.connect(str(self.db_path))
         conn.row_factory = sqlite3.Row
         return conn
 
+    _USAGE_DDL = """
+        CREATE TABLE IF NOT EXISTS {name} (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            day_pt TEXT NOT NULL,
+            model TEXT NOT NULL,
+            key_fingerprint TEXT NOT NULL DEFAULT '',
+            provider TEXT DEFAULT 'gemini',
+            status TEXT DEFAULT 'active',
+            costo_estimado_usd REAL DEFAULT 0.0,
+            requests INTEGER NOT NULL DEFAULT 0,
+            requests_success INTEGER NOT NULL DEFAULT 0,
+            requests_failed INTEGER NOT NULL DEFAULT 0,
+            is_exhausted BOOLEAN DEFAULT 0,
+            tokens_in INTEGER NOT NULL DEFAULT 0,
+            tokens_out INTEGER NOT NULL DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            UNIQUE(day_pt, model, key_fingerprint)
+        );
+    """
+
+    def _backup_db_file(self, label: str) -> None:
+        if not self.db_path.exists():
+            return
+        backup_dir = self.db_path.parent / "backup"
+        backup_dir.mkdir(parents=True, exist_ok=True)
+        stamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        src = sqlite3.connect(str(self.db_path))
+        dst = sqlite3.connect(str(backup_dir / f"{self.db_path.stem}_before_{label}_{stamp}.db"))
+        try:
+            src.backup(dst)
+        finally:
+            dst.close()
+            src.close()
+
+    def _migrate_usage_to_key_fingerprint(self, conn: sqlite3.Connection) -> None:
+        """
+        Rebuilds llm_usage with UNIQUE(day_pt, model, key_fingerprint); SQLite cannot alter a
+        UNIQUE constraint in place. Existing rows are kept with key_fingerprint = '' (legacy).
+        """
+        self._backup_db_file("key_fingerprint")
+        cols = [
+            "id", "day_pt", "model", "provider", "status", "costo_estimado_usd", "requests",
+            "requests_success", "requests_failed", "is_exhausted", "tokens_in", "tokens_out", "created_at",
+        ]
+        col_list = ", ".join(cols)
+        if conn.in_transaction:
+            conn.commit()
+        conn.execute("BEGIN")
+        try:
+            conn.execute("DROP TABLE IF EXISTS llm_usage_new")
+            conn.execute(self._USAGE_DDL.format(name="llm_usage_new"))
+            conn.execute(
+                f"INSERT INTO llm_usage_new ({col_list}, key_fingerprint) "
+                f"SELECT {col_list}, '' FROM llm_usage"
+            )
+            conn.execute("DROP TABLE llm_usage")
+            conn.execute("ALTER TABLE llm_usage_new RENAME TO llm_usage")
+            conn.commit()
+        except Exception:
+            conn.rollback()
+            raise
+        logger.info("llm_usage migrada a cuota por clave (key_fingerprint); registros previos conservados.")
+
     def _init_db(self) -> None:
         """Create llm_usage and llm_attempts tables if they do not exist and ensure columns."""
         with self._get_connection() as conn:
-            conn.execute(
-                """
-                CREATE TABLE IF NOT EXISTS llm_usage (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
-                    day_pt TEXT NOT NULL,
-                    model TEXT NOT NULL,
-                    provider TEXT DEFAULT 'gemini',
-                    status TEXT DEFAULT 'active',
-                    costo_estimado_usd REAL DEFAULT 0.0,
-                    requests INTEGER NOT NULL DEFAULT 0,
-                    requests_success INTEGER NOT NULL DEFAULT 0,
-                    requests_failed INTEGER NOT NULL DEFAULT 0,
-                    is_exhausted BOOLEAN DEFAULT 0,
-                    tokens_in INTEGER NOT NULL DEFAULT 0,
-                    tokens_out INTEGER NOT NULL DEFAULT 0,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                    UNIQUE(day_pt, model)
-                );
-                """
-            )
+            conn.execute(self._USAGE_DDL.format(name="llm_usage"))
             conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS llm_attempts (
@@ -144,20 +212,29 @@ class QuotaGuard:
                 conn.execute("ALTER TABLE llm_usage ADD COLUMN requests_failed INTEGER DEFAULT 0")
             if "is_exhausted" not in cols:
                 conn.execute("ALTER TABLE llm_usage ADD COLUMN is_exhausted BOOLEAN DEFAULT 0")
+            if "key_fingerprint" not in cols:
+                self._migrate_usage_to_key_fingerprint(conn)
+
+            cur.execute("PRAGMA table_info(llm_attempts)")
+            if "key_fingerprint" not in [row["name"] for row in cur.fetchall()]:
+                conn.execute("ALTER TABLE llm_attempts ADD COLUMN key_fingerprint TEXT DEFAULT ''")
             conn.commit()
 
-    def get_daily_usage(self, model: str, day_pt: Optional[str] = None) -> Dict[str, Any]:
-        """Fetch current day usage metrics for a specific model."""
+    def get_daily_usage(
+        self, model: str, day_pt: Optional[str] = None, key_fingerprint: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Fetch current day usage metrics for a specific model and API key."""
         day = day_pt or get_current_day_pt()
+        fp = self._resolve_fp(key_fingerprint)
         with self._get_connection() as conn:
             cur = conn.cursor()
             cur.execute(
                 """
-                SELECT requests, requests_success, requests_failed, tokens_in, tokens_out, is_exhausted, status 
-                FROM llm_usage 
-                WHERE day_pt = ? AND model = ?
+                SELECT requests, requests_success, requests_failed, tokens_in, tokens_out, is_exhausted, status
+                FROM llm_usage
+                WHERE day_pt = ? AND model = ? AND key_fingerprint = ?
                 """,
-                (day, model),
+                (day, model, fp),
             )
             row = cur.fetchone()
             if row:
@@ -181,49 +258,69 @@ class QuotaGuard:
             "status": "active",
         }
 
-    def mark_exhausted(self, model: str, day_pt: Optional[str] = None) -> None:
-        """Mark model quota as exhausted for the given day in Pacific Time (America/Los_Angeles)."""
+    def mark_exhausted(
+        self, model: str, day_pt: Optional[str] = None, key_fingerprint: Optional[str] = None
+    ) -> None:
+        """Mark model quota as exhausted for the given day (PT) and API key only."""
         day = day_pt or get_current_day_pt()
+        fp = self._resolve_fp(key_fingerprint)
         with self._get_connection() as conn:
             conn.execute(
                 """
-                INSERT INTO llm_usage (day_pt, model, is_exhausted, status, requests)
-                VALUES (?, ?, 1, '429_rpd', 0)
-                ON CONFLICT(day_pt, model) DO UPDATE SET
+                INSERT INTO llm_usage (day_pt, model, key_fingerprint, is_exhausted, status, requests)
+                VALUES (?, ?, ?, 1, '429_rpd', 0)
+                ON CONFLICT(day_pt, model, key_fingerprint) DO UPDATE SET
                     is_exhausted = 1,
                     status = '429_rpd';
                 """,
-                (day, model),
+                (day, model, fp),
             )
             conn.commit()
-        logger.warning(f"🛑 Quota marked as EXHAUSTED for model {model} on {day} (PT). Blocked until midnight PT.")
+        logger.warning(
+            f"🛑 Quota marked as EXHAUSTED for model {model}, key {fp} on {day} (PT). Blocked until midnight PT."
+        )
 
-    def is_exhausted(self, model: str, day_pt: Optional[str] = None) -> bool:
-        """Check if quota is explicitly marked as exhausted for today."""
-        usage = self.get_daily_usage(model, day_pt)
+    def is_exhausted(
+        self, model: str, day_pt: Optional[str] = None, key_fingerprint: Optional[str] = None
+    ) -> bool:
+        """Check if quota is explicitly marked as exhausted for today and this API key."""
+        usage = self.get_daily_usage(model, day_pt, key_fingerprint)
         return bool(usage.get("is_exhausted", False))
 
-    def get_available_requests(self, model: str, day_pt: Optional[str] = None) -> int:
+    def get_available_requests(
+        self, model: str, day_pt: Optional[str] = None, key_fingerprint: Optional[str] = None
+    ) -> int:
         """Calculate remaining usable requests for today considering reserve requests and exhaustion flag."""
         if not settings.FREE_TIER_MODE:
             return 999999
 
-        if self.is_exhausted(model, day_pt):
+        if self.is_exhausted(model, day_pt, key_fingerprint):
             return 0
 
         raw_limit = settings.get_rpd_for_model(model)
         effective_limit = max(0, raw_limit - settings.RESERVE_REQUESTS)
-        usage = self.get_daily_usage(model, day_pt)
+        usage = self.get_daily_usage(model, day_pt, key_fingerprint)
         remaining = effective_limit - usage["requests"]
         return max(0, remaining)
 
-    def can_acquire(self, model: str, requests_needed: int = 1) -> bool:
+    def can_acquire(self, model: str, requests_needed: int = 1, key_fingerprint: Optional[str] = None) -> bool:
         """Check if quota allows acquiring additional requests."""
-        if self.is_exhausted(model):
+        if self.is_exhausted(model, key_fingerprint=key_fingerprint):
             return False
-        return self.get_available_requests(model) >= requests_needed
+        return self.get_available_requests(model, key_fingerprint=key_fingerprint) >= requests_needed
 
-    def acquire(self, model: str, est_tokens: int = 0) -> None:
+    def get_key_usage_today(self, key_fingerprint: Optional[str] = None, day_pt: Optional[str] = None) -> int:
+        """Total Gemini requests recorded today for one API key, across models."""
+        day = day_pt or get_current_day_pt()
+        fp = self._resolve_fp(key_fingerprint)
+        with self._get_connection() as conn:
+            row = conn.execute(
+                "SELECT COALESCE(SUM(requests), 0) AS total FROM llm_usage WHERE day_pt = ? AND key_fingerprint = ?",
+                (day, fp),
+            ).fetchone()
+        return int(row["total"])
+
+    def acquire(self, model: str, est_tokens: int = 0, key_fingerprint: Optional[str] = None) -> None:
         """
         Reserve an API request slot.
         - Enforces RPD: raises QuotaExhausted if daily cap reached or marked exhausted.
@@ -235,8 +332,9 @@ class QuotaGuard:
         day_pt = get_current_day_pt()
         raw_limit = settings.get_rpd_for_model(model)
         effective_limit = max(0, raw_limit - settings.RESERVE_REQUESTS)
+        fp = self._resolve_fp(key_fingerprint)
 
-        if self.is_exhausted(model, day_pt):
+        if self.is_exhausted(model, day_pt, fp):
             raise QuotaExhausted(
                 model=model,
                 day_pt=day_pt,
@@ -245,11 +343,11 @@ class QuotaGuard:
                 reason="429 RESOURCE_EXHAUSTED: Límite diario RPD agotado. Cola detenida hasta medianoche PT.",
             )
 
-        usage = self.get_daily_usage(model, day_pt)
+        usage = self.get_daily_usage(model, day_pt, fp)
 
         if usage["requests"] >= effective_limit:
             logger.warning(
-                f"🚨 QuotaGuard: Daily limit reached for {model} on {day_pt}. "
+                f"🚨 QuotaGuard: Daily limit reached for {model} (key {fp}) on {day_pt}. "
                 f"Used: {usage['requests']}/{effective_limit} (Reserve: {settings.RESERVE_REQUESTS})"
             )
             raise QuotaExhausted(
@@ -297,33 +395,35 @@ class QuotaGuard:
         cost_usd: float = 0.0,
         error_message: Optional[str] = None,
         day_pt: Optional[str] = None,
+        key_fingerprint: Optional[str] = None,
     ) -> None:
         """
         Record every single API request attempt sent over the wire (successful or failed).
-        Inserts row into llm_attempts and updates cumulative llm_usage.
+        Inserts row into llm_attempts and updates cumulative llm_usage for that API key.
         """
         day = day_pt or get_current_day_pt()
+        fp = self._resolve_fp(key_fingerprint, provider)
         now_utc = datetime.now(timezone.utc).isoformat()
         is_success = (status.lower() == "success")
 
         with self._get_connection() as conn:
             conn.execute(
                 """
-                INSERT INTO llm_attempts (day_pt, timestamp_utc, model, provider, status, error_message, tokens_in, tokens_out, costo_estimado_usd)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+                INSERT INTO llm_attempts (day_pt, timestamp_utc, model, provider, status, error_message, tokens_in, tokens_out, costo_estimado_usd, key_fingerprint)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
                 """,
-                (day, now_utc, model, provider, status, error_message, tokens_in, tokens_out, cost_usd),
+                (day, now_utc, model, provider, status, error_message, tokens_in, tokens_out, cost_usd, fp),
             )
 
             is_exhausted_flag = 1 if status in ("429_rpd", "rpd_exhausted") else 0
             conn.execute(
                 """
                 INSERT INTO llm_usage (
-                    day_pt, model, provider, status, costo_estimado_usd, 
+                    day_pt, model, key_fingerprint, provider, status, costo_estimado_usd,
                     requests, requests_success, requests_failed, is_exhausted, tokens_in, tokens_out
                 )
-                VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?)
-                ON CONFLICT(day_pt, model) DO UPDATE SET
+                VALUES (?, ?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?)
+                ON CONFLICT(day_pt, model, key_fingerprint) DO UPDATE SET
                     requests = requests + 1,
                     requests_success = requests_success + excluded.requests_success,
                     requests_failed = requests_failed + excluded.requests_failed,
@@ -335,7 +435,7 @@ class QuotaGuard:
                     provider = excluded.provider;
                 """,
                 (
-                    day, model, provider, status, cost_usd,
+                    day, model, fp, provider, status, cost_usd,
                     1 if is_success else 0,
                     0 if is_success else 1,
                     is_exhausted_flag,
@@ -345,7 +445,7 @@ class QuotaGuard:
             conn.commit()
 
         logger.info(
-            f"📊 LLM Attempt recorded [{provider} | {model} | {day}]: status={status}, +1 req "
+            f"📊 LLM Attempt recorded [{provider} | {model} | key {fp or '-'} | {day}]: status={status}, +1 req "
             f"({'SUCCESS' if is_success else 'FAIL'}), +{tokens_in} tok_in, +{tokens_out} tok_out"
         )
 
@@ -360,6 +460,7 @@ class QuotaGuard:
         cost_usd: float = 0.0,
         status: str = "success",
         error_message: Optional[str] = None,
+        key_fingerprint: Optional[str] = None,
     ) -> None:
         """Atomically record token, request and cost consumption (calls record_attempt)."""
         req_count = max(1, requests)
@@ -373,6 +474,7 @@ class QuotaGuard:
                 cost_usd=cost_usd / req_count,
                 error_message=error_message,
                 day_pt=day_pt,
+                key_fingerprint=key_fingerprint,
             )
 
     def get_total_spend(self, provider: Optional[str] = None) -> float:

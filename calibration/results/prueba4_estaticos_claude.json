@@ -1,0 +1,7 @@
+{
+  "test": "prueba4_estaticos_claude",
+  "model": "claude-sonnet-5-5",
+  "runs": [],
+  "stopped": "Anthropic 400: la clave no esta asociada a un workspace; requiere ANTHROPIC_WORKSPACE_ID. Antes, 3 TypeError locales (SDK 2.1.0 sin 'temperature') ya corregidos.",
+  "cost_usd": 0.0
+}

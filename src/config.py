@@ -59,6 +59,10 @@ class Settings(BaseSettings):
         default=None,
         description="Anthropic Claude API Key for static ad evaluations",
     )
+    ANTHROPIC_WORKSPACE_ID: Optional[str] = Field(
+        default=None,
+        description="Anthropic workspace ID; required when the API key is not scoped to a workspace",
+    )
     CLAUDE_BUDGET_USD: float = Field(
         default=8.0,
         description="Spending cap in USD for Claude static evaluations",
@@ -168,6 +172,7 @@ class Settings(BaseSettings):
         "GEMINI_RPD_MAIN",
         "GEMINI_RPD_CHEAP",
         "GEMINI_API_KEY",
+        "ANTHROPIC_WORKSPACE_ID",
         mode="before",
     )
     @classmethod

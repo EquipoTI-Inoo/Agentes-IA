@@ -17,14 +17,27 @@ from typing import Any, Dict, Optional
 from src.ai.claude_client import BudgetExceededError, ClaudeClient, MissingApiKeyError
 from src.ai.schemas import AdCopy, MediaBundle, StaticEvaluationResult
 from src.config import settings
-from src.database import AdRecord, AnalysisRecord, SessionLocal
+from src.database import AnalysisRecord, SessionLocal, ensure_ad, mark_evaluated
 from src.media.fingerprint import compute_creative_hash, compute_image_phash
 
 logger = logging.getLogger("Jinora.EvaluatorStatic")
 
 DOWNLOADS_DIR = Path("downloads")
 PROMPT_VERSION = "v1"
-RUBRIC_VERSION = "v1"
+RUBRIC_PATH = Path(__file__).resolve().parent.parent / "config" / "rubric_static.yaml"
+
+
+def _load_rubric_version() -> str:
+    """Version declared in config/rubric_static.yaml, so analyses rows show which anchors were used."""
+    import yaml
+
+    try:
+        return str(yaml.safe_load(RUBRIC_PATH.read_text(encoding="utf-8")).get("version", "v1"))
+    except Exception:
+        return "v1"
+
+
+RUBRIC_VERSION = _load_rubric_version()
 
 
 def evaluate_static_ad(
@@ -137,6 +150,10 @@ def evaluate_static_ad(
         result_dict["creative_score"] = creative_score
         result_dict["total_score"] = creative_score
 
+        # Real cost of this call (ClaudeClient.last_usage); 0.0 for clients that do not report it
+        last_usage = getattr(eval_client, "last_usage", None)
+        real_cost_usd = float(last_usage.get("cost_usd", 0.0)) if isinstance(last_usage, dict) else 0.0
+
         # 7. Persist to analysis_static.json
         ad_folder = img_path.parent
         analysis_json_path = ad_folder / "analysis_static.json"
@@ -158,15 +175,11 @@ def evaluate_static_ad(
             analysis_type="static",
             creative_score=creative_score,
             result_json=json.dumps(result_dict, ensure_ascii=False),
-            cost_usd=eval_client._calculate_cost(2000, 1000),
+            cost_usd=real_cost_usd,
         )
         db.add(analysis_record)
 
-        ad_record = db.query(AdRecord).filter(AdRecord.id == ad_id).first()
-        if ad_record:
-            ad_record.cognitive_score = creative_score
-            ad_record.score_breakdown = json.dumps(result_dict, ensure_ascii=False)
-
+        mark_evaluated(ensure_ad(db, {**ad_dict, "ad_id": ad_id}))
         db.commit()
 
         return {

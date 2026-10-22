@@ -1,0 +1,27 @@
+{
+  "ad_id": "931108833186595",
+  "whisper_full": "You know we don't play stay out the way check out this look on my face. I'll come say the day. Give me my cape. Look it on flying away. I start cream of the cup. Go to me spot. Go put the cherry on top. This one can be stopped. Don't really me just watch.",
+  "whisper_segments": [
+    {
+      "start": 0.0,
+      "end": 18.0,
+      "text": "You know we don't play stay out the way check out this look on my face. I'll come say the day. Give me my cape. Look it on flying away. I start cream of the cup. Go to me spot. Go put the cherry on top. This one can be stopped."
+    },
+    {
+      "start": 48.0,
+      "end": 55.0,
+      "text": "Don't really me just watch."
+    }
+  ],
+  "gemini_transcript_segments_per_run": [
+    0,
+    0,
+    0
+  ],
+  "gemini_has_voiceover": [
+    false,
+    false,
+    false
+  ],
+  "whisper_source": "faster-whisper base ejecutado sobre el video en esta corrida"
+}

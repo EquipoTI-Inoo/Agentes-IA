@@ -1,0 +1,98 @@
+[
+  {
+    "ad_id": "3172443476285076",
+    "page_name": "Leadsales",
+    "video_file": "video_0.mp4",
+    "whisper_word_count": 142,
+    "gemini_word_count": 141,
+    "wer_percent": 6.34,
+    "edits": 9,
+    "whisper_source": "faster-whisper ejecutado sobre el archivo de video en esta corrida (no leído de la BD)",
+    "differences": [
+      {
+        "type": "sustitución",
+        "whisper": "ordenar las",
+        "gemini": "ordénalas",
+        "context": "lista infinita y mejor"
+      },
+      {
+        "type": "sustitución",
+        "whisper": "lixels",
+        "gemini": "leadsales",
+        "context": "sociales tienes que probar"
+      },
+      {
+        "type": "sustitución",
+        "whisper": "y",
+        "gemini": "e",
+        "context": "ventas por whatsapp facebook"
+      }
+    ],
+    "whisper_full": "Si vendes por redes sociales, tienes que probar Lixels. Esta plataforma te va a ayudar a crecer tus ventas por WhatsApp, Facebook y Instagram. Deja de perder tus conversaciones en una lista infinita y mejor ordenar las en columnas como si fuera un excel. Y no solo eso. Cada vez que alguien te escriba, vas a poder asignar esas conversaciones a las personas de tu equipo de ventos, mandar mensajes masivos segmentados de manera oficial para atender a tus mejores prospectos y tener a la mano una herramienta de analítica para tener visibilidad total de todo tu equipo de ventos y todo en un mismo lugar. Cuantas ventas más estás dispuesto a perder antes de que sea demasiado tan. Agenda hoy mismo tu demo, triplica tus ventas con Lixels y no te olvides de seguirme para más tips sobre impuestos y negocios.",
+    "gemini_full": "Si vendes por redes sociales tienes que probar Leadsales. Esta plataforma... ...te va a ayudar a crecer tus ventas por WhatsApp, Facebook e Instagram. Deja de perder tus conversaciones en una lista infinita y mejor ordénalas en columnas como si fuera un Excel. Y no solo eso, cada vez que alguien te escriba vas a poder asignar esas conversaciones a las personas de tu equipo de ventas. Mandar mensajes masivos segmentados de manera oficial para atender a tus mejores prospectos. Y tener a la mano una herramienta de analítica para tener visibilidad total de todo tu equipo de ventas. Y todo en un mismo lugar. ¿Cuántas ventas más estás dispuesto a perder antes de que sea demasiado tarde? Agenda hoy mismo tu demo, triplica tus ventas con Leadsales y no te olvides de seguirme para más tips sobre impuestos y negocios."
+  },
+  {
+    "ad_id": "1714051753080819",
+    "page_name": "Leadsales",
+    "video_file": "video_0.mp4",
+    "whisper_word_count": 126,
+    "gemini_word_count": 126,
+    "wer_percent": 6.35,
+    "edits": 8,
+    "whisper_source": "faster-whisper ejecutado sobre el archivo de video en esta corrida (no leído de la BD)",
+    "differences": [
+      {
+        "type": "sustitución",
+        "whisper": "super fácil",
+        "gemini": "superfácil",
+        "context": "mejor todo esto es"
+      },
+      {
+        "type": "sustitución",
+        "whisper": "asclica",
+        "gemini": "haz clic",
+        "context": "sistema organizado y eficiente"
+      },
+      {
+        "type": "sustitución",
+        "whisper": "lidsel",
+        "gemini": "leadsales",
+        "context": "pero todavía no utilizan"
+      }
+    ],
+    "whisper_full": "A ver, a ver, me estás diciendo que tu equipo vende por WhatsApp, pero todavía no utilizan Lidsel, nombre no saben de lo que se están perdiendo. Imagina esto, todos tus chats de WhatsApp organizados como si fuera un excel, tu equipo de ventas conectado para que no pierdan ni un solo mensaje, clientes felices y más ventas cerradas. Y lo mejor, todo esto es super fácil de usar y sin complicaciones. Lidsel fue diseñado para emprendedores, pymes y negocios como el tuyo, que quieren transformar el caos de WhatsApp en un sistema organizado y eficiente. Asclica aquí abajo y agenda tu demo. Dejan que te enseñemos cómo Lidsel puede transformar tu negocio. Y no te olvides de seguirme para más tips sobre negocios e impuestos.",
+    "gemini_full": "A ver a ver, ¿me estás diciendo que tu equipo vende por WhatsApp pero todavía no utilizan Leadsales? Nombre, no saben de lo que se están perdiendo. Imagina esto: todos tus chats de WhatsApp organizados como si fuera un Excel. Tu equipo de ventas conectado para que no pierdan ni un solo mensaje. Clientes felices y más ventas cerradas. Y lo mejor: todo esto es superfácil de usar y sin complicaciones. Leadsales fue diseñado para emprendedores, PYMES y negocios como el TUYO... ...que quieren transformar el caos de WhatsApp en un sistema organizado y eficiente. Haz clic aquí abajo y agenda tu DEMO. Deja que te enseñemos cómo Leadsales puede transformar tu negocio. Y no te olvides de seguirme para más tips sobre negocios e impuestos."
+  },
+  {
+    "ad_id": "1649292236915392",
+    "page_name": "B2Chat",
+    "video_file": "video_0.mp4",
+    "whisper_word_count": 97,
+    "gemini_word_count": 97,
+    "wer_percent": 10.31,
+    "edits": 10,
+    "whisper_source": "faster-whisper ejecutado sobre el archivo de video en esta corrida (no leído de la BD)",
+    "differences": [
+      {
+        "type": "sustitución",
+        "whisper": "te llamo beatuchat",
+        "gemini": "se llama b2chat",
+        "context": "una solución que encontré"
+      },
+      {
+        "type": "sustitución",
+        "whisper": "ciertamente",
+        "gemini": "cierto simplemente",
+        "context": "por whatsapp es fácil"
+      },
+      {
+        "type": "sustitución",
+        "whisper": "bloqueé en",
+        "gemini": "bloqueen",
+        "context": "y sin que me"
+      }
+    ],
+    "whisper_full": "Hoy voy a lanzar una campaña por WhatsApp. Es fácil, ciertamente copio y pego el mensaje para los 100 contactos de mi negocio. Obviamente colapsé en el proceso. Pero tranquilos porque les tengo una solución que encontré. Te llamo Beatuchat y es una forma de hacer envíos masivos por WhatsApp que es fácil y sin que me bloqueé en la línea. Ya no es necesario copiar y pegar a todos mis contactos. Beatuchat me dio la solución. Así que si tu también quieres esta solución para tus envíos masivos por WhatsApp, agenda una demo gratis con Beatuchat.",
+    "gemini_full": "Hoy voy a lanzar una campaña por WhatsApp. ¿Es fácil, cierto? Simplemente copio y pego el mensaje para los 100 contactos de mi negocio. Obviamente colapsé en el proceso. Pero tranquilos porque les tengo una solución que encontré. Se llama B2Chat y es una forma de hacer envíos masivos por WhatsApp que es fácil y sin que me bloqueen la línea. Ya no es necesario copiar y pegar a todos mis contactos. B2Chat me dio la solución. Así que si tú también quieres esta solución para tus envíos masivos por WhatsApp, agenda una demo gratis con B2Chat."
+  }
+]

@@ -1,0 +1,295 @@
+{
+  "test": "prueba1_video6",
+  "ad_id": "931108833186595",
+  "runs": [
+    {
+      "label": "P1-corrida1",
+      "ad_id": "931108833186595",
+      "page_name": "respond.io",
+      "model": "gemini-3.5-flash",
+      "prompt_version": "v1",
+      "rubric_version": "1.1",
+      "requests_used": 1,
+      "creative_score": 56,
+      "dimensions": {
+        "hook": 14,
+        "mechanism": 16,
+        "narrative": 15,
+        "offer": 11
+      },
+      "format": "mixto",
+      "has_voiceover": false,
+      "language": "en",
+      "transcript": [],
+      "evaluation": {
+        "transcript": [],
+        "has_voiceover": false,
+        "scene_cuts_estimate": 18,
+        "speech_pace_wpm_estimate": null,
+        "burned_in_subtitles": true,
+        "hook": {
+          "score": 14,
+          "anchor_level": "13-19",
+          "reasoning": "El anuncio capta la atención rápidamente mediante tipografía en movimiento y animación fluida que define las funciones clave del agente de atención. La propuesta de valor se transmite claramente desde los primeros segundos sin requerir locución.",
+          "evidence": [
+            {
+              "timestamp": "00:00-00:03",
+              "source": "visual",
+              "quote": "Texto animado: 'AI Agent is your receptionist... support agent... teammate'."
+            }
+          ]
+        },
+        "mechanism": {
+          "score": 16,
+          "anchor_level": "13-19",
+          "reasoning": "Muestra la interfaz del producto ejecutando tareas reales como agendamiento de citas, seguimiento automático y sincronización con CRM. La demostración visual valida el funcionamiento del sistema en canales conversacionales.",
+          "evidence": [
+            {
+              "timestamp": "00:12-00:27",
+              "source": "visual",
+              "quote": "Simulación de chat en WhatsApp respondiendo disponibilidad, haciendo seguimiento y actualizando perfil en CRM."
+            }
+          ]
+        },
+        "narrative": {
+          "score": 15,
+          "anchor_level": "13-19",
+          "reasoning": "Mantiene un ritmo dinámico marcado por la música y cortes visuales continuos. La secuencia lógica pasa de la presentación de capacidades a la integración omnicanal y métricas finales.",
+          "evidence": [
+            {
+              "timestamp": "00:05-00:45",
+              "source": "visual",
+              "quote": "Transición secuencial desde la gestión del inbox hasta integraciones con HubSpot/Salesforce y métricas de estabilidad."
+            }
+          ]
+        },
+        "offer": {
+          "score": 11,
+          "anchor_level": "7-12",
+          "reasoning": "Presenta una llamada a la acción estándar acompañada del logotipo final. Aunque el copy del anuncio menciona un ROI elevado, la pieza en video carece de una oferta directa o incentivo de baja fricción.",
+          "evidence": [
+            {
+              "timestamp": null,
+              "source": "cta",
+              "quote": "Botón de CTA 'Learn More' y pantalla final con marca 'respond.io'."
+            }
+          ]
+        },
+        "hook_description": "Animación tipográfica veloz sobre fondo degradado que sustituye etiquetas del rol comercial ('receptionist', 'support agent', 'teammate') con efectos sonoros.",
+        "value_proposition": "Automatiza la atención al cliente y el agendamiento de ventas en canales conversacionales e integraciones CRM.",
+        "feature_focus": [
+          "agentes_ia",
+          "atencion_omnicanal",
+          "gestion_leads_crm"
+        ],
+        "ai_mention": "central",
+        "format": "mixto",
+        "language": "en",
+        "target_niche": "B2B / Ventas conversacionales",
+        "what_to_model": "Demostración rápida de flujos de chat e integración visual con CRM en interfaz limpia.",
+        "what_to_beat": "Incluir un cierre con una prueba gratuita o incentivo claro de conversión directa en lugar de un CTA genérico.",
+        "cosmiq_adaptation_idea": "Video en motion graphics mostrando cómo un lead de WhatsApp se califica solo y se asigna al equipo en el CRM de Cosmiq.",
+        "confidence": 0.92,
+        "creative_score": 56,
+        "total_score": 56
+      }
+    },
+    {
+      "label": "P1-corrida2",
+      "ad_id": "931108833186595",
+      "page_name": "respond.io",
+      "model": "gemini-3.5-flash",
+      "prompt_version": "v1",
+      "rubric_version": "1.1",
+      "requests_used": 3,
+      "creative_score": 54,
+      "dimensions": {
+        "hook": 14,
+        "mechanism": 15,
+        "narrative": 14,
+        "offer": 11
+      },
+      "format": "animacion",
+      "has_voiceover": false,
+      "language": "en",
+      "transcript": [],
+      "evaluation": {
+        "transcript": [],
+        "has_voiceover": false,
+        "scene_cuts_estimate": 22,
+        "speech_pace_wpm_estimate": null,
+        "burned_in_subtitles": true,
+        "hook": {
+          "score": 14,
+          "anchor_level": "13-19",
+          "reasoning": "Clear textual statement defining the AI Agent's roles directly at the start. Dynamic motion graphics capture visual interest quickly without needing spoken audio.",
+          "evidence": [
+            {
+              "timestamp": "00:01-00:03",
+              "source": "visual",
+              "quote": "Text animation transitioning from 'AI Agent is your receptionist' to 'support agent'"
+            }
+          ]
+        },
+        "mechanism": {
+          "score": 15,
+          "anchor_level": "13-19",
+          "reasoning": "Clear product UI walkthrough showing specific workflow steps like auto-replies, lead tagging, and multi-channel integrations. Demonstrates functional capability clearly.",
+          "evidence": [
+            {
+              "timestamp": "00:12-00:23",
+              "source": "visual",
+              "quote": "UI showing auto-reply for Honda Civic test drive and automatic follow-up after 1 hour"
+            }
+          ]
+        },
+        "narrative": {
+          "score": 14,
+          "anchor_level": "13-19",
+          "reasoning": "Well-paced visual story moving logically from lead interaction to backend integration and system uptime. Syncs smoothly with beat-driven background music.",
+          "evidence": [
+            {
+              "timestamp": "00:05-00:45",
+              "source": "visual",
+              "quote": "Visual transition from customer conversation UI to backend CRM connection badges"
+            }
+          ]
+        },
+        "offer": {
+          "score": 11,
+          "anchor_level": "7-12",
+          "reasoning": "Standard call to action directing users to learn more or try the platform. Clear brand positioning at the end, though lacking strong immediate urgency or risk-reversal offer.",
+          "evidence": [
+            {
+              "timestamp": "00:54-00:59",
+              "source": "cta",
+              "quote": "Final logo display with 'respond.io' and 'Learn More' CTA button in ad copy"
+            }
+          ]
+        },
+        "hook_description": "Animated text transition presenting 'AI Agent is your receptionist / support agent' over a clean background.",
+        "value_proposition": "Automated conversational AI agent for multi-channel sales messaging and lead routing.",
+        "feature_focus": [
+          "agentes_ia",
+          "atencion_omnicanal",
+          "gestion_leads_crm"
+        ],
+        "ai_mention": "central",
+        "format": "animacion",
+        "language": "en",
+        "target_niche": "Automotive / B2C Sales",
+        "what_to_model": "Fast-paced animated UI walkthroughs showcasing real conversation flows and backend routing.",
+        "what_to_beat": "Add direct voiceover explanations and explicit free-trial risk reversal in the CTA.",
+        "cosmiq_adaptation_idea": "Create a kinetic motion graphic showing Cosmiq's WhatsApp lead qualification routing seamlessly to sales reps in real time.",
+        "confidence": 0.92,
+        "creative_score": 54,
+        "total_score": 54
+      }
+    },
+    {
+      "label": "P1-corrida3",
+      "ad_id": "931108833186595",
+      "page_name": "respond.io",
+      "model": "gemini-3.5-flash",
+      "prompt_version": "v1",
+      "rubric_version": "1.1",
+      "requests_used": 1,
+      "creative_score": 53,
+      "dimensions": {
+        "hook": 14,
+        "mechanism": 15,
+        "narrative": 13,
+        "offer": 11
+      },
+      "format": "animacion",
+      "has_voiceover": false,
+      "language": "en",
+      "transcript": [],
+      "evaluation": {
+        "transcript": [],
+        "has_voiceover": false,
+        "scene_cuts_estimate": 18,
+        "speech_pace_wpm_estimate": null,
+        "burned_in_subtitles": false,
+        "hook": {
+          "score": 14,
+          "anchor_level": "13-19",
+          "reasoning": "Dynamic kinetic typography defines the AI Agent's roles quickly, generating visual interest without audio dialogue.",
+          "evidence": [
+            {
+              "timestamp": "00:01-00:05",
+              "source": "visual",
+              "quote": "Text animation cycling through AI Agent is your receptionist, support agent, teammate"
+            }
+          ]
+        },
+        "mechanism": {
+          "score": 15,
+          "anchor_level": "13-19",
+          "reasoning": "Clear graphic walkthrough of automated chat replies, auto follow-ups, and CRM sync steps.",
+          "evidence": [
+            {
+              "timestamp": "00:12-00:35",
+              "source": "visual",
+              "quote": "UI simulation showing WhatsApp automated responses, profile updates, and team routing"
+            }
+          ]
+        },
+        "narrative": {
+          "score": 13,
+          "anchor_level": "13-19",
+          "reasoning": "Logical visual flow moving from AI assistant functions to channel integrations and platform stability metrics.",
+          "evidence": [
+            {
+              "timestamp": "00:05-00:50",
+              "source": "visual",
+              "quote": "Sequence shifts smoothly from chat agent features to channel logos and uptime stats"
+            }
+          ]
+        },
+        "offer": {
+          "score": 11,
+          "anchor_level": "7-12",
+          "reasoning": "Ends with a standard brand logo slide, lacking a explicit risk-free offer or urgency trigger.",
+          "evidence": [
+            {
+              "timestamp": "00:55-00:59",
+              "source": "visual",
+              "quote": "End card displaying respond.io logo without specific trial callout"
+            }
+          ]
+        },
+        "hook_description": "Animated text quickly switches roles of AI Agent from receptionist to teammate over upbeat music.",
+        "value_proposition": "Automates multi-channel sales and support conversations while syncing lead data directly to CRM.",
+        "feature_focus": [
+          "agentes_ia",
+          "atencion_omnicanal",
+          "gestion_leads_crm"
+        ],
+        "ai_mention": "central",
+        "format": "animacion",
+        "language": "en",
+        "target_niche": "B2B Conversational Sales",
+        "what_to_model": "Fast visual UI animations highlighting specific automated chat actions step by step.",
+        "what_to_beat": "Include a stronger end-screen offer such as a free trial or interactive demo link.",
+        "cosmiq_adaptation_idea": "Animate Cosmiq's WhatsApp automation interface showing lead qualification and team assignment in real time.",
+        "confidence": 0.92,
+        "creative_score": 53,
+        "total_score": 53
+      }
+    }
+  ],
+  "uploads_to_files_api": 1,
+  "session": {
+    "key_fingerprint": "7b423d59",
+    "requests_used_total": 9,
+    "budget": 12
+  },
+  "max_diff_per_dimension": {
+    "hook": 0,
+    "mechanism": 1,
+    "narrative": 2,
+    "offer": 0
+  },
+  "max_diff_total": 3
+}

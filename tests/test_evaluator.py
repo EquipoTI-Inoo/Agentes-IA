@@ -119,6 +119,7 @@ def test_extract_retry_after_header_and_body():
 
 def test_evaluation_failure_leaves_pending_evaluation(tmp_path):
     from src.database import AdRecord, SessionLocal
+    from src.db.models import Job
 
     ad_id = "ad_fail_test_123"
     ad_dir = tmp_path / ad_id
@@ -126,13 +127,12 @@ def test_evaluation_failure_leaves_pending_evaluation(tmp_path):
     video_file = ad_dir / "video_0.mp4"
     video_file.write_bytes(b"dummy" * 50)
 
-    # Insert test AdRecord into DB
+    # Insert test ad into DB (still pending evaluation)
     db = SessionLocal()
     try:
         existing = db.query(AdRecord).filter(AdRecord.id == ad_id).first()
         if not existing:
-            rec = AdRecord(id=ad_id, page_name="TestCo", video_path=str(video_file), cognitive_score=None)
-            db.add(rec)
+            db.add(AdRecord(id=ad_id, page_name="TestCo", status="pending_evaluation"))
             db.commit()
     finally:
         db.close()
@@ -146,15 +146,19 @@ def test_evaluation_failure_leaves_pending_evaluation(tmp_path):
         evaluate_video_ad(ad_dict, client=mock_client, force=True)
     assert "503" in str(exc.value)
 
-    # Verify that AdRecord in DB has cognitive_score = None and score_breakdown with pending_evaluation
+    # The ad stays pending_evaluation, without analyses, and the failure is recorded in a job
     db = SessionLocal()
     try:
         updated = db.query(AdRecord).filter(AdRecord.id == ad_id).first()
-        assert updated.cognitive_score is None
-        breakdown = json.loads(updated.score_breakdown)
-        assert breakdown["status"] == "pending_evaluation"
-        assert "503 Service Unavailable" in breakdown["last_error"]
-        assert "retry_after" in breakdown
+        assert updated.status == "pending_evaluation"
+        assert not [a for a in updated.analyses if a.analysis_type == "video"]
+        job = db.query(Job).filter(Job.ad_id == ad_id, Job.type == "evaluate").one()
+        assert job.status == "pending"
+        assert "503 Service Unavailable" in job.error
+        payload = json.loads(job.payload)
+        assert payload["status"] == "pending_evaluation"
+        assert "503 Service Unavailable" in payload["last_error"]
+        assert "retry_after" in payload
     finally:
         db.close()
 

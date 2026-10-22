@@ -82,6 +82,27 @@ def compute_word_error_rate(reference: str, hypothesis: str) -> Tuple[float, int
     return (wer, edits, n)
 
 
+def top_differences(reference: str, hypothesis: str, n: int = 3) -> List[Dict[str, str]]:
+    """Largest word-level differences (normalized tokens) between Whisper (ref) and Gemini (hyp)."""
+    import difflib
+
+    ref_words = normalize_words(reference)
+    hyp_words = normalize_words(hypothesis)
+    matcher = difflib.SequenceMatcher(a=ref_words, b=hyp_words, autojunk=False)
+    diffs = []
+    for tag, i1, i2, j1, j2 in matcher.get_opcodes():
+        if tag == "equal":
+            continue
+        diffs.append({
+            "type": {"replace": "sustitución", "delete": "solo Whisper", "insert": "solo Gemini"}[tag],
+            "whisper": " ".join(ref_words[i1:i2]),
+            "gemini": " ".join(hyp_words[j1:j2]),
+            "context": " ".join(ref_words[max(0, i1 - 4):i1]),
+        })
+    diffs.sort(key=lambda d: max(len(d["whisper"].split()), len(d["gemini"].split())), reverse=True)
+    return diffs[:n]
+
+
 def transcribe_with_local_whisper(
     video_path: Path,
     model_size: str = "base",
@@ -119,7 +140,7 @@ def load_gemini_transcript(ad_id: str, db: Any) -> Optional[str]:
     """Loads Gemini complete transcription from analyses table or analysis.json."""
     record = (
         db.query(AnalysisRecord)
-        .filter(AnalysisRecord.ad_id == ad_id, AnalysisRecord.model.like("gemini%"))
+        .filter(AnalysisRecord.ad_id == ad_id, AnalysisRecord.analysis_type == "video", AnalysisRecord.model.like("gemini%"))
         .order_by(AnalysisRecord.id.desc())
         .first()
     )
@@ -195,6 +216,8 @@ def run_comparison(
                 "gemini_word_count": len(normalize_words(gemini_full)),
                 "wer_percent": round(wer * 100, 2),
                 "edits": edits,
+                "whisper_source": "faster-whisper ejecutado sobre el archivo de video en esta corrida (no leído de la BD)",
+                "differences": top_differences(whisper_full, gemini_full, 3),
                 "whisper_full": whisper_full,
                 "gemini_full": gemini_full,
             })
@@ -215,6 +238,9 @@ def run_comparison(
         print(r['whisper_full'] if r['whisper_full'] else "[SIN VOZ / VACÍO]")
         print(f"\n--- Transcripción Completa Gemini (Multimodal) ---")
         print(r['gemini_full'] if r['gemini_full'] else "[SIN VOZ / VACÍO]")
+        print(f"\n--- 3 diferencias más largas (tokens normalizados) ---")
+        for d in r["differences"]:
+            print(f"  [{d['type']}] ...{d['context']}... | Whisper: '{d['whisper']}' | Gemini: '{d['gemini']}'")
         print("-" * 70)
     print("=" * 70 + "\n")
 
@@ -226,13 +252,17 @@ def main() -> None:
     parser.add_argument("--ids", nargs="+", help="IDs de anuncios a comparar", default=[])
     parser.add_argument("--model", default="base", help="Tamaño del modelo Whisper (tiny, base, small)")
     parser.add_argument("--device", default="cpu", help="Dispositivo para Whisper (cpu, cuda)")
+    parser.add_argument("--out", help="Ruta JSON donde guardar los resultados completos")
     args = parser.parse_args()
 
     if not args.ids:
         print("Uso: python scripts/compare_transcripts.py --ids <ad_id1> <ad_id2> ...")
         return
 
-    run_comparison(args.ids, whisper_model=args.model, device=args.device)
+    results = run_comparison(args.ids, whisper_model=args.model, device=args.device)
+    if args.out:
+        Path(args.out).write_text(json.dumps(results, indent=2, ensure_ascii=False), encoding="utf-8")
+        print(f"Resultados guardados en {args.out}")
 
 
 if __name__ == "__main__":

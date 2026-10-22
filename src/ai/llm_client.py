@@ -19,7 +19,13 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 from pydantic import ValidationError
 
 from src.ai.claude_client import ClaudeClient
-from src.ai.quota import QuotaExhausted, QuotaGuard, get_current_day_pt, get_quota_guard
+from src.ai.quota import (
+    QuotaExhausted,
+    QuotaGuard,
+    compute_key_fingerprint,
+    get_current_day_pt,
+    get_quota_guard,
+)
 from src.ai.schemas import AdCopy, EvaluationResult, MediaBundle, StaticEvaluationResult
 from src.config import settings
 from src.media.media_info import check_video_context_limit, estimate_video_tokens
@@ -75,6 +81,8 @@ class GeminiClient(BaseLLMClient):
         self.api_key = api_key or settings.GEMINI_API_KEY
         self.model = model or settings.LLM_MODEL
         self.quota_guard = quota_guard or get_quota_guard()
+        # Quota is counted per key; only the fingerprint is ever stored or logged
+        self.key_fingerprint = compute_key_fingerprint(self.api_key)
 
         root_dir = Path(__file__).resolve().parent.parent.parent
         self.prompt_path = prompt_path or (root_dir / "prompts" / "evaluator_v1.md")
@@ -126,7 +134,7 @@ class GeminiClient(BaseLLMClient):
             raise ValueError(f"No se puede evaluar el video: {reason}")
 
         # 2. Acquire QuotaGuard slot (enforces Pacific Time daily RPD & RPM/TPM sliding windows)
-        self.quota_guard.acquire(self.model, est_tokens=est_tokens)
+        self.quota_guard.acquire(self.model, est_tokens=est_tokens, key_fingerprint=self.key_fingerprint)
 
         from google.genai import types
 
@@ -191,7 +199,7 @@ class GeminiClient(BaseLLMClient):
                 eval_result = EvaluationResult.model_validate_json(raw_text)
             except ValidationError as val_err:
                 logger.warning(f"Error de validación Pydantic en primera respuesta: {val_err}. Iniciando único reintento...")
-                self.quota_guard.acquire(self.model, est_tokens=500)
+                self.quota_guard.acquire(self.model, est_tokens=500, key_fingerprint=self.key_fingerprint)
                 retry_prompt = (
                     f"{user_content}\n\n"
                     f"ATENCIÓN: Tu respuesta anterior generó el siguiente error de validación:\n{val_err}\n"
@@ -228,6 +236,7 @@ class GeminiClient(BaseLLMClient):
                     status="success",
                     tokens_in=tokens_in,
                     tokens_out=tokens_out,
+                    key_fingerprint=self.key_fingerprint,
                 )
                 return resp
             except Exception as err:
@@ -251,10 +260,11 @@ class GeminiClient(BaseLLMClient):
                     provider="gemini",
                     status=status_code,
                     error_message=err_str[:200],
+                    key_fingerprint=self.key_fingerprint,
                 )
 
                 if is_rpd:
-                    self.quota_guard.mark_exhausted(self.model)
+                    self.quota_guard.mark_exhausted(self.model, key_fingerprint=self.key_fingerprint)
                     raise QuotaExhausted(
                         model=self.model,
                         day_pt=get_current_day_pt(),

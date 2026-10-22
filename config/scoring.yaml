@@ -1,0 +1,30 @@
+# Jinora — Fase 5: market_score y agrupación de variantes
+# market_score usa SOLO datos de la plataforma (Meta Ad Library). Nunca IA ni contenido del creativo.
+
+market_score:
+  # Los pesos deben sumar 1.0 (el código lo valida al cargar).
+  weights:
+    longevity: 0.40     # log(1 + días activo), tope en longevity_cap_days
+    variants: 0.25      # nº de variantes del mismo creativo (escala log), tope en variants_cap
+    countries: 0.15     # nº de países donde corre, tope en countries_cap
+    is_active: 0.10     # sigue activo hoy (1) o no (0)
+    platforms: 0.10     # nº de plataformas de counted_platforms donde corre
+
+  # Topes de escala: normalizan cada componente a 0-1. No son topes sobre el puntaje.
+  longevity_cap_days: 180
+  variants_cap: 10      # 10+ variantes = componente completo; 1 variante = 0
+  countries_cap: 7      # los 7 mercados de DEFAULT_COUNTRIES
+  # Plataformas contadas según el plan (FB, IG, Messenger, Audience Network).
+  # WHATSAPP y THREADS aparecen en los datos pero no se cuentan.
+  counted_platforms: [FACEBOOK, INSTAGRAM, MESSENGER, AUDIENCE_NETWORK]
+
+fingerprint:
+  # Distancia de Hamming máxima entre pHash (64 bits) para considerar dos miniaturas la misma imagen.
+  # Medido el 21-oct sobre 183 miniaturas reales (16 653 pares):
+  #   - Pares no relacionados: casi todos en 20-40; el mínimo entre imágenes distintas a la vista fue 18.
+  #   - Pares con copy idéntico: 0 (50 pares), 8 y 10 (4 pares, revisados a ojo: mismo creativo con
+  #     recorte/titular distinto) y luego un salto a 22.
+  # 10 captura las variantes reales y deja un margen de 8 bits hasta el primer par distinto.
+  # Además se exige copy normalizado idéntico: hay pares a distancia 6 con copy distinto
+  # (miniaturas casi en blanco de marcas distintas) que no deben agruparse.
+  phash_max_distance: 10

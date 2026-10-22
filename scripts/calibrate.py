@@ -259,7 +259,7 @@ def load_ai_evaluation(ad_id: str, db: Any) -> Optional[Dict[str, Any]]:
     """Fetches the latest AI analysis for an ad from DB or analysis.json."""
     record = (
         db.query(AnalysisRecord)
-        .filter(AnalysisRecord.ad_id == ad_id)
+        .filter(AnalysisRecord.ad_id == ad_id, AnalysisRecord.analysis_type.in_(("video", "static")))
         .order_by(AnalysisRecord.id.desc())
         .first()
     )
@@ -401,6 +401,13 @@ def run_calibration_report(csv_path: Path = MANUAL_SCORES_PATH) -> Dict[str, Any
         for dim, m in dim_metrics.items():
             print(f"  * {dim.capitalize():<12}: r={m['spearman']:+.3f} | MAE={m['mae']:.1f} pts | DifMedia={m['mean_diff']:+.1f} pts (n={m['count']})")
 
+    print("-" * 65)
+    print("DETALLE POR VIDEO (video | dueño | IA | diferencia IA-dueño | formato):")
+    n_by_ad = {item["ad_id"]: n for n, item in load_manifest().items()}
+    for d in matched_data:
+        label = f"video {n_by_ad[d['human']['ad_id']]}" if d["human"]["ad_id"] in n_by_ad else d["human"]["ad_id"]
+        diff = d["ai"]["total"] - d["human"]["total"]
+        print(f"  {label:<9} {d['human']['ad_id']:<17} dueño={d['human']['total']:>4.0f} | IA={d['ai']['total']:>4.0f} | dif={diff:+.0f} | {d['ai']['format']}")
     print("-" * 65)
     print("ANALISIS POR FORMATO CREATIVO (Neutralidad):")
     for fmt, m in sorted(format_metrics.items()):

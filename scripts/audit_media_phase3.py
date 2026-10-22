@@ -45,7 +45,13 @@ def audit_media():
     conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
-    cur.execute("SELECT * FROM ads")
+    # Phase 6 schema: media paths live in the media table (rel_path, relative to downloads/)
+    cur.execute(
+        "SELECT a.id, a.page_name, a.headline, a.body_text, "
+        "(SELECT rel_path FROM media WHERE ad_id = a.id AND kind = 'video' LIMIT 1) AS video_path, "
+        "(SELECT rel_path FROM media WHERE ad_id = a.id AND kind = 'image' LIMIT 1) AS image_path "
+        "FROM ads a"
+    )  # noqa: E501
     rows = cur.fetchall()
 
     print("=" * 70)

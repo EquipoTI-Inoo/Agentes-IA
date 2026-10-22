@@ -11,7 +11,6 @@ Replaces legacy heuristics with real multimodal Gemini evaluation:
 
 from __future__ import annotations
 
-from datetime import datetime, timezone
 import json
 import logging
 from pathlib import Path
@@ -20,7 +19,7 @@ from typing import Any, Dict, Optional
 from src.ai.llm_client import GeminiClient
 from src.ai.schemas import AdCopy, EvaluationResult, MediaBundle
 from src.config import settings
-from src.database import AdRecord, AnalysisRecord, SessionLocal
+from src.database import AnalysisRecord, SessionLocal, ensure_ad, mark_evaluated, mark_evaluation_failed
 from src.media.fingerprint import compute_creative_hash, compute_file_sha256
 from src.media.media_info import get_video_info
 
@@ -28,7 +27,20 @@ logger = logging.getLogger("Jinora.Evaluator")
 
 DOWNLOADS_DIR = Path("downloads")
 PROMPT_VERSION = "v1"
-RUBRIC_VERSION = "v1"
+RUBRIC_PATH = Path(__file__).resolve().parent.parent / "config" / "rubric.yaml"
+
+
+def _load_rubric_version() -> str:
+    """Version declared in config/rubric.yaml, so analyses rows show which anchors were used."""
+    import yaml
+
+    try:
+        return str(yaml.safe_load(RUBRIC_PATH.read_text(encoding="utf-8")).get("version", "v1"))
+    except Exception:
+        return "v1"
+
+
+RUBRIC_VERSION = _load_rubric_version()
 
 
 def evaluate_video_ad(
@@ -123,18 +135,8 @@ def evaluate_video_ad(
         try:
             eval_result: EvaluationResult = eval_client.evaluate(media_bundle, copy_bundle)
         except Exception as eval_err:
-            # Leave ad in pending_evaluation with retry_after and last error (Paso 2)
-            ad_record = db.query(AdRecord).filter(AdRecord.id == ad_id).first()
-            if ad_record:
-                ad_record.cognitive_score = None
-                pending_info = {
-                    "status": "pending_evaluation",
-                    "last_error": str(eval_err),
-                    "failed_at": datetime.now(timezone.utc).isoformat(),
-                    "retry_after": datetime.now(timezone.utc).isoformat(),
-                }
-                ad_record.score_breakdown = json.dumps(pending_info, ensure_ascii=False)
-                db.commit()
+            # Leave ad in pending_evaluation with retry_after and last error (Paso 2): ads.status + jobs row
+            mark_evaluation_failed(db, {**ad_dict, "ad_id": ad_id}, str(eval_err))
             raise
 
         # 6. Sum dimensions strictly BY CODE (LLM never sums)
@@ -160,7 +162,8 @@ def evaluate_video_ad(
         except Exception as e:
             logger.warning(f"No se pudo escribir {analysis_json_path}: {e}")
 
-        # 8. Persist to 'analyses' table in DB
+        # 8. Persist to 'analyses' table in DB (the ad row must exist: foreign key)
+        ad_record = ensure_ad(db, {**ad_dict, "ad_id": ad_id})
         analysis_record = AnalysisRecord(
             ad_id=ad_id,
             model=model_name,
@@ -174,17 +177,8 @@ def evaluate_video_ad(
         )
         db.add(analysis_record)
 
-        # Update AdRecord if exists
-        ad_record = db.query(AdRecord).filter(AdRecord.id == ad_id).first()
-        if ad_record:
-            ad_record.cognitive_score = creative_score
-            ad_record.score_breakdown = json.dumps(result_dict, ensure_ascii=False)
-            if eval_result.transcript and not ad_record.full_transcript:
-                full_trans = " ".join(t.text for t in eval_result.transcript)
-                ad_record.full_transcript = full_trans
-            if eval_result.speech_pace_wpm_estimate:
-                ad_record.total_frames = eval_result.speech_pace_wpm_estimate
-
+        # The transcript, pace and scores live in result_json; the ad only changes status
+        mark_evaluated(ad_record)
         db.commit()
 
         return {
