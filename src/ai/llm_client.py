@@ -216,7 +216,21 @@ class GeminiClient(BaseLLMClient):
             logger.error(f"Fallo durante la evaluación del anuncio en Gemini: {e}")
             raise
 
-    def _call_with_transient_retry(self, cnts: list, config: Any = None, est_tokens: int = 0):
+    def generate_text(self, prompt: str, system: str = "", max_attempts: int = 1) -> str:
+        """
+        Plain-text generation (executive summary): exactly `max_attempts` request(s), default ONE, each one through
+        QuotaGuard (RPD minus reserve, session budget, key fingerprint). Raises QuotaExhausted when the cap is reached.
+        """
+        self.quota_guard.check_available(self.model, key_fingerprint=self.key_fingerprint)
+        from google.genai import types
+
+        config = types.GenerateContentConfig(temperature=0.0, system_instruction=system or None)
+        response = self._call_with_transient_retry(
+            [prompt], config=config, est_tokens=max(1, len(prompt) // 3), max_attempts=max_attempts
+        )
+        return (response.text or "").strip()
+
+    def _call_with_transient_retry(self, cnts: list, config: Any = None, est_tokens: int = 0, max_attempts: Optional[int] = None):
         """
         Execute Gemini API call with progressive backoff and attempt tracking.
         Every attempt sent to the API goes through QuotaGuard.acquire() first, so retries count against the
@@ -224,6 +238,8 @@ class GeminiClient(BaseLLMClient):
         is raised (it is not an API failure and is never recorded as an attempt).
         """
         delays = settings.GEMINI_RETRY_DELAYS or [5.0, 15.0, 45.0, 120.0]
+        if max_attempts is not None:
+            delays = delays[:max(1, max_attempts)]
         max_attempts = len(delays)
 
         for attempt_idx, base_delay in enumerate(delays, 1):

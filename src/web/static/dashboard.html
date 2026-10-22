@@ -1,0 +1,51 @@
+﻿<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Jinora — Anuncios de la competencia</title>
+  <link rel="stylesheet" href="/static/dashboard.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1>Jinora</h1>
+    <nav class="tabs" role="tablist" aria-label="Vistas">
+      <button class="tab" role="tab" data-view="ranking" aria-selected="true">Ranking</button>
+      <button class="tab" role="tab" data-view="competitors" aria-selected="false">Por competidor</button>
+      <button class="tab" role="tab" data-view="queue" aria-selected="false">Cola</button>
+    </nav>
+  </header>
+
+  <div id="notice" class="notice" role="status" hidden></div>
+
+  <main>
+    <section id="view-ranking" class="view" aria-label="Ranking">
+      <form id="filters" class="filters" aria-label="Filtros"></form>
+      <div class="split">
+        <div class="list-col">
+          <div id="ranking-head" class="muted small"></div>
+          <div id="ranking-list" class="rows"></div>
+          <h2 id="unevaluated-title" class="section-title" hidden></h2>
+          <div id="unevaluated-list" class="rows"></div>
+        </div>
+        <aside id="detail" class="detail" aria-label="Detalle del anuncio">
+          <p class="muted">Elige un anuncio de la lista para ver su detalle.</p>
+        </aside>
+      </div>
+    </section>
+
+    <section id="view-competitors" class="view" aria-label="Por competidor" hidden>
+      <div id="competitors-grid" class="cards"></div>
+    </section>
+
+    <section id="view-queue" class="view" aria-label="Cola" hidden>
+      <div class="row-actions"><button id="queue-refresh" class="btn">Actualizar</button><span id="queue-updated" class="muted small"></span></div>
+      <div id="queue-stats" class="stats"></div>
+      <h2 class="section-title">Trabajos recientes</h2>
+      <div id="jobs-list" class="jobs"></div>
+    </section>
+  </main>
+
+  <script src="/static/dashboard.js" defer></script>
+</body>
+</html>

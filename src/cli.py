@@ -32,27 +32,16 @@ def _split(csv_text: Optional[str]) -> List[str]:
 # --------------------------------------------------------------------------------------
 
 def show_queue_status() -> int:
-    from src.ai.quota import get_quota_guard
-    from src.config import is_within_preferred_hours, settings
-    from src.cost import CostSnapshot
-    from src.database import SessionLocal, engine
+    from src.database import engine
     from src.db.engine import is_legacy_schema
-    from src.work_queue import estimate_days_to_clear, queue_stats
+    from src.queue_status import build_queue_status
 
     if is_legacy_schema(engine):
         print("❌ La base tiene el esquema anterior a la Fase 6. Ejecuta: python -m src.db.migrate")
         return 1
 
-    with SessionLocal() as db:
-        s = queue_stats(db)
-    guard = get_quota_guard()
-    snap = CostSnapshot.take(guard)
-    main_usage = guard.get_daily_usage(settings.LLM_MODEL, key_fingerprint=snap.key_fingerprint)
-    cheap_usage = guard.get_daily_usage(settings.LLM_MODEL_CHEAP, key_fingerprint=snap.key_fingerprint)
-    legacy_today = guard.get_key_usage_today("")
-    usable_rpd = max(1, settings.GEMINI_RPD - settings.RESERVE_REQUESTS)
-    days = estimate_days_to_clear(s["queue_video"], settings.GEMINI_RPD, settings.RESERVE_REQUESTS)
-
+    st = build_queue_status()
+    s, q, est, cl = st["totals"], st["quota"], st["estimate"], st["claude"]
     print("=" * 70)
     print("📊 ESTADO DE LA COLA DE EVALUACIÓN")
     print("=" * 70)
@@ -70,20 +59,19 @@ def show_queue_status() -> int:
         print("Grupos de creativos:                         sin calcular (ejecuta: python main.py rescore)")
     print("-" * 70)
     print("📈 CONSUMO Y CUOTA DE HOY (GEMINI - America/Los_Angeles):")
-    print(f"  - Clave Gemini activa (fingerprint):       {snap.key_fingerprint}")
-    print(f"  - Solicitudes de esta clave hoy:           {snap.gemini_requests} (éxitos {snap.gemini_success}, fallos {snap.gemini_failed})")
-    if legacy_today:
-        print(f"  - Solicitudes sin fingerprint hoy:         {legacy_today} (registradas antes del conteo por clave)")
-    exhausted = main_usage.get("is_exhausted")
-    print(f"  - Estado de la cuota:                      {'🛑 AGOTADA (429 RPD - reanuda a medianoche PT)' if exhausted else '🟢 ACTIVA'}")
-    print(f"  - Límite diario / reserva / útiles:        {settings.GEMINI_RPD} / {settings.RESERVE_REQUESTS} / {usable_rpd}")
-    print(f"    * Modelo principal ({settings.LLM_MODEL}): {main_usage['requests']} req ({main_usage.get('requests_success', 0)} ok, {main_usage.get('requests_failed', 0)} fail)")
-    print(f"    * Modelo barato ({settings.LLM_MODEL_CHEAP}): {cheap_usage['requests']} req ({cheap_usage.get('requests_success', 0)} ok, {cheap_usage.get('requests_failed', 0)} fail)")
-    print(f"  - Ventana preferida ({settings.EVAL_PREFERRED_HOURS} Lima): {'🟢 DENTRO' if is_within_preferred_hours() else '⏳ FUERA'}")
+    print(f"  - Clave Gemini activa (fingerprint):       {q['key_fingerprint']}")
+    print(f"  - Solicitudes de esta clave hoy:           {q['requests_today']} (éxitos {q['success_today']}, fallos {q['failed_today']})")
+    if q["requests_without_fingerprint_today"]:
+        print(f"  - Solicitudes sin fingerprint hoy:         {q['requests_without_fingerprint_today']} (registradas antes del conteo por clave)")
+    print(f"  - Estado de la cuota:                      {'🛑 AGOTADA (429 RPD - reanuda a medianoche PT)' if q['exhausted'] else '🟢 ACTIVA'}")
+    print(f"  - Límite diario / reserva / útiles:        {q['rpd']} / {q['reserve']} / {q['usable']}")
+    for label, m in (("principal", q["main_model"]), ("barato", q["cheap_model"])):
+        print(f"    * Modelo {label} ({m['name']}): {m['requests']} req ({m['requests_success']} ok, {m['requests_failed']} fail)")
+    print(f"  - Ventana preferida ({st['window']['preferred_hours']} Lima): {'🟢 DENTRO' if st['window']['inside'] else '⏳ FUERA'}")
     print("-" * 70)
     print("⏱️ DÍAS ESTIMADOS PARA VACIAR LA COLA:")
-    print(f"  - Videos en cola / (RPD − RESERVE) = {s['queue_video']} / {usable_rpd}  →  ~{days} día(s)")
-    print(f"  - Estáticos ({s['queue_static']}): usan Claude; gasto ${snap.claude_usd:.4f} de tope ${settings.CLAUDE_BUDGET_USD:.2f}")
+    print(f"  - Videos en cola / (RPD − RESERVE) = {est['queue_video']} / {est['usable_rpd']}  →  ~{est['days_to_clear']} día(s)")
+    print(f"  - Estáticos ({cl['queue_static']}): usan Claude; gasto ${cl['spent_usd']:.4f} de tope ${cl['budget_usd']:.2f}")
     print("=" * 70)
     return 0
 
@@ -141,10 +129,25 @@ def cmd_evaluate(args: argparse.Namespace, respect_hours: bool = False, now: boo
 
 def cmd_report(args: argparse.Namespace) -> int:
     from src.database import SessionLocal
-    from src.report import build_report, format_report
+    from src.report import REPORTS_DIR, ROOT_DIR, build_report, format_report, write_report
+    from src.summary import generate_executive_summary
 
     with SessionLocal() as db:
-        print(format_report(build_report(db, pillar=args.pillar, top=args.top)))
+        report = build_report(db, pillar=args.pillar, top=args.top)
+    fmt = args.format or ("md" if args.summary else None)
+    if args.summary:  # explicit opt-in: ONE request to the configured LLM, through QuotaGuard
+        report["summary"] = generate_executive_summary(report)
+    if fmt is None:
+        print(format_report(report))
+        return 0
+    path = write_report(report, fmt, output_dir=args.output_dir)
+    try:
+        shown = path.resolve().relative_to(ROOT_DIR)
+    except ValueError:
+        shown = path.name
+    print(f"Reporte guardado en: {str(shown).replace(chr(92), '/')}")
+    s = report["summary"]
+    print("Resumen ejecutivo con LLM: " + ("generado" if s["generated"] else (f"NO generado — {s['reason']}" if s["requested"] else "no solicitado (use --summary)")))
     return 0
 
 
@@ -226,6 +229,9 @@ def build_parser() -> argparse.ArgumentParser:
     rep = sub.add_parser("report", help="Top de anuncios por jinora_score")
     rep.add_argument("--pillar", choices=["voz", "conversacional", "crm"])
     rep.add_argument("--top", type=int, default=10)
+    rep.add_argument("--format", choices=["md", "html"], help="Guarda el reporte en reports/ (sin esta opción se imprime la tabla)")
+    rep.add_argument("--summary", action="store_true", help="Añade un resumen ejecutivo con UNA solicitud al LLM (apagado por defecto)")
+    rep.add_argument("--output-dir", default=None, help="Carpeta de salida (defecto: reports/)")
     rep.set_defaults(func=cmd_report)
 
     cl = sub.add_parser("cleanup", help="Marca como out_of_catalog los anuncios de páginas que no son competidores")
