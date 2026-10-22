@@ -46,6 +46,15 @@ python -m src.db.migrate                 # crea la base y carga el catálogo de 
 
 `python -m src.db.migrate` también migra una base del esquema anterior (haz antes `--dry-run`; crea un backup verificado en `data/backup/`).
 
+**Multiempresa (empresas y proyectos).** Cada competidor pertenece a un proyecto de una empresa; el catálogo de Cosmiq es el proyecto por defecto (ver `docs/PLAN_MULTIEMPRESA.md`). En una base existente:
+
+```bash
+python -m src.db.tenancy --dry-run      # qué cambiaría
+python -m src.db.tenancy                # backup verificado, migra y verifica (también lo hace src.db.migrate)
+```
+
+No toca anuncios, medios ni evaluaciones; cambia `UNIQUE(name)` de competidores por `UNIQUE(project_id, name)`.
+
 ## Configuración (`.env`)
 
 El archivo `.env` **no se versiona** (está en `.gitignore`); `.env.example` lista las variables con los secretos vacíos. Los valores por defecto de las no secretas están en `src/config.py`.
@@ -204,6 +213,7 @@ Los tests nunca tocan `data/meta_ads.db` ni llaman a Gemini o Claude. Incluyen u
 | **Claude responde 400 por falta de workspace** | Tu clave de Anthropic no está asociada a un workspace. Pon el ID en `ANTHROPIC_WORKSPACE_ID` (en tu `.env`) o crea la clave dentro de un workspace. Mientras tanto los estáticos quedan en `pending_evaluation` |
 | **Cambié la clave de Gemini** | El contador de cuota es **por clave**: una clave nueva empieza el día en 0. `queue --status` muestra el *fingerprint* (primeros 8 caracteres del hash de la clave activa, nunca la clave). Si no coincide con el que esperabas, revisa `GEMINI_API_KEY`. Los registros de la clave anterior se conservan. Aviso: si la clave nueva es del **mismo proyecto de Google**, comparte el límite diario |
 | `La base tiene el esquema anterior a la Fase 6` | Ejecuta `python -m src.db.migrate --dry-run` y luego `python -m src.db.migrate` |
+| `La tabla competitors aún tiene UNIQUE(name) global` | Ejecuta `python -m src.db.tenancy --dry-run` y luego `python -m src.db.tenancy` |
 | `El catálogo de competidores está vacío` | Ejecuta `python -m src.db.migrate` (carga `config/competitors_database.json`) |
 | La cola dice "pendientes sin archivo local" | Esos anuncios no tienen su video o imagen descargado: `python -m src.cli run --competitor "<nombre>" --stages download,media` |
 | El dashboard muestra "Aún no hay anuncios evaluados" | Todavía no hay `creative_score` guardados: mira la pestaña **Cola** y ejecuta `evaluate --pending` |

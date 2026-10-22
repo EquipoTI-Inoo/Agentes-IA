@@ -495,7 +495,7 @@ def _tenancy_step(engine: Engine, report: Dict[str, Any], backup: bool, backup_d
         backup_file = backup_sqlite(engine, backup_dir, label="multiempresa")
         report["backup_path"] = str(backup_file) if backup_file else None
     report["tenancy"] = apply_tenancy(engine)
-    if report["status"] == "already_migrated":
+    if report.get("status") == "already_migrated":
         report["after"] = table_counts(engine)
 
 
