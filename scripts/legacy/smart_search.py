@@ -1,3 +1,4 @@
+# LEGACY: nadie lo importa (verificado en src, tests y scripts); expansor de busquedas anterior al pipeline
 """
 Smart Query Expander & Strategy Engine
 Expands user intents into targeted search vectors (Niche x Pain Point x AI Mechanism).

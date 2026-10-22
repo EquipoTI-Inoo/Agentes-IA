@@ -219,7 +219,8 @@ src/evaluator*.py      evaluadores (video, estático)   src/ai/            clien
 src/scoring/           market_score y jinora_score     src/db/            modelos y migración
 src/web/               dashboard y API             src/report.py, summary.py  reportes
 config/                catálogo, rúbricas, pesos   prompts/              prompts de los evaluadores
-scripts/               utilidades (calibración, auditorías, tarea programada)
+scripts/               calibrate, compare_transcripts, resolve_page_ids, run_phase4_real_tests, schedule_windows.ps1
+scripts/legacy/        scripts históricos sin mantenimiento (ver su README)
 tests/                 suite de pruebas            docs/                 plan y progreso
 ```
 

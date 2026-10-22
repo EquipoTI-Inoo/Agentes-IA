@@ -1,3 +1,4 @@
+# LEGACY: prueba puntual contra Meta (viabilidad de anuncios inactivos, Fase 3); renombrado para que pytest no lo recolecte
 """
 Prueba de viabilidad de anuncios inactivos en Meta Ads Library.
 Solo lectura, sin guardar en base de datos ni llamar a LLMs.

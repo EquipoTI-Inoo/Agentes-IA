@@ -1,3 +1,4 @@
+# LEGACY: auditoria puntual de la Fase 3; la etapa media del pipeline calcula hash, pHash y metadatos de cada anuncio
 """
 Audit and fingerprint all ads and media in Jinora according to Fase 3 requirements:
 - Computes SHA-256 for exact video deduplication

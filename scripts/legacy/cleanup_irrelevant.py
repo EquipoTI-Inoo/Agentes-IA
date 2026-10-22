@@ -1,3 +1,4 @@
+# LEGACY: roto: consulta la columna full_transcript, que ya no existe en la tabla ads desde la Fase 6; la relevancia ahora la hace el pipeline (etapa filter) y el cleanup es python -m src.cli cleanup
 """
 Jinora - Irrelevant Ads Auditor & Cleaner
 Audits all existing ad records in data/meta_ads.db using the updated relevance filter.

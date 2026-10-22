@@ -1,3 +1,4 @@
+# LEGACY: reemplazo una sola vez videos de la muestra de calibracion; la muestra ya esta cerrada
 """
 Script para filtrar y reemplazar los videos no relevantes en la muestra de calibración.
 Sustituye los anuncios de Kommo Home y Yalo Perú por anuncios genuinos de CRM y WhatsApp

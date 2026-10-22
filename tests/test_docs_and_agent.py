@@ -106,3 +106,31 @@ def test_scheduler_never_registers_without_the_register_switch():
     dry_run = SCHEDULER.split("if (-not $Register) {")[1].split("exit 0")[0]
     assert "Register-ScheduledTask" not in dry_run and "exit 0" in SCHEDULER
     assert SCHEDULER.index("if (-not $Register) {") < SCHEDULER.index("Register-ScheduledTask")  # simulation exits before any registration
+
+
+# --- scripts/: only what is used stays; the rest is quarantined in scripts/legacy ------------------
+
+ACTIVE_SCRIPTS = {"calibrate.py", "compare_transcripts.py", "resolve_page_ids.py", "run_phase4_real_tests.py", "schedule_windows.ps1"}
+
+
+def test_scripts_folder_holds_only_the_maintained_scripts():
+    assert {p.name for p in (ROOT / "scripts").iterdir() if p.is_file()} == ACTIVE_SCRIPTS
+    assert not (ROOT / "src" / "smart_search.py").exists()  # unused module moved out of src/
+
+
+def test_legacy_scripts_are_marked_documented_and_never_collected_by_pytest():
+    legacy = ROOT / "scripts" / "legacy"
+    scripts = sorted(legacy.glob("*.py"))
+    assert len(scripts) == 8 and (legacy / "README.md").exists()
+    readme = (legacy / "README.md").read_text(encoding="utf-8")
+    for script in scripts:
+        first = script.read_text(encoding="utf-8-sig").splitlines()[0]
+        assert re.match(r"# LEGACY: \S", first), f"{script.name} lacks the '# LEGACY: <motivo>' first line"
+        assert script.name in readme
+        assert not script.name.startswith("test_")  # a test_ prefix would make pytest collect it
+    ini = (ROOT / "pytest.ini").read_text(encoding="utf-8")
+    assert "testpaths = tests" in ini and "scripts" in ini.split("norecursedirs")[1]
+    for name in ("README.md", "ad-hunter.md"):
+        text = README if name == "README.md" else AGENT
+        for moved in ("cleanup_irrelevant", "run_phase4_live_evals", "audit_media_phase3", "build_calibration_sample", "refine_sample", "smart_search"):
+            assert moved not in text, f"{name} still points at the retired script {moved}"

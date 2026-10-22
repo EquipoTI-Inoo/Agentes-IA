@@ -1,3 +1,4 @@
+# LEGACY: corrida de aceptacion de la Fase 2 contra Meta; renombrado para que pytest no lo recolecte
 """
 Test verification script for Phase 2 acceptance.
 Runs collection over 10 Priority 1 competitors across LatAm (PE, MX, CO).

@@ -1,3 +1,4 @@
+# LEGACY: duplica scripts/run_phase4_real_tests.py (que tiene tope de presupuesto por clave) y llama a Gemini con ids fijos
 """
 Script to execute Phase 4 live validation tests:
 1. Live evaluation of 3 calibration ads (WhatsApp, CRM, Mass campaigns)

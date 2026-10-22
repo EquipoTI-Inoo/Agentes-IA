@@ -1,3 +1,4 @@
+# LEGACY: armo una sola vez la muestra de calibracion de la Fase 4; la muestra ya existe
 """
 Script para scraping dirigido y generación de la muestra de calibración manual (20 videos P1).
 Cumple estrictamente con las reglas de Jinora:

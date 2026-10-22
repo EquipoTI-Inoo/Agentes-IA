@@ -7,6 +7,7 @@ from unittest.mock import MagicMock, patch
 import pytest
 
 from src.collect.page_resolver import PageResolver, extract_base_domain
+from src.collect.ratelimit import MetaRateLimiter
 
 
 def test_extract_base_domain():
@@ -40,7 +41,7 @@ def test_page_resolver_exact_match_with_domain_verification():
     mock_ad.creatives = [mock_creative]
     mock_collector.search.return_value = [mock_ad]
 
-    resolver = PageResolver(collector=mock_collector)
+    resolver = PageResolver(collector=mock_collector, limiter=MetaRateLimiter(sleep=lambda s: None))
     competitor = {
         "name": "Leadsales",
         "website": "https://leadsales.io",
@@ -65,7 +66,7 @@ def test_page_resolver_ambiguous_candidate_flags_needs_review():
         }
     ]
 
-    resolver = PageResolver(collector=mock_collector)
+    resolver = PageResolver(collector=mock_collector, limiter=MetaRateLimiter(sleep=lambda s: None))
     competitor = {
         "name": "B2Chat",
         "website": "https://b2chat.io",
@@ -83,7 +84,7 @@ def test_page_resolver_no_candidates_found():
     mock_collector = MagicMock()
     mock_collector.client.search_pages.return_value = []
 
-    resolver = PageResolver(collector=mock_collector)
+    resolver = PageResolver(collector=mock_collector, limiter=MetaRateLimiter(sleep=lambda s: None))
     competitor = {
         "name": "NonExistentCRM12345",
         "website": "https://nonexistent.io",
