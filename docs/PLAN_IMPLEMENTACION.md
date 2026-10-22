@@ -348,10 +348,10 @@ Mantener las 4 dimensiones del `ad-hunter.md` (0–25 c/u) pero con **anclas** p
 
 | Dimensión | 0–6 | 7–12 | 13–19 | 20–25 |
 |-----------|-----|------|-------|-------|
-| **1. Captación (0–3 s)** | Arranca con logo/intro genérica; sin texto ni voz que enganche. | Gancho presente pero predecible (“¿Quieres más ventas?”). | Gancho específico con dolor o curiosidad claros; visual acompaña. | Interrupción de patrón fuerte + dolor visceral o afirmación contraintuitiva; audio y visual sincronizados. |
+| **1. Captación (0–3 s)** | Arranca con logo/intro genérica; sin texto, voz ni imagen que enganche. | Gancho presente pero predecible (“¿Quieres más ventas?”). | Gancho específico con dolor o curiosidad claros (por voz, texto en pantalla, animación o imagen); visual acompaña. | Interrupción de patrón fuerte + dolor visceral o afirmación contraintuitiva; audio y visual sincronizados (en motion graphics: tipografía/animación que interrumpe y comunica la promesa sin voz). |
 | **2. Mecanismo y prueba** | Solo afirmaciones (“la mejor IA”). | Explica qué hace sin mostrarlo. | Muestra el producto (pantallas, demo parcial) o un dato concreto. | Demo en vivo verificable, caso real con métricas o contraste explícito con la alternativa. |
 | **3. Narrativa y ritmo** | Monótono, sin estructura, se cae a los pocos segundos. | Estructura básica, ritmo irregular. | Problema → solución claro, ritmo sostenido. | Arco de tensión completo (dolor → giro → alivio), cortes y locución que sostienen hasta el CTA. |
-| **4. Oferta y CTA** | Sin CTA o CTA confuso. | CTA genérico (“Más información”). | CTA claro con beneficio. | CTA de baja fricción + reversión de riesgo (prueba gratis, garantía, demo inmediata) + urgencia/valor evidente. |
+| **4. Oferta y CTA** | Sin CTA o CTA confuso. | CTA genérico (“Más información”). | CTA claro con beneficio (hablado, en texto en pantalla o en tarjeta final). | CTA de baja fricción + reversión de riesgo (prueba gratis, garantía, demo inmediata) + urgencia/valor evidente. |
 
 ### 4.2 Esquema de salida — `src/ai/schemas.py` (Pydantic)
 ```python
@@ -402,6 +402,9 @@ class EvaluationResult(BaseModel):
   - Puntuar **solo con lo observable**; cada puntaje requiere ≥1 evidencia con timestamp.
   - Si no hay voz, evaluar texto en pantalla y visual; no inventar diálogo.
   - **Prohibido** usar los días activos para puntuar (esa señal va en `market_score`). No enviar `days_active` al modelo.
+  - **Neutralidad frente al formato** (decisión 21-oct, calibración: un motion graphics puro recibió 40 vs 73 del dueño, con captación 5 y oferta 2): el formato (persona, UGC, demo, motion graphics) **no suma ni resta**. El gancho, el mecanismo, la oferta y el CTA cuentan por cualquier canal: voz, texto en pantalla, gráficos, animación o tarjeta final. No asumir que la ausencia de personas o voz es ausencia de gancho/CTA.
+  - **Justificar toda nota baja:** si una dimensión recibe menos de 8, el modelo debe citar qué buscó y no encontró, con el rango de tiempos revisado y el canal (voz/texto/visual). Sin esa cita, la nota no es válida y se reintenta.
+  - `format` es un dato descriptivo (`animacion` incluye motion graphics). `calibrate.py` reporta Spearman y diferencia media vs puntajes del dueño **por `format`**; si un formato sale sistemáticamente más bajo, se ajustan las anclas, no se limita el rango.
   - Usar todo el rango 0–25 según las anclas. **Sin cupos ni topes numéricos** (decisión 21-oct: un tope distorsiona). Un puntaje de 20 o más solo se justifica si lo observado cumple lo que describe el ancla de ese nivel, y la evidencia con tiempos lo demuestra. Si tras calibrar con los puntajes del dueño se ve inflación, se ajustan las anclas, no se limita el rango.
 - [ ] Temperatura 0, salida JSON con schema (`response_schema` de Gemini).
 
