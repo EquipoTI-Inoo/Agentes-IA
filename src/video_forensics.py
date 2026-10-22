@@ -1,4 +1,3 @@
-# DEPRECATED: se elimina tras verificar la transcripción de Gemini (Fase 0.2.2)
 """
 Enterprise Video Forensics Engine
 Performs 100% full-duration audio transcription with millisecond timestamps (Faster-Whisper)

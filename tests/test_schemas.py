@@ -98,4 +98,52 @@ def test_static_evaluation_result_validation():
         confidence=0.95,
     )
     assert res.ai_mention == "mencionada"
-    assert res.has_product_screenshot is True
+
+
+def test_low_score_requires_absence_and_channel_citation():
+    # Score < 8 with missing absence / channel justification should fail
+    ev_generic = Evidence(timestamp="00:01-00:05", source="visual", quote="Solo un fondo azul")
+    with pytest.raises(ValidationError) as exc:
+        DimensionScore(
+            score=5,
+            anchor_level="0-6",
+            reasoning="Poco atractivo y muy aburrido.",
+            evidence=[ev_generic]
+        )
+    assert "Puntaje bajo (< 8) requiere justificar explícitamente" in str(exc.value)
+
+    # Score < 8 with proper citation of searched element not found, channel, and time range passes
+    ev_proper = Evidence(
+        timestamp="00:00-00:05",
+        source="audio",
+        quote="Se buscó locución o gancho de voz en los primeros 5s y no se observó ningún audio ni titular en pantalla."
+    )
+    ds_valid = DimensionScore(
+        score=4,
+        anchor_level="0-6",
+        reasoning="En el intervalo de 0 a 5 segundos se buscó un gancho verbal o visual en pantalla y no se encontró ninguna promesa ni problema presentado.",
+        evidence=[ev_proper]
+    )
+    assert ds_valid.score == 4
+
+
+def test_static_low_score_validation():
+    # Score < 8 without absence justification fails
+    ev_bad = StaticEvidence(zone="centro", quote="Fondo plano")
+    with pytest.raises(ValidationError):
+        StaticDimensionScore(
+            score=5,
+            anchor_level="0-6",
+            reasoning="Diseño simple.",
+            evidence=[ev_bad]
+        )
+
+    # Score < 8 with absence justification passes
+    ev_ok = StaticEvidence(zone="inferior", quote="No se observa ningún botón o enlace de CTA visible")
+    ds_ok = StaticDimensionScore(
+        score=4,
+        anchor_level="0-6",
+        reasoning="En la zona inferior se buscó llamada a la acción y carece de CTA claro.",
+        evidence=[ev_ok]
+    )
+    assert ds_ok.score == 4

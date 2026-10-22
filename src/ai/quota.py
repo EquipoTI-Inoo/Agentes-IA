@@ -1,7 +1,9 @@
 """
 Jinora AI - Quota Guard & Free Tier Rate Limiter
 Enforces Google Gemini Free Tier constraints:
-- Requests Per Day (RPD) with Pacific Time reset tracking
+- Requests Per Day (RPD) with Pacific Time (America/Los_Angeles) reset tracking
+- Accurate attempt tracking for ALL requests (success, 503, 429, timeouts)
+- Immediate halt upon daily 429 RPD exhaustion until midnight PT
 - Requests Per Minute (RPM) & Tokens Per Minute (TPM) sliding window pacing
 - Exponential backoff on HTTP 429 errors
 - Prioritized evaluation queue and low-value ad skipping
@@ -22,15 +24,21 @@ from src.config import settings
 logger = logging.getLogger("Jinora.QuotaGuard")
 T = TypeVar("T")
 
-# Pacific Time Zone used by Google AI Studio to reset daily limits (midnight PT)
+# Pacific Time Zone used by Google AI Studio to reset daily limits (midnight PT = 02:00 AM America/Lima)
 try:
     PACIFIC_TZ = ZoneInfo("America/Los_Angeles")
 except Exception:
     PACIFIC_TZ = timezone.utc
 
 
-def get_current_day_pt() -> str:
-    """Return the current date string (YYYY-MM-DD) in Pacific Time."""
+def get_current_day_pt(current_dt: Optional[datetime] = None) -> str:
+    """Return the current date string (YYYY-MM-DD) in America/Los_Angeles."""
+    if current_dt:
+        if current_dt.tzinfo is None:
+            dt = current_dt.replace(tzinfo=PACIFIC_TZ)
+        else:
+            dt = current_dt.astimezone(PACIFIC_TZ)
+        return dt.strftime("%Y-%m-%d")
     return datetime.now(PACIFIC_TZ).strftime("%Y-%m-%d")
 
 
@@ -82,7 +90,7 @@ class QuotaGuard:
         return conn
 
     def _init_db(self) -> None:
-        """Create llm_usage table if it does not exist and ensure columns."""
+        """Create llm_usage and llm_attempts tables if they do not exist and ensure columns."""
         with self._get_connection() as conn:
             conn.execute(
                 """
@@ -91,8 +99,12 @@ class QuotaGuard:
                     day_pt TEXT NOT NULL,
                     model TEXT NOT NULL,
                     provider TEXT DEFAULT 'gemini',
+                    status TEXT DEFAULT 'active',
                     costo_estimado_usd REAL DEFAULT 0.0,
                     requests INTEGER NOT NULL DEFAULT 0,
+                    requests_success INTEGER NOT NULL DEFAULT 0,
+                    requests_failed INTEGER NOT NULL DEFAULT 0,
+                    is_exhausted BOOLEAN DEFAULT 0,
                     tokens_in INTEGER NOT NULL DEFAULT 0,
                     tokens_out INTEGER NOT NULL DEFAULT 0,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -100,7 +112,23 @@ class QuotaGuard:
                 );
                 """
             )
-            # Ensure columns exist if table was created in an earlier phase
+            conn.execute(
+                """
+                CREATE TABLE IF NOT EXISTS llm_attempts (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    day_pt TEXT NOT NULL,
+                    timestamp_utc TEXT NOT NULL,
+                    model TEXT NOT NULL,
+                    provider TEXT DEFAULT 'gemini',
+                    status TEXT NOT NULL,
+                    error_message TEXT,
+                    tokens_in INTEGER DEFAULT 0,
+                    tokens_out INTEGER DEFAULT 0,
+                    costo_estimado_usd REAL DEFAULT 0.0,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+                """
+            )
             cur = conn.cursor()
             cur.execute("PRAGMA table_info(llm_usage)")
             cols = [row["name"] for row in cur.fetchall()]
@@ -108,30 +136,80 @@ class QuotaGuard:
                 conn.execute("ALTER TABLE llm_usage ADD COLUMN provider TEXT DEFAULT 'gemini'")
             if "costo_estimado_usd" not in cols:
                 conn.execute("ALTER TABLE llm_usage ADD COLUMN costo_estimado_usd REAL DEFAULT 0.0")
+            if "status" not in cols:
+                conn.execute("ALTER TABLE llm_usage ADD COLUMN status TEXT DEFAULT 'active'")
+            if "requests_success" not in cols:
+                conn.execute("ALTER TABLE llm_usage ADD COLUMN requests_success INTEGER DEFAULT 0")
+            if "requests_failed" not in cols:
+                conn.execute("ALTER TABLE llm_usage ADD COLUMN requests_failed INTEGER DEFAULT 0")
+            if "is_exhausted" not in cols:
+                conn.execute("ALTER TABLE llm_usage ADD COLUMN is_exhausted BOOLEAN DEFAULT 0")
             conn.commit()
 
-    def get_daily_usage(self, model: str, day_pt: Optional[str] = None) -> Dict[str, int]:
+    def get_daily_usage(self, model: str, day_pt: Optional[str] = None) -> Dict[str, Any]:
         """Fetch current day usage metrics for a specific model."""
         day = day_pt or get_current_day_pt()
         with self._get_connection() as conn:
             cur = conn.cursor()
             cur.execute(
-                "SELECT requests, tokens_in, tokens_out FROM llm_usage WHERE day_pt = ? AND model = ?",
+                """
+                SELECT requests, requests_success, requests_failed, tokens_in, tokens_out, is_exhausted, status 
+                FROM llm_usage 
+                WHERE day_pt = ? AND model = ?
+                """,
                 (day, model),
             )
             row = cur.fetchone()
             if row:
+                col_keys = row.keys()
                 return {
                     "requests": int(row["requests"]),
+                    "requests_success": int(row["requests_success"] if "requests_success" in col_keys and row["requests_success"] is not None else row["requests"]),
+                    "requests_failed": int(row["requests_failed"] if "requests_failed" in col_keys and row["requests_failed"] is not None else 0),
                     "tokens_in": int(row["tokens_in"]),
                     "tokens_out": int(row["tokens_out"]),
+                    "is_exhausted": bool(row["is_exhausted"] if "is_exhausted" in col_keys and row["is_exhausted"] is not None else False),
+                    "status": str(row["status"] if "status" in col_keys and row["status"] else "active"),
                 }
-        return {"requests": 0, "tokens_in": 0, "tokens_out": 0}
+        return {
+            "requests": 0,
+            "requests_success": 0,
+            "requests_failed": 0,
+            "tokens_in": 0,
+            "tokens_out": 0,
+            "is_exhausted": False,
+            "status": "active",
+        }
+
+    def mark_exhausted(self, model: str, day_pt: Optional[str] = None) -> None:
+        """Mark model quota as exhausted for the given day in Pacific Time (America/Los_Angeles)."""
+        day = day_pt or get_current_day_pt()
+        with self._get_connection() as conn:
+            conn.execute(
+                """
+                INSERT INTO llm_usage (day_pt, model, is_exhausted, status, requests)
+                VALUES (?, ?, 1, '429_rpd', 0)
+                ON CONFLICT(day_pt, model) DO UPDATE SET
+                    is_exhausted = 1,
+                    status = '429_rpd';
+                """,
+                (day, model),
+            )
+            conn.commit()
+        logger.warning(f"🛑 Quota marked as EXHAUSTED for model {model} on {day} (PT). Blocked until midnight PT.")
+
+    def is_exhausted(self, model: str, day_pt: Optional[str] = None) -> bool:
+        """Check if quota is explicitly marked as exhausted for today."""
+        usage = self.get_daily_usage(model, day_pt)
+        return bool(usage.get("is_exhausted", False))
 
     def get_available_requests(self, model: str, day_pt: Optional[str] = None) -> int:
-        """Calculate remaining usable requests for today considering reserve requests."""
+        """Calculate remaining usable requests for today considering reserve requests and exhaustion flag."""
         if not settings.FREE_TIER_MODE:
             return 999999
+
+        if self.is_exhausted(model, day_pt):
+            return 0
 
         raw_limit = settings.get_rpd_for_model(model)
         effective_limit = max(0, raw_limit - settings.RESERVE_REQUESTS)
@@ -141,12 +219,14 @@ class QuotaGuard:
 
     def can_acquire(self, model: str, requests_needed: int = 1) -> bool:
         """Check if quota allows acquiring additional requests."""
+        if self.is_exhausted(model):
+            return False
         return self.get_available_requests(model) >= requests_needed
 
     def acquire(self, model: str, est_tokens: int = 0) -> None:
         """
         Reserve an API request slot.
-        - Enforces RPD: raises QuotaExhausted if daily cap reached.
+        - Enforces RPD: raises QuotaExhausted if daily cap reached or marked exhausted.
         - Enforces RPM/TPM: sleeps if rate limits are momentarily saturated.
         """
         if not settings.FREE_TIER_MODE:
@@ -155,27 +235,37 @@ class QuotaGuard:
         day_pt = get_current_day_pt()
         raw_limit = settings.get_rpd_for_model(model)
         effective_limit = max(0, raw_limit - settings.RESERVE_REQUESTS)
+
+        if self.is_exhausted(model, day_pt):
+            raise QuotaExhausted(
+                model=model,
+                day_pt=day_pt,
+                requests_used=raw_limit,
+                limit=effective_limit,
+                reason="429 RESOURCE_EXHAUSTED: Límite diario RPD agotado. Cola detenida hasta medianoche PT.",
+            )
+
         usage = self.get_daily_usage(model, day_pt)
 
         if usage["requests"] >= effective_limit:
             logger.warning(
-                f"🚨 Quota diaria agotada para {model}: {usage['requests']}/{effective_limit} "
-                f"(Límite bruto: {raw_limit}, Reserva: {settings.RESERVE_REQUESTS})"
+                f"🚨 QuotaGuard: Daily limit reached for {model} on {day_pt}. "
+                f"Used: {usage['requests']}/{effective_limit} (Reserve: {settings.RESERVE_REQUESTS})"
             )
             raise QuotaExhausted(
                 model=model,
                 day_pt=day_pt,
                 requests_used=usage["requests"],
                 limit=effective_limit,
-                reason="Daily RPD limit reached after deducting reserve",
+                reason=f"Reached daily usable limit ({effective_limit} requests)",
             )
 
         # Sliding window for RPM (Requests Per Minute)
         now = time.time()
         self._request_timestamps = [t for t in self._request_timestamps if now - t < 60.0]
         if len(self._request_timestamps) >= settings.GEMINI_RPM:
-            oldest = self._request_timestamps[0]
-            sleep_time = max(0.1, 60.0 - (now - oldest) + 0.5)
+            oldest_request_time = self._request_timestamps[0]
+            sleep_time = max(0.1, 60.0 - (now - oldest_request_time) + 0.5)
             logger.info(f"⏳ RPM limit reached ({settings.GEMINI_RPM}/min). Pacing for {sleep_time:.1f}s...")
             time.sleep(sleep_time)
             now = time.time()
@@ -197,6 +287,68 @@ class QuotaGuard:
         if est_tokens > 0:
             self._token_timestamps.append((now, est_tokens))
 
+    def record_attempt(
+        self,
+        model: str,
+        provider: str = "gemini",
+        status: str = "success",
+        tokens_in: int = 0,
+        tokens_out: int = 0,
+        cost_usd: float = 0.0,
+        error_message: Optional[str] = None,
+        day_pt: Optional[str] = None,
+    ) -> None:
+        """
+        Record every single API request attempt sent over the wire (successful or failed).
+        Inserts row into llm_attempts and updates cumulative llm_usage.
+        """
+        day = day_pt or get_current_day_pt()
+        now_utc = datetime.now(timezone.utc).isoformat()
+        is_success = (status.lower() == "success")
+
+        with self._get_connection() as conn:
+            conn.execute(
+                """
+                INSERT INTO llm_attempts (day_pt, timestamp_utc, model, provider, status, error_message, tokens_in, tokens_out, costo_estimado_usd)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+                """,
+                (day, now_utc, model, provider, status, error_message, tokens_in, tokens_out, cost_usd),
+            )
+
+            is_exhausted_flag = 1 if status in ("429_rpd", "rpd_exhausted") else 0
+            conn.execute(
+                """
+                INSERT INTO llm_usage (
+                    day_pt, model, provider, status, costo_estimado_usd, 
+                    requests, requests_success, requests_failed, is_exhausted, tokens_in, tokens_out
+                )
+                VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?, ?, ?)
+                ON CONFLICT(day_pt, model) DO UPDATE SET
+                    requests = requests + 1,
+                    requests_success = requests_success + excluded.requests_success,
+                    requests_failed = requests_failed + excluded.requests_failed,
+                    tokens_in = tokens_in + excluded.tokens_in,
+                    tokens_out = tokens_out + excluded.tokens_out,
+                    costo_estimado_usd = costo_estimado_usd + excluded.costo_estimado_usd,
+                    status = excluded.status,
+                    is_exhausted = CASE WHEN excluded.is_exhausted = 1 THEN 1 ELSE llm_usage.is_exhausted END,
+                    provider = excluded.provider;
+                """,
+                (
+                    day, model, provider, status, cost_usd,
+                    1 if is_success else 0,
+                    0 if is_success else 1,
+                    is_exhausted_flag,
+                    tokens_in, tokens_out,
+                ),
+            )
+            conn.commit()
+
+        logger.info(
+            f"📊 LLM Attempt recorded [{provider} | {model} | {day}]: status={status}, +1 req "
+            f"({'SUCCESS' if is_success else 'FAIL'}), +{tokens_in} tok_in, +{tokens_out} tok_out"
+        )
+
     def record_usage(
         self,
         model: str,
@@ -206,28 +358,22 @@ class QuotaGuard:
         day_pt: Optional[str] = None,
         provider: str = "gemini",
         cost_usd: float = 0.0,
+        status: str = "success",
+        error_message: Optional[str] = None,
     ) -> None:
-        """Atomically record actual token, request and cost consumption."""
-        day = day_pt or get_current_day_pt()
-        with self._get_connection() as conn:
-            conn.execute(
-                """
-                INSERT INTO llm_usage (day_pt, model, provider, costo_estimado_usd, requests, tokens_in, tokens_out)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(day_pt, model) DO UPDATE SET
-                    requests = requests + excluded.requests,
-                    tokens_in = tokens_in + excluded.tokens_in,
-                    tokens_out = tokens_out + excluded.tokens_out,
-                    costo_estimado_usd = costo_estimado_usd + excluded.costo_estimado_usd,
-                    provider = excluded.provider;
-                """,
-                (day, model, provider, cost_usd, requests, tokens_in, tokens_out),
+        """Atomically record token, request and cost consumption (calls record_attempt)."""
+        req_count = max(1, requests)
+        for _ in range(req_count):
+            self.record_attempt(
+                model=model,
+                provider=provider,
+                status=status,
+                tokens_in=tokens_in // req_count,
+                tokens_out=tokens_out // req_count,
+                cost_usd=cost_usd / req_count,
+                error_message=error_message,
+                day_pt=day_pt,
             )
-            conn.commit()
-
-        logger.info(
-            f"📊 LLM Usage recorded [{provider} | {model} | {day}]: +{requests} req, +{tokens_in} tok_in, +{tokens_out} tok_out, +${cost_usd:.4f}"
-        )
 
     def get_total_spend(self, provider: Optional[str] = None) -> float:
         """Calculate total cumulative spend in USD (e.g. for Claude budget tracking)."""
@@ -262,12 +408,13 @@ class QuotaGuard:
 
         for attempt in range(1, total_attempts + 1):
             try:
-                return func(*args, **kwargs)
+                res = func(*args, **kwargs)
+                self.record_attempt(model=model, provider="gemini", status="success")
+                return res
             except Exception as exc:
                 last_exception = exc
                 err_str = str(exc).lower()
 
-                # Detect 429 or ResourceExhausted
                 is_rate_limit = (
                     "429" in err_str
                     or "resource_exhausted" in err_str
@@ -278,10 +425,16 @@ class QuotaGuard:
                     "quota exceeded" in err_str
                     or "daily" in err_str
                     or "per day" in err_str
+                    or "generaterequestsperday" in err_str
+                    or "limit: 20" in err_str
                 )
 
+                status_code = "429_rpd" if is_daily_quota else ("429" if is_rate_limit else "error")
+                self.record_attempt(model=model, provider="gemini", status=status_code, error_message=err_str[:200])
+
                 if is_rate_limit:
-                    if is_daily_quota or attempt == total_attempts:
+                    if is_daily_quota:
+                        self.mark_exhausted(model)
                         day_pt = get_current_day_pt()
                         usage = self.get_daily_usage(model, day_pt)
                         raise QuotaExhausted(
@@ -291,6 +444,9 @@ class QuotaGuard:
                             limit=settings.get_rpd_for_model(model),
                             reason=f"Google API returned quota error: {exc}",
                         ) from exc
+
+                    if attempt == total_attempts:
+                        break
 
                     delay = backoff_delays[attempt - 1]
                     logger.warning(
@@ -318,7 +474,7 @@ def sort_ads_for_evaluation(ads: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
     """
     def _sort_key(ad: Dict[str, Any]) -> Tuple[int, int, float, int]:
         is_active = bool(ad.get("is_active", True))
-        active_rank = 0 if is_active else 1  # 0 = active first, 1 = inactive at lowest priority
+        active_rank = 0 if is_active else 1
 
         priority = int(ad.get("priority", 2))
         is_p1 = 0 if priority == 1 else 1
@@ -346,11 +502,9 @@ def should_evaluate_ad(
     is_active = bool(ad.get("is_active", True))
     days = int(ad.get("days_active", 0) or 0)
 
-    # Inactive ads: collected as data only; never evaluated unless duration was > 60 days
     if not is_active:
         if days <= 60:
             return False, "skipped_data_only: inactive ad <= 60 days (data only, no LLM)"
-        # Inactive ads with > 60 days can be evaluated at lowest priority if quota permits
 
     if is_active and days < 3:
         return False, "skipped_low_value: days_active < 3"

@@ -26,8 +26,8 @@ if sys.platform == "win32":
     except Exception:
         pass
 
-from src.ai.quota import get_quota_guard
-from src.config import settings
+from src.ai.quota import QuotaExhausted, get_quota_guard, sort_ads_for_evaluation
+from src.config import is_within_preferred_hours, settings
 from src.media.fingerprint import detect_ad_format, route_ad_for_evaluation
 from src.pillars import PILLARS
 from src.scraper import MetaAdsHunter
@@ -44,15 +44,21 @@ def show_queue_status() -> None:
     conn = sqlite3.connect(str(db_path))
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
-    cur.execute("SELECT id, page_name, has_video, video_path, image_path, headline, body_text FROM ads")
+    cur.execute("SELECT id, page_name, has_video, video_path, image_path, headline, body_text, cognitive_score FROM ads")
     rows = cur.fetchall()
+
+    cur.execute("SELECT COUNT(DISTINCT ad_id) FROM analyses")
+    evaluated_count = cur.fetchone()[0] or 0
     conn.close()
 
     total_ads = len(rows)
     video_count = 0
     static_count = 0
+    pending_count = 0
 
     for r in rows:
+        if r["cognitive_score"] is None:
+            pending_count += 1
         ad_dict = {
             "ad_id": str(r["id"]),
             "video_path": r["video_path"],
@@ -74,9 +80,10 @@ def show_queue_status() -> None:
     main_usage = quota_guard.get_daily_usage(settings.LLM_MODEL)
     cheap_usage = quota_guard.get_daily_usage(settings.LLM_MODEL_CHEAP)
     total_today_requests = main_usage["requests"] + cheap_usage["requests"]
+    total_success_requests = main_usage.get("requests_success", 0) + cheap_usage.get("requests_success", 0)
+    total_failed_requests = main_usage.get("requests_failed", 0) + cheap_usage.get("requests_failed", 0)
 
     usable_rpd = max(1, settings.GEMINI_RPD - settings.RESERVE_REQUESTS)
-    # Decision vigente: 1 video por solicitud para máxima precisión sin recorte
     eval_batch = 1
     requests_needed_videos = math.ceil(video_count / eval_batch)
     days_to_clear_videos = math.ceil(requests_needed_videos / usable_rpd) if video_count > 0 else 0
@@ -84,24 +91,102 @@ def show_queue_status() -> None:
     print("=" * 70)
     print("📊 ESTADO DE LA COLA DE EVALUACIÓN (FASE 7.x)")
     print("=" * 70)
-    print(f"Total anuncios en cola (pending_evaluation): {total_ads}")
-    print(f"  - 🎥 Videos en cola (Gemini Free Tier):    {video_count}")
-    print(f"  - 🖼️ Estáticos en cola (Claude API):       {static_count}")
-    print(f"Total evaluados con nueva rúbrica IA:       0 (Fase 4 pendiente)")
+    print(f"Total anuncios en base de datos:             {total_ads}")
+    print(f"  - ⏳ En cola pendiente (pending_eval):     {pending_count}")
+    print(f"  - 🎥 Videos totales:                       {video_count}")
+    print(f"  - 🖼️ Estáticos totales:                    {static_count}")
+    print(f"Total anuncios evaluados con rúbrica IA:     {evaluated_count}")
     print("-" * 70)
-    print("📈 CONSUMO Y CUOTA DE HOY (GEMINI):")
-    print(f"  - Solicitudes usadas hoy (PT):             {total_today_requests} / {settings.GEMINI_RPD} RPD")
-    print(f"    * Modelo principal ({settings.LLM_MODEL}): {main_usage['requests']} req ({main_usage['tokens_in'] + main_usage['tokens_out']} tokens)")
-    print(f"    * Modelo barato ({settings.LLM_MODEL_CHEAP}):  {cheap_usage['requests']} req ({cheap_usage['tokens_in'] + cheap_usage['tokens_out']} tokens)")
+    print("📈 CONSUMO Y CUOTA DE HOY (GEMINI - America/Los_Angeles):")
+    status_str = "🛑 AGOTADA (429 RPD - reanudación a medianoche PT)" if main_usage.get("is_exhausted") else "🟢 ACTIVA"
+    print(f"  - Estado de la cuota:                      {status_str}")
+    print(f"  - Total solicitudes contadas hoy:          {total_today_requests} / {settings.GEMINI_RPD} RPD")
+    print(f"    * Solicitudes exitosas hoy:              {total_success_requests}")
+    print(f"    * Solicitudes fallidas hoy:              {total_failed_requests}")
+    print(f"    * Modelo principal ({settings.LLM_MODEL}): {main_usage['requests']} req ({main_usage.get('requests_success', 0)} ok, {main_usage.get('requests_failed', 0)} fail)")
+    print(f"    * Modelo barato ({settings.LLM_MODEL_CHEAP}):  {cheap_usage['requests']} req ({cheap_usage.get('requests_success', 0)} ok, {cheap_usage.get('requests_failed', 0)} fail)")
+    in_hours = is_within_preferred_hours()
+    print(f"  - Ventana preferida ({settings.EVAL_PREFERRED_HOURS} Lima): {'🟢 DENTRO DE LA VENTANA' if in_hours else '⏳ FUERA DE LA VENTANA'}")
     print(f"  - Reserva técnica de seguridad:            {settings.RESERVE_REQUESTS} solicitudes")
     print(f"  - Solicitudes útiles efectivas por día:    {usable_rpd} solicitudes/día")
     print("-" * 70)
     print("⏱️ ESTIMACIÓN DE TIEMPO PARA VACIAR LA COLA:")
     print(f"  - Política de evaluación:                  1 video por solicitud ({settings.GEMINI_MEDIA_RESOLUTION} resolution)")
-    print(f"  - Solicitudes Gemini requeridas:           {requests_needed_videos} solicitudes")
+    print(f"  - Solicitudes Gemini requeridas (videos):  {requests_needed_videos} solicitudes")
     print(f"  - Días estimados para vaciar videos:       ~{days_to_clear_videos} días (~{days_to_clear_videos * 24} horas)")
     print(f"  - Estáticos ({static_count} anuncios):                Vía Claude prepago con tope de ${settings.CLAUDE_BUDGET_USD} USD")
     print("=" * 70)
+
+
+def run_evaluation_queue(respect_hours: bool = False, now: bool = False) -> None:
+    """Processes pending evaluation queue with time-window and quota guardrails."""
+    if respect_hours and not now:
+        if not is_within_preferred_hours():
+            print(
+                f"[INFO] Fuera de la ventana preferida ({settings.EVAL_PREFERRED_HOURS} America/Lima). "
+                f"Evaluación pospuesta para horario de baja demanda. Usa --now para procesar de inmediato."
+            )
+            return
+
+    quota_guard = get_quota_guard()
+    if quota_guard.is_exhausted(settings.LLM_MODEL):
+        print(f"🛑 Cuota de hoy agotada para {settings.LLM_MODEL} (RPD). Cola detenida hasta medianoche PT.")
+        return
+
+    from src.database import AdRecord, SessionLocal
+    from src.ai.router import route_and_evaluate_ad
+
+    db = SessionLocal()
+    try:
+        pending_records = (
+            db.query(AdRecord)
+            .filter(AdRecord.cognitive_score.is_(None))
+            .all()
+        )
+        if not pending_records:
+            print("✨ No hay anuncios pendientes de evaluación en la cola.")
+            return
+
+        ads_dict_list = []
+        for r in pending_records:
+            ads_dict_list.append({
+                "id": r.id,
+                "ad_id": r.id,
+                "page_name": r.page_name,
+                "video_path": r.video_path,
+                "image_path": r.image_path,
+                "headline": r.headline,
+                "body_text": r.body_text,
+                "cta_text": r.cta_text,
+                "link_url": r.link_url,
+                "days_active": r.days_active,
+                "is_active": r.is_active,
+                "creatives": [{
+                    "has_video": bool(r.has_video or r.video_path),
+                    "has_image": bool(r.image_path),
+                    "title": r.headline or "",
+                    "body": r.body_text or "",
+                }],
+            })
+
+        sorted_ads = sort_ads_for_evaluation(ads_dict_list)
+        print(f"🚀 Procesando cola de evaluación: {len(sorted_ads)} anuncios pendientes...")
+
+        for ad in sorted_ads:
+            if not quota_guard.can_acquire(settings.LLM_MODEL):
+                print("🛑 Cuota diaria alcanzada o reservada. Deteniendo cola.")
+                break
+            try:
+                print(f"---> Evaluando {ad.get('page_name', 'ad')} ({ad.get('id')})...")
+                res = route_and_evaluate_ad(ad)
+                print(f"OK! Score={res.get('creative_score')}")
+            except QuotaExhausted as q_err:
+                print(f"🛑 {q_err}. Cola detenida hasta el reinicio de cuota.")
+                break
+            except Exception as err:
+                print(f"⚠️ Error evaluando {ad.get('id')}: {err}. Permanece en cola.")
+    finally:
+        db.close()
 
 
 def generate_markdown_report(
@@ -177,9 +262,20 @@ def generate_markdown_report(
 
 
 def main():
-    # Subcommand: queue --status (Fase 7.x)
+    # Subcommand: queue --status / queue --run (Fase 7.x)
     if len(sys.argv) > 1 and sys.argv[1] == "queue":
-        show_queue_status()
+        q_parser = argparse.ArgumentParser(description="Gestión de la cola de evaluación")
+        q_parser.add_argument("queue_cmd", metavar="queue", choices=["queue"], help="Comando de cola")
+        q_parser.add_argument("--status", action="store_true", help="Muestra el estado de la cola y cuota")
+        q_parser.add_argument("--run", action="store_true", help="Ejecuta la evaluación de anuncios pendientes")
+        q_parser.add_argument("--respect-hours", action="store_true", help="Respeta la ventana horaria preferida (01:00-06:00 Lima)")
+        q_parser.add_argument("--now", action="store_true", help="Fuerza la ejecución inmediata ignorando la ventana horaria")
+        q_args = q_parser.parse_args()
+
+        if q_args.run:
+            run_evaluation_queue(respect_hours=q_args.respect_hours, now=q_args.now)
+        else:
+            show_queue_status()
         return
 
     parser = argparse.ArgumentParser(

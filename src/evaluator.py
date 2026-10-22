@@ -11,6 +11,7 @@ Replaces legacy heuristics with real multimodal Gemini evaluation:
 
 from __future__ import annotations
 
+from datetime import datetime, timezone
 import json
 import logging
 from pathlib import Path
@@ -119,7 +120,22 @@ def evaluate_video_ad(
 
         # 5. Call Gemini client
         eval_client = client or GeminiClient()
-        eval_result: EvaluationResult = eval_client.evaluate(media_bundle, copy_bundle)
+        try:
+            eval_result: EvaluationResult = eval_client.evaluate(media_bundle, copy_bundle)
+        except Exception as eval_err:
+            # Leave ad in pending_evaluation with retry_after and last error (Paso 2)
+            ad_record = db.query(AdRecord).filter(AdRecord.id == ad_id).first()
+            if ad_record:
+                ad_record.cognitive_score = None
+                pending_info = {
+                    "status": "pending_evaluation",
+                    "last_error": str(eval_err),
+                    "failed_at": datetime.now(timezone.utc).isoformat(),
+                    "retry_after": datetime.now(timezone.utc).isoformat(),
+                }
+                ad_record.score_breakdown = json.dumps(pending_info, ensure_ascii=False)
+                db.commit()
+            raise
 
         # 6. Sum dimensions strictly BY CODE (LLM never sums)
         creative_score = (
@@ -163,7 +179,7 @@ def evaluate_video_ad(
         if ad_record:
             ad_record.cognitive_score = creative_score
             ad_record.score_breakdown = json.dumps(result_dict, ensure_ascii=False)
-            if eval_result.transcript:
+            if eval_result.transcript and not ad_record.full_transcript:
                 full_trans = " ".join(t.text for t in eval_result.transcript)
                 ad_record.full_transcript = full_trans
             if eval_result.speech_pace_wpm_estimate:

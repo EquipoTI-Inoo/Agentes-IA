@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from typing import Any, Dict, List, Literal, Optional, Union
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 FeatureFocusType = Literal[
     "automatizacion",
@@ -45,6 +45,30 @@ class DimensionScore(BaseModel):
     anchor_level: AnchorLevelType = Field(..., description="Nivel del ancla que justifica el puntaje")
     reasoning: str = Field(..., description="Justificación específica a este anuncio (2 a 4 frases)")
     evidence: List[Evidence] = Field(..., min_length=1, description="Al menos una evidencia verificable")
+
+    @model_validator(mode="after")
+    def validate_low_score_citation(self) -> "DimensionScore":
+        if self.score < 8:
+            combined = (
+                self.reasoning + " " + " ".join(e.quote for e in self.evidence)
+            ).lower()
+            channels = [
+                "voz", "audio", "habla", "locuci", "texto", "pantalla",
+                "subt", "visual", "imagen", "gráfico", "grafico", "animaci"
+            ]
+            has_channel = any(c in combined for c in channels)
+            has_time = any(e.timestamp for e in self.evidence) or any(char.isdigit() for char in self.reasoning)
+            absence_terms = [
+                "no encontr", "no se observ", "no muestr", "no hay", "sin ",
+                "ausenc", "carec", "no exist", "no incluy", "no present", "no ofrec", "falta"
+            ]
+            has_absence = any(t in combined for t in absence_terms)
+            if not (has_channel and has_time and has_absence):
+                raise ValueError(
+                    f"Puntaje bajo (< 8) requiere justificar explícitamente qué se buscó y no se encontró, "
+                    f"indicando el rango de tiempo revisado y el canal (voz/texto/visual). Reasoning: {self.reasoning}"
+                )
+        return self
 
 
 class TranscriptSegment(BaseModel):
@@ -103,6 +127,23 @@ class StaticDimensionScore(BaseModel):
     anchor_level: AnchorLevelType = Field(..., description="Nivel del ancla que justifica el puntaje")
     reasoning: str = Field(..., description="Justificación específica a este creativo")
     evidence: List[StaticEvidence] = Field(..., min_length=1, description="Al menos una evidencia verificable")
+
+    @model_validator(mode="after")
+    def validate_low_score_citation(self) -> "StaticDimensionScore":
+        if self.score < 8:
+            combined = (
+                self.reasoning + " " + " ".join(e.quote for e in self.evidence)
+            ).lower()
+            absence_terms = [
+                "no encontr", "no se observ", "no muestr", "no hay", "sin ",
+                "ausenc", "carec", "no exist", "no incluy", "no present", "no ofrec", "falta"
+            ]
+            has_absence = any(t in combined for t in absence_terms)
+            if not has_absence:
+                raise ValueError(
+                    f"Puntaje bajo (< 8) requiere justificar explícitamente qué se buscó y no se encontró en la imagen o texto. Reasoning: {self.reasoning}"
+                )
+        return self
 
 
 class StaticEvaluationResult(BaseModel):

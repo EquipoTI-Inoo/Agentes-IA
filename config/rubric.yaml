@@ -1,8 +1,10 @@
-version: "1.0"
+version: "1.1"
 name: "Rúbrica de Evaluación de Video Ads (Jinora)"
 scoring:
   scale: "0-25 por dimensión (total 0-100 calculado por código)"
-  neutrality: "Neutralidad frente a la IA: la mención de IA es descriptiva y no suma ni resta puntos"
+  neutrality_ai: "Neutralidad frente a la IA: la mención de IA es descriptiva y no suma ni resta puntos"
+  neutrality_format: "Neutralidad frente al formato: persona, UGC, demo de pantalla o motion graphics no suman ni restan. La ausencia de personas o voz NO es ausencia de gancho o CTA; cuentan por voz, texto en pantalla, animación o tarjeta final"
+  low_score_justification: "Toda dimensión con puntaje menor a 8 (< 8) requiere cita explícita de qué se buscó y no se encontró, con rango de tiempo revisado y canal (voz, texto en pantalla o visual)"
   caps: "Sin cupos ni topes numéricos. Todo el rango 0-25 es accesible según cumplimiento estricto del ancla"
 
 dimensions:
@@ -10,10 +12,10 @@ dimensions:
     name: "Captación (0-3 s)"
     max_score: 25
     anchors:
-      "0-6": "Arranca con logo o intro corporativa genérica; sin texto ni voz que enganche."
+      "0-6": "Arranca con logo/intro corporativa genérica; sin texto, voz ni imagen que enganche."
       "7-12": "Gancho presente pero predecible o cliché (ej. '¿Quieres aumentar tus ventas?')."
-      "13-19": "Gancho específico con dolor o curiosidad claros; el visual y texto acompañan activamente."
-      "20-25": "Interrupción de patrón contundente + dolor visceral o afirmación contraintuitiva; audio y visual sincronizados con alto impacto."
+      "13-19": "Gancho específico con dolor o curiosidad claros (por voz, texto en pantalla, animación o imagen); visual acompaña."
+      "20-25": "Interrupción de patrón fuerte + dolor visceral o afirmación contraintuitiva; audio y visual sincronizados (en motion graphics: tipografía/animación que interrumpe y comunica la promesa sin voz)."
 
   mechanism:
     name: "Mecanismo único y prueba"
@@ -21,8 +23,8 @@ dimensions:
     anchors:
       "0-6": "Solo afirmaciones vacías o superlativos sin evidencia (ej. 'la mejor plataforma')."
       "7-12": "Explica conceptualmente qué hace pero sin mostrar el producto ni interfaces reales."
-      "13-19": "Muestra el producto en acción (capturas de pantalla, demo parcial o métrica verificable)."
-      "20-25": "Demostración en vivo comprobable, caso de éxito con números o contraste directo entre proceso manual vs automatizado."
+      "13-19": "Muestra el producto en acción (capturas de pantalla, demo parcial o dato concreto)."
+      "20-25": "Demostración en vivo comprobable, caso de éxito con números o contraste directo entre proceso manual caótico vs automatizado."
 
   narrative:
     name: "Narrativa y ritmo (Pacing)"
@@ -30,8 +32,8 @@ dimensions:
     anchors:
       "0-6": "Monótono, plano, sin estructura argumental; se cae el interés a los pocos segundos."
       "7-12": "Estructura básica pero con ritmo irregular o baches de atención."
-      "13-19": "Estructura clara de problema a solución con ritmo sostenido y dinámico."
-      "20-25": "Arco de tensión completo (tensión, quiebre, alivio), edición ágil y locución que retiene la atención hasta el CTA final."
+      "13-19": "Estructura clara de problema a solución con ritmo dinámico y sostenido."
+      "20-25": "Arco de tensión completo (tensión, quiebre, alivio), edición ágil y cortes/locución que retienen la atención hasta el CTA final."
 
   offer:
     name: "Oferta y CTA"
@@ -39,5 +41,5 @@ dimensions:
     anchors:
       "0-6": "Sin llamada a la acción o CTA confuso/inaudible."
       "7-12": "CTA genérico y pasivo (ej. 'Más información')."
-      "13-19": "CTA directo con beneficio explícito de la acción."
-      "20-25": "Llamada a la acción de mínima fricción con reversión de riesgo clara (prueba gratis, demo inmediata, garantía) y urgencia justificada."
+      "13-19": "CTA claro con beneficio explícito (hablado, en texto en pantalla o en tarjeta final)."
+      "20-25": "Llamada a la acción de mínima fricción con reversión de riesgo clara (prueba gratis, garantía, demo inmediata) y urgencia/valor evidente."

@@ -131,3 +131,58 @@ def test_should_evaluate_ad_heuristics():
     )
     assert eligible is False
     assert "saturated" in reason
+
+
+def test_record_attempt_and_audit(temp_guard):
+    model = "gemini-3.5-flash"
+    # Record 1 success and 2 failures (503 and 429)
+    temp_guard.record_attempt(model=model, status="success", tokens_in=100, tokens_out=50)
+    temp_guard.record_attempt(model=model, status="503", error_message="Service Unavailable")
+    temp_guard.record_attempt(model=model, status="429", error_message="ResourceExhausted")
+
+    usage = temp_guard.get_daily_usage(model)
+    assert usage["requests"] == 3
+    assert usage["requests_success"] == 1
+    assert usage["requests_failed"] == 2
+
+    # Check audit table records
+    with sqlite3.connect(temp_guard.db_path) as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT status, model FROM llm_attempts WHERE model = ? ORDER BY id", (model,))
+        rows = cursor.fetchall()
+        assert len(rows) == 3
+        assert rows[0] == ("success", model)
+        assert rows[1] == ("503", model)
+        assert rows[2] == ("429", model)
+
+
+def test_mark_exhausted_and_stop_queue(temp_guard):
+    model = "gemini-3.5-flash"
+    assert temp_guard.is_exhausted(model) is False
+
+    # Mark quota exhausted on 429 RPD
+    temp_guard.mark_exhausted(model=model)
+    assert temp_guard.is_exhausted(model) is True
+
+    # QuotaGuard acquire should raise QuotaExhausted immediately
+    with pytest.raises(QuotaExhausted) as exc:
+        temp_guard.acquire(model=model)
+    assert "RPD agotado" in str(exc.value)
+
+
+def test_midnight_pt_rollover(temp_guard):
+    model = "gemini-3.5-flash"
+    day1 = "2026-10-21"
+    day2 = "2026-10-22"
+
+    # Record usage on day 1
+    temp_guard.record_attempt(model=model, status="success", day_pt=day1)
+    temp_guard.mark_exhausted(model=model, day_pt=day1)
+
+    assert temp_guard.get_daily_usage(model=model, day_pt=day1)["requests"] == 1
+    assert temp_guard.is_exhausted(model=model, day_pt=day1) is True
+
+    # On day 2 (next day in PT), quota is fresh and not exhausted
+    assert temp_guard.get_daily_usage(model=model, day_pt=day2)["requests"] == 0
+    assert temp_guard.is_exhausted(model=model, day_pt=day2) is False
+

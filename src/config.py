@@ -155,6 +155,14 @@ class Settings(BaseSettings):
         default=False,
         description="Enable collection of inactive competitor ads for historical data only (no LLM calls)",
     )
+    GEMINI_RETRY_DELAYS: List[float] = Field(
+        default=[5.0, 15.0, 45.0, 120.0],
+        description="Delays in seconds for retrying transient Gemini errors (503, 500, transient 429)",
+    )
+    EVAL_PREFERRED_HOURS: str = Field(
+        default="01:00-06:00",
+        description="Preferred time window in America/Lima for running batch evaluations",
+    )
 
     @field_validator(
         "GEMINI_RPD_MAIN",
@@ -190,6 +198,16 @@ class Settings(BaseSettings):
             return [c.strip().upper() for c in clean_v.split(",") if c.strip()]
         return v
 
+    @field_validator("GEMINI_RETRY_DELAYS", mode="before")
+    @classmethod
+    def parse_retry_delays(cls, v: Any) -> List[float]:
+        if isinstance(v, str):
+            clean = v.strip().strip("[]()")
+            return [float(x.strip()) for x in clean.split(",") if x.strip()]
+        if isinstance(v, (list, tuple)):
+            return [float(x) for x in v]
+        return v
+
     @property
     def downloads_path(self) -> Path:
         """Absolute Path to the downloads directory."""
@@ -206,3 +224,48 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
+
+
+def is_within_preferred_hours(
+    preferred_str: Optional[str] = None,
+    tz_name: str = "America/Lima",
+    current_dt: Optional[Any] = None,
+    window: Optional[str] = None,
+) -> bool:
+    """
+    Checks if current time in specified timezone is within preferred hours window (e.g. '01:00-06:00').
+    Supports crossing midnight (e.g. '23:00-04:00').
+    """
+    win = window or preferred_str or settings.EVAL_PREFERRED_HOURS
+    if not win or "-" not in win:
+        return True
+
+    from datetime import datetime, timezone
+    from zoneinfo import ZoneInfo
+
+    try:
+        tz = ZoneInfo(tz_name)
+    except Exception:
+        tz = timezone.utc
+
+    now = current_dt or datetime.now(tz)
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=tz)
+    else:
+        now = now.astimezone(tz)
+
+    try:
+        start_str, end_str = win.split("-")
+        s_h, s_m = map(int, start_str.strip().split(":"))
+        e_h, e_m = map(int, end_str.strip().split(":"))
+
+        current_minutes = now.hour * 60 + now.minute
+        start_minutes = s_h * 60 + s_m
+        end_minutes = e_h * 60 + e_m
+
+        if start_minutes <= end_minutes:
+            return start_minutes <= current_minutes <= end_minutes
+        else:
+            return current_minutes >= start_minutes or current_minutes <= end_minutes
+    except Exception:
+        return True
