@@ -38,6 +38,16 @@ def _redact(text: str, secret: Optional[str]) -> str:
     return text.replace(secret, "<redacted>") if secret else text
 
 
+def mask_brand_url(url: str) -> str:
+    """Hides the advertiser's domain (and the tracking query string) so the evaluator never sees the brand name."""
+    if not url:
+        return ""
+    from urllib.parse import urlparse
+
+    path = urlparse(url if "//" in url else "//" + url).path
+    return f"[dominio del anunciante]{path}"
+
+
 class BudgetExceededError(Exception):
     """Raised when cumulative Claude spending reaches or exceeds CLAUDE_BUDGET_USD."""
     pass
@@ -183,7 +193,7 @@ class ClaudeClient:
             f"Titular: {copy.headline or 'N/A'}\n"
             f"Texto del anuncio (copy): {copy.body_text or 'N/A'}\n"
             f"Llamada a la acción (CTA): {copy.cta_text or 'N/A'}\n"
-            f"URL de destino: {copy.link_url or 'N/A'}\n\n"
+            f"URL de destino: {mask_brand_url(copy.link_url) or 'N/A'}\n\n"
             f"Formato detectado: {media.media_type}\n\n"
             f"IMPORTANTE: Evalúa con base estricta en las anclas de la rúbrica (0-25). "
             f"Sin cupos ni topes numéricos. No sumes el puntaje. "
@@ -202,7 +212,7 @@ class ClaudeClient:
             response = client.messages.create(
                 **extra_args,
                 model=self.model,
-                max_tokens=2500,
+                max_tokens=6000,  # 2500 truncated the JSON mid-string (real test 2026-10-22)
                 system=self.prompt_template,
                 messages=[{"role": "user", "content": content_blocks}],
             )
@@ -230,9 +240,7 @@ class ClaudeClient:
         if clean_text.endswith("```"):
             clean_text = clean_text[:-3].strip()
 
-        eval_result = StaticEvaluationResult.model_validate_json(clean_text)
-
-        # Token & cost recording
+        # Token & cost recording first: the call is billed even when the JSON turns out invalid or truncated
         tokens_in = response.usage.input_tokens
         tokens_out = response.usage.output_tokens
         cost_usd = self._calculate_cost(tokens_in, tokens_out)
@@ -247,4 +255,4 @@ class ClaudeClient:
             cost_usd=cost_usd,
         )
 
-        return eval_result
+        return StaticEvaluationResult.model_validate_json(clean_text)

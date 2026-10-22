@@ -86,7 +86,7 @@ def cmd_run(args: argparse.Namespace) -> int:
     from src.pipeline import STAGES, Pipeline, RunOptions, format_summary
 
     opts = RunOptions(
-        pillar=args.pillar, competitor=args.competitor, query=args.query, all_pillars=args.all,
+        pillar=args.pillar, competitor=args.competitor, priority=args.priority, query=args.query, all_pillars=args.all,
         countries=_split(args.countries) or list(settings.DEFAULT_COUNTRIES), limit=args.limit,
         stages=_split(args.stages) or STAGES, media_filter=args.media, keywords=args.keywords,
         forensics=args.forensics, download_min_days=args.download_min_days, max_ads=args.max_ads,
@@ -202,6 +202,7 @@ def build_parser() -> argparse.ArgumentParser:
     run = sub.add_parser("run", help="Ejecuta etapas del pipeline (discover→filter→download→media→evaluate→signals)")
     run.add_argument("--pillar", choices=["voz", "conversacional", "crm"])
     run.add_argument("--competitor", help="Nombre de un competidor del catálogo")
+    run.add_argument("--priority", type=int, choices=[1, 2, 3], help="Solo competidores de esa prioridad del catálogo (busca por page_id)")
     run.add_argument("--query", help="Búsqueda libre (marca o palabra clave) fuera del catálogo")
     run.add_argument("--all", action="store_true", help="Todos los competidores del catálogo")
     run.add_argument("--countries", help="Códigos ISO separados por coma (defecto: DEFAULT_COUNTRIES)")

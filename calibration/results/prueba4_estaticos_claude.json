@@ -1,7 +1,394 @@
 {
   "test": "prueba4_estaticos_claude",
   "model": "claude-sonnet-5-5",
-  "runs": [],
-  "stopped": "Anthropic 400: la clave no esta asociada a un workspace; requiere ANTHROPIC_WORKSPACE_ID. Antes, 3 TypeError locales (SDK 2.1.0 sin 'temperature') ya corregidos.",
-  "cost_usd": 0.0
+  "date": "2026-10-22",
+  "budget_test_usd": 0.5,
+  "runs": [
+    {
+      "ad_id": "2594848640971633",
+      "competitor": "EliseAI",
+      "pillar": "voz",
+      "format": "image",
+      "total": 45,
+      "tokens_in": 3852,
+      "tokens_out": 2102,
+      "cost_usd": 0.043086,
+      "cumulative_test_usd": 0.144981,
+      "cumulative_total_usd": 0.144981,
+      "rubric_version": "1.0",
+      "evaluation": {
+        "stop_power": {
+          "score": 11,
+          "anchor_level": "7-12",
+          "reasoning": "El diseño es limpio y prolijo: mockup 3D del playbook en tonos azul-violeta sobre fondo gris claro, con titular grande centrado. Sin embargo, el fondo neutro y la composición minimalista y corporativa se confunden fácilmente en el scroll. El sello '2026 Edition' aporta un acento de color, pero no genera curiosidad ni impacto instantáneo.",
+          "evidence": [
+            {
+              "card": null,
+              "zone": "centro",
+              "quote": "Mockup de libro/playbook azul-violeta con degradado de círculos concéntricos, 'Centralization Playbook', sobre fondo gris claro"
+            },
+            {
+              "card": null,
+              "zone": "superior",
+              "quote": "Sello violeta tipo estrella '2026 EDITION' en la esquina superior izquierda del libro"
+            },
+            {
+              "card": null,
+              "zone": "titular",
+              "quote": "'The 2026 Centralization Playbook Is Here' en tipografía negra grande, legible en móvil"
+            }
+          ]
+        },
+        "message_clarity": {
+          "score": 14,
+          "anchor_level": "13-19",
+          "reasoning": "La imagen comunica rápidamente que hay una guía descargable (2026 Centralization Playbook) gracias a la jerarquía limpia: logo, mockup, titular y botón. Sin embargo, el dolor o el beneficio concreto no aparecen en la imagen; el 'por qué importa' está solo en el copy (85% de los property managers centralizan, benchmarks y KPIs). Quien no conoce el concepto de centralización queda sin contexto en el arte.",
+          "evidence": [
+            {
+              "card": null,
+              "zone": "titular",
+              "quote": "The 2026 Centralization Playbook Is Here"
+            },
+            {
+              "card": null,
+              "zone": "copy",
+              "quote": "85% of property managers are centralizing. The 2026 edition draws on new learnings with 150+ operators, with benchmarks and KPIs by function."
+            },
+            {
+              "card": null,
+              "zone": "completa",
+              "quote": "Jerarquía limpia y vertical: logo Elise AI, mockup, titular, botón; el dolor del cliente no se expresa en la imagen"
+            }
+          ]
+        },
+        "proof": {
+          "score": 8,
+          "anchor_level": "7-12",
+          "reasoning": "La imagen solo muestra un mockup del playbook (entregable) y el logo de la marca, sin captura del software, chat ni métrica visible. Las cifras de prueba (85%, 150+ operadores) aparecen únicamente en el copy, no en el arte, por lo que la prueba visual es débil.",
+          "evidence": [
+            {
+              "card": null,
+              "zone": "centro",
+              "quote": "Mockup 3D del libro 'Centralization Playbook – 2026 Edition'; no se observa captura de producto ni métrica en la imagen"
+            },
+            {
+              "card": null,
+              "zone": "copy",
+              "quote": "85% of property managers are centralizing... 150+ operators"
+            }
+          ]
+        },
+        "offer_cta": {
+          "score": 12,
+          "anchor_level": "7-12",
+          "reasoning": "El botón oscuro 'Download the New Playbook →' tiene buen contraste y es claro, y el recurso gratuito es un incentivo de bajo riesgo. Aun así, la oferta no explícita el beneficio concreto (qué se obtiene) ni indica que no requiere compromiso; el titular del copy 'See where you stand' es el único gancho de valor y no está en la imagen.",
+          "evidence": [
+            {
+              "card": null,
+              "zone": "cta",
+              "quote": "Botón azul marino oscuro con texto blanco 'Download the New Playbook →'"
+            },
+            {
+              "card": null,
+              "zone": "copy",
+              "quote": "CTA: Download; titular: 'See where you stand'"
+            }
+          ]
+        },
+        "text_in_image": "Elise AI | 2026 EDITION | Elise AI | Centralization Playbook | 2026 EDITION | The 2026 Centralization Playbook Is Here | Download the New Playbook →",
+        "text_density": "baja",
+        "visual_style": "mockup_dispositivo",
+        "has_human_face": false,
+        "has_product_screenshot": false,
+        "main_promise": "Descarga el Centralization Playbook 2026 con benchmarks y KPIs para ver cómo te comparas en la centralización de operaciones.",
+        "value_proposition": "Ayudar a administradores de propiedades a evaluar y planificar la centralización de sus operaciones, ofreciendo una guía descargable con benchmarks y KPIs por función, basada en datos de más de 150 operadores.",
+        "feature_focus": [
+          "otro"
+        ],
+        "ai_mention": "mencionada",
+        "target_niche": "Administradores de propiedades / property management (multifamily)",
+        "language": "en",
+        "carousel_narrative": null,
+        "weakest_card": null,
+        "what_to_model": "El formato de lead magnet con mockup tangible del recurso, titular grande y un único botón de descarga claro; el uso de un dato de adopción (85%) y una muestra de 150+ operadores en el copy para generar FOMO y credibilidad.",
+        "what_to_beat": "Subir el stop power con más contraste, color o un gancho de dolor visible en el arte; llevar la prueba (cifras como 85% o 150+) a la imagen; explicitar qué se obtiene al descargar; y reemplazar el fondo gris neutro por algo más disruptivo en el feed.",
+        "cosmiq_adaptation_idea": "Crear un lead magnet estático para negocios de LatAm, por ejemplo 'Benchmark 2026: tiempos de respuesta y conversión en WhatsApp por industria', con mockup del reporte, una cifra grande en la imagen (ej. '78% de los leads se pierde por responder tarde') y un botón 'Descargar gratis' de alto contraste. El gancho parte de gestión de leads y atención por WhatsApp, sin forzar IA.",
+        "confidence": 0.85,
+        "creative_score": 45,
+        "total_score": 45
+      }
+    },
+    {
+      "ad_id": "855565900823087",
+      "competitor": "EliseAI",
+      "pillar": "voz",
+      "format": "image",
+      "total": 52,
+      "tokens_in": 3844,
+      "tokens_out": 1900,
+      "cost_usd": 0.040032,
+      "cumulative_test_usd": 0.185013,
+      "cumulative_total_usd": 0.185013,
+      "rubric_version": "1.0",
+      "evaluation": {
+        "stop_power": {
+          "score": 11,
+          "anchor_level": "7-12",
+          "reasoning": "El diseño es limpio y prolijo, con un titular grande ('AI in U.S. Multifamily') legible en móvil y buen espacio en blanco. Sin embargo, el fondo gris claro, la paleta sobria y la portada del reporte con mapa genérico se parecen a muchos anuncios corporativos de lead magnets y no generan impacto ni curiosidad especial en el scroll.",
+          "evidence": [
+            {
+              "card": null,
+              "zone": "superior",
+              "quote": "Titular grande en negro 'AI in U.S. Multifamily' sobre fondo gris claro, con etiqueta morada pequeña 'NEW REPORT'"
+            },
+            {
+              "card": null,
+              "zone": "centro",
+              "quote": "Mockup de portada de reporte con mapa de EE. UU. punteado en tonos lavanda; estética prolija pero sobria y de bajo contraste"
+            }
+          ]
+        },
+        "message_clarity": {
+          "score": 17,
+          "anchor_level": "13-19",
+          "reasoning": "En 1-2 segundos se entiende que es un reporte descargable sobre IA en el sector multifamily, con jerarquía limpia: etiqueta, titular, subtítulo, botón y mockup. No expresa un dolor concreto en la imagen; el gancho de 'adoptar vs dominar' aparece solo en el copy, por lo que no llega al nivel máximo.",
+          "evidence": [
+            {
+              "card": null,
+              "zone": "titular",
+              "quote": "AI in U.S. Multifamily"
+            },
+            {
+              "card": null,
+              "zone": "centro",
+              "quote": "Insights From 350 Top Executives"
+            },
+            {
+              "card": null,
+              "zone": "copy",
+              "quote": "Almost every multifamily operator now has AI. Far fewer have mastered it. See what separates the two in 2026."
+            }
+          ]
+        },
+        "proof": {
+          "score": 10,
+          "anchor_level": "7-12",
+          "reasoning": "La única prueba es la cifra '350 Top Executives' como base de la investigación y el mockup de la portada del reporte. No se muestra captura real de software, interfaz de chat ni datos concretos del estudio (porcentajes, gráficos); la portada es conceptual y el logo de marca queda pequeño al final.",
+          "evidence": [
+            {
+              "card": null,
+              "zone": "centro",
+              "quote": "'Insights From 350 Top Executives' como respaldo numérico de la muestra"
+            },
+            {
+              "card": null,
+              "zone": "inferior",
+              "quote": "Mockup de portada 'The 2026 State of AI in U.S. Multifamily' y logo 'Elise AI'; sin pantalla de producto ni estadísticas visibles"
+            }
+          ]
+        },
+        "offer_cta": {
+          "score": 14,
+          "anchor_level": "13-19",
+          "reasoning": "El botón oscuro 'Download Now →' es visible y de buen contraste, y el activo gratuito (reporte) implica un beneficio claro y de bajo riesgo. Pero no se destaca explícitamente que sea gratis ni qué se obtiene concretamente, y el CTA del anuncio ('See Details') es más pasivo que el del arte.",
+          "evidence": [
+            {
+              "card": null,
+              "zone": "cta",
+              "quote": "Botón navy oscuro 'Download Now →' centrado bajo el subtítulo"
+            },
+            {
+              "card": null,
+              "zone": "copy",
+              "quote": "CTA de plataforma: 'See Details'; promesa 'See what separates the two in 2026'"
+            }
+          ]
+        },
+        "text_in_image": "NEW REPORT\nAI in U.S. Multifamily\nInsights From 350 Top Executives\nDownload Now →\nREPORT\nThe 2026 State of AI in U.S. Multifamily\nElise AI\nElise AI",
+        "text_density": "baja",
+        "visual_style": "mockup_dispositivo",
+        "has_human_face": false,
+        "has_product_screenshot": false,
+        "main_promise": "Descarga el reporte 2026 con insights de 350 ejecutivos sobre cómo se usa y domina la IA en el sector multifamily de EE. UU.",
+        "value_proposition": "Ofrecen un reporte de investigación gratuito como lead magnet para operadores inmobiliarios multifamily que ya adoptaron IA pero no logran dominarla; buscan posicionar a Elise AI como autoridad y captar leads.",
+        "feature_focus": [
+          "otro"
+        ],
+        "ai_mention": "central",
+        "target_niche": "Operadores y ejecutivos de bienes raíces multifamily en EE. UU.",
+        "language": "en",
+        "carousel_narrative": null,
+        "weakest_card": null,
+        "what_to_model": "La jerarquía limpia (etiqueta 'NEW REPORT', titular grande, dato de autoridad con cifra, botón de descarga y mockup tangible del activo) y el uso de una muestra numérica ('350 Top Executives') como credibilidad rápida para un lead magnet B2B vertical.",
+        "what_to_beat": "Hacer el creativo más magnético con mayor contraste y un dato duro del estudio en el titular; mostrar prueba real (porcentaje o gráfico clave); explicitar 'gratis' y reducir la fricción; evitar el aspecto corporativo genérico que se mimetiza en el feed.",
+        "cosmiq_adaptation_idea": "Estático para un lead magnet de Cosmiq, por ejemplo 'Benchmark 2026: tiempos de respuesta en WhatsApp de 300 empresas de LatAm' o una plantilla gratis de seguimiento de leads, con una cifra impactante en el titular, mockup del documento junto a una captura real de chat de WhatsApp/CRM y un botón de alto contraste 'Descarga gratis'.",
+        "confidence": 0.85,
+        "creative_score": 52,
+        "total_score": 52
+      }
+    },
+    {
+      "ad_id": "1097832299273239",
+      "competitor": "EliseAI",
+      "pillar": "voz",
+      "format": "image",
+      "total": 48,
+      "tokens_in": 3806,
+      "tokens_out": 2313,
+      "cost_usd": 0.046113,
+      "cumulative_test_usd": 0.231126,
+      "cumulative_total_usd": 0.231126,
+      "rubric_version": "1.0",
+      "evaluation": {
+        "stop_power": {
+          "score": 13,
+          "anchor_level": "13-19",
+          "reasoning": "El titular grande en tipografía ligera y negra sobre fondo claro se lee bien en móvil, y la interfaz de chat debajo aporta un elemento visual de producto. Sin embargo, el diseño es muy minimalista y de tono corporativo SaaS, con paleta pálida y poco contraste cromático, por lo que se mezcla con otros anuncios limpios del feed. Interrumpe de forma moderada, pero no es magnético.",
+          "evidence": [
+            {
+              "card": null,
+              "zone": "titular",
+              "quote": "\"The One Agent for Your Whole Team\" en tipografía grande negra sobre fondo blanco/lavanda claro, ocupa el tercio superior"
+            },
+            {
+              "card": null,
+              "zone": "centro",
+              "quote": "Burbuja de chat gris y tarjeta con campo de texto sobre degradado lavanda, estética limpia pero de bajo contraste"
+            }
+          ]
+        },
+        "message_clarity": {
+          "score": 12,
+          "anchor_level": "7-12",
+          "reasoning": "El titular dice 'un agente para todo tu equipo', pero no explica qué problema concreto resuelve ni para qué tipo de negocio. El ejemplo del chat (reprogramar tours de Sarah a Jake) aclara el caso de uso, pero solo se entiende leyendo el texto pequeño de la interfaz. Además, el titular del anuncio ('The Answer is Apollo') no coincide con el del arte, lo que diluye el mensaje.",
+          "evidence": [
+            {
+              "card": null,
+              "zone": "titular",
+              "quote": "\"The One Agent for Your Whole Team\" – promesa genérica sin dolor explícito"
+            },
+            {
+              "card": null,
+              "zone": "centro",
+              "quote": "\"Reschedule all tours for Sarah, she has to be out of office on Friday last minute.\" – caso de uso en texto pequeño"
+            },
+            {
+              "card": null,
+              "zone": "copy",
+              "quote": "\"Apollo is the one agent that works for your whole team, built into the EliseAI platform.\""
+            }
+          ]
+        },
+        "proof": {
+          "score": 14,
+          "anchor_level": "13-19",
+          "reasoning": "Se muestra una interfaz de chat del producto con una instrucción real y la respuesta del agente que reprograma 3 tours y ofrece enviar mensajes a los prospectos, lo que demuestra una acción concreta. No llega al nivel superior: es una sola interacción, el texto es pequeño en móvil y no hay métricas, cifras ni antes/después.",
+          "evidence": [
+            {
+              "card": null,
+              "zone": "centro",
+              "quote": "Respuesta del agente: \"Got it! Moving 3 tours from Sarah to Jake on Friday. Want me to send rescheduling message to those 3 prospects?\""
+            },
+            {
+              "card": null,
+              "zone": "inferior",
+              "quote": "Campo \"Add a follow up...\", selector \"Caladan Lofts\" y logo EliseAI que contextualizan la interfaz real"
+            }
+          ]
+        },
+        "offer_cta": {
+          "score": 9,
+          "anchor_level": "7-12",
+          "reasoning": "El botón negro 'Book Demo →' tiene buen contraste y está bien ubicado bajo el titular, pero es un CTA tradicional sin incentivo ni reducción de riesgo (sin prueba gratis, sin plazo, sin beneficio explícito). Además, el CTA del arte ('Book Demo') difiere del de la plataforma ('Book Now').",
+          "evidence": [
+            {
+              "card": null,
+              "zone": "cta",
+              "quote": "Botón negro \"Book Demo →\" bajo el titular"
+            },
+            {
+              "card": null,
+              "zone": "copy",
+              "quote": "CTA de plataforma \"Book Now\" sin incentivo adicional"
+            }
+          ]
+        },
+        "text_in_image": "APOLLO\nThe One Agent for Your Whole Team\nBook Demo →\nReschedule all tours for Sarah, she has to be out of office on Friday last minute.\nWorked for a few seconds\nGot it! Moving 3 tours from Sarah to Jake on Friday. Want me to send rescheduling message to those 3 prospects?\nAdd a follow up...\nCaladan Lofts\nElise AI",
+        "text_density": "media",
+        "visual_style": "captura_producto",
+        "has_human_face": false,
+        "has_product_screenshot": true,
+        "main_promise": "Un solo agente (Apollo) que trabaja para todo tu equipo ejecutando tareas operativas desde un chat.",
+        "value_proposition": "Resuelve la carga operativa de coordinar al equipo, por ejemplo reprogramar visitas y avisar a prospectos, mediante un agente conversacional integrado en la plataforma EliseAI; ofrece una demo para verlo en acción.",
+        "feature_focus": [
+          "agendamiento",
+          "automatizacion",
+          "agentes_ia"
+        ],
+        "ai_mention": "mencionada",
+        "target_niche": "Gestión inmobiliaria / property management (alquiler de apartamentos, tours a prospectos)",
+        "language": "en",
+        "carousel_narrative": null,
+        "weakest_card": null,
+        "what_to_model": "Mostrar una instrucción real en lenguaje natural con la respuesta que ejecuta una acción operativa concreta (reprogramar 3 visitas y proponer avisar a los prospectos). Esa demostración en interfaz es creíble y fácil de seguir. También el titular grande y limpio con CTA justo debajo.",
+        "what_to_beat": "Titular genérico sin dolor explícito, texto del chat demasiado pequeño para móvil, paleta pálida de bajo impacto, CTA sin incentivo ni reducción de riesgo, e inconsistencia entre arte ('Book Demo') y copy ('Book Now', 'The Answer is Apollo'). Se puede superar con un dolor concreto en el titular, una cifra o resultado, y una oferta de bajo riesgo.",
+        "cosmiq_adaptation_idea": "Crear un estático con una captura de WhatsApp o del CRM de Cosmiq donde un equipo comercial pide 'Reagenda todas las citas de Laura de mañana' y el sistema las mueve y avisa a los leads por WhatsApp. Titular con dolor concreto (ej. 'Cuando alguien falta, tus citas no se pierden'), texto del chat en grande y botón de alto contraste con 'Prueba gratis / Agenda demo de 15 min'.",
+        "confidence": 0.85,
+        "creative_score": 48,
+        "total_score": 48
+      }
+    }
+  ],
+  "stopped": null,
+  "cost_usd": 0.231126,
+  "requests": 3,
+  "previous_attempt": {
+    "test": "prueba4_estaticos_claude",
+    "model": "claude-sonnet-5-5",
+    "date": "2026-10-22",
+    "budget_test_usd": 0.5,
+    "runs": [
+      {
+        "ad_id": "2594848640971633",
+        "competitor": "EliseAI",
+        "pillar": "voz",
+        "error": "ValidationError: 27 validation errors for StaticEvaluationResult\nstop_power.anchor_level\n  Field required [type=missing, input_value={'score': 11, 'rationale'...en un feed saturado.'}]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/missing\nstop_power.reasoning\n  Field required [type=missing, input_value={'score': 11, 'rationale'...en un feed saturado.'}]}, input_type=dict]\n    For further information visit https://errors.pydantic.dev/2.14/v/missing\nstop_power.evidence.0.quote\n  Field required [type=missing, input_value={'zone': 'centro', 'descr...ona como ancla visual.\"",
+        "usage_billed": {
+          "in": 2320,
+          "out": 3365
+        }
+      }
+    ],
+    "stopped": "error en 2594848640971633: ValidationError",
+    "cost_usd": 0.101895,
+    "requests": 1,
+    "previous_attempt": {
+      "test": "prueba4_estaticos_claude",
+      "model": "claude-sonnet-5-5",
+      "date": "2026-10-22",
+      "budget_test_usd": 0.5,
+      "runs": [
+        {
+          "ad_id": "2594848640971633",
+          "competitor": "EliseAI",
+          "pillar": "voz",
+          "error": "ValidationError: 1 validation error for StaticEvaluationResult\n  Invalid JSON: EOF while parsing a value at line 95 column 85 [type=json_invalid, input_value='{\\n  \"text_in_image\": \"E...o están en el copy).\",', input_type=str]\n    For further information visit https://errors.pydantic.dev/2.14/v/json_invalid",
+          "usage_billed": {
+            "in": 2320,
+            "out": 2500
+          }
+        }
+      ],
+      "stopped": "error en 2594848640971633: ValidationError",
+      "cost_usd": 0.04446,
+      "requests": 1,
+      "previous_attempt": {
+        "test": "prueba4_estaticos_claude",
+        "model": "claude-sonnet-5-5",
+        "runs": [],
+        "stopped": "Anthropic 400: la clave no esta asociada a un workspace; requiere ANTHROPIC_WORKSPACE_ID. Antes, 3 TypeError locales (SDK 2.1.0 sin 'temperature') ya corregidos.",
+        "cost_usd": 0.0
+      }
+    }
+  }
 }

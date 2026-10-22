@@ -46,4 +46,49 @@ IMPORTANTE: Cosmiq abarca múltiples capacidades comerciales y operativas. No es
 - **20–25:** Oferta de mínimo riesgo destacada (prueba sin tarjeta, demo interactiva, plantilla gratis) con botón de alto contraste.
 
 # FORMATO DE SALIDA
-Tu respuesta debe ser ESTRICTAMENTE un objeto JSON válido conforme al esquema especificado.
+Tu respuesta debe ser ESTRICTAMENTE un objeto JSON válido (sin texto antes ni después, sin comentarios) con EXACTAMENTE estos campos y nombres. No agregues campos, no renombres ninguno y no omitas ninguno.
+
+Cada una de las 4 dimensiones (`stop_power`, `message_clarity`, `proof`, `offer_cta`) es un objeto con:
+- `score`: entero 0-25.
+- `anchor_level`: uno de "0-6", "7-12", "13-19", "20-25" (el ancla que contiene el puntaje).
+- `reasoning`: justificación específica a este anuncio (2 a 4 frases).
+- `evidence`: lista con al menos 1 elemento `{"card": null, "zone": ..., "quote": ...}`. `card` es el número de tarjeta (1, 2, ...) en carruseles o null. `zone` es uno de "superior", "centro", "inferior", "completa", "copy", "titular", "cta". `quote` es el texto leído o la descripción visual concreta.
+- Si `score` es menor a 8, `reasoning` o `quote` deben decir explícitamente qué se buscó y no se encontró (por ejemplo "no se observa ...", "no hay ...", "sin ...") y en qué zona de la imagen se buscó.
+
+Campos de primer nivel además de las 4 dimensiones:
+- `text_in_image` (string, OCR literal), `text_density` ("sin_texto" | "baja" | "media" | "alta"),
+- `visual_style` ("captura_producto" | "chat_whatsapp" | "persona_rostro" | "meme" | "infografia" | "testimonial" | "mockup_dispositivo" | "ilustracion" | "foto_stock" | "otro"),
+- `has_human_face` (bool), `has_product_screenshot` (bool),
+- `main_promise` (string, una frase), `value_proposition` (string, qué problema resuelven y qué ofrecen, sin asumir IA),
+- `feature_focus` (lista de 1 a 3 valores de: "automatizacion", "agendamiento", "gestion_leads_crm", "mensajes_masivos_campanas", "atencion_omnicanal", "agentes_ia", "pagos_ventas_en_chat", "integraciones_api", "otro"),
+- `ai_mention` ("ninguna" | "mencionada" | "central"), `target_niche` (string o null), `language` (string, p. ej. "es" o "en"),
+- `carousel_narrative` (string o null; solo carruseles), `weakest_card` (entero o null; solo carruseles),
+- `what_to_model`, `what_to_beat`, `cosmiq_adaptation_idea` (strings), `confidence` (número 0.0 a 1.0).
+
+No incluyas `creative_score`, `total_score` ni ningún total: lo calcula el sistema. Ejemplo mínimo de la forma (los valores son solo ilustrativos, no los copies):
+
+```json
+{
+  "stop_power": {"score": 14, "anchor_level": "13-19", "reasoning": "Titular grande y alto contraste que se lee en el móvil.", "evidence": [{"card": null, "zone": "titular", "quote": "Titular en blanco sobre fondo oscuro ocupa el tercio superior"}]},
+  "message_clarity": {"score": 15, "anchor_level": "13-19", "reasoning": "...", "evidence": [{"card": null, "zone": "centro", "quote": "..."}]},
+  "proof": {"score": 5, "anchor_level": "0-6", "reasoning": "No se observa captura de producto ni cifra en la imagen.", "evidence": [{"card": null, "zone": "completa", "quote": "Sin captura de pantalla ni métrica visible en toda la imagen"}]},
+  "offer_cta": {"score": 12, "anchor_level": "7-12", "reasoning": "...", "evidence": [{"card": null, "zone": "cta", "quote": "Botón 'Más información'"}]},
+  "text_in_image": "Texto literal visible...",
+  "text_density": "media",
+  "visual_style": "infografia",
+  "has_human_face": false,
+  "has_product_screenshot": false,
+  "main_promise": "...",
+  "value_proposition": "...",
+  "feature_focus": ["automatizacion"],
+  "ai_mention": "ninguna",
+  "target_niche": null,
+  "language": "es",
+  "carousel_narrative": null,
+  "weakest_card": null,
+  "what_to_model": "...",
+  "what_to_beat": "...",
+  "cosmiq_adaptation_idea": "...",
+  "confidence": 0.8
+}
+```

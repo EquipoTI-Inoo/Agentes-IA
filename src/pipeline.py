@@ -63,6 +63,7 @@ class StopRequested(Exception):
 class RunOptions:
     pillar: Optional[str] = None
     competitor: Optional[str] = None
+    priority: Optional[int] = None  # catalog priority tier (1-3); restricts every stage to those competitors
     query: Optional[str] = None  # ad-hoc brand/keyword search (API /api/search)
     all_pillars: bool = False
     countries: List[str] = field(default_factory=lambda: list(settings.DEFAULT_COUNTRIES))
@@ -212,12 +213,17 @@ class Pipeline:
 
     def _scope(self, q, opts: RunOptions, db):
         """Restricts an Ad query to what this run is about (competitor / pillar / ad-hoc query)."""
+        if opts.media_filter == "image":
+            q = q.filter(Ad.has_video.is_(False))  # a static-only run never advances video ads
         if opts.competitor:
             comp = self._find_competitor(db, opts.competitor)
             # its own ads plus the ones its search brought in from other pages (those become out_of_catalog)
             q = q.filter((Ad.competitor_id == comp.id) | (Ad.search_query == comp.name))
         elif opts.query:
             q = q.filter(Ad.search_query == opts.query)
+        elif opts.priority is not None:
+            tier = db.query(Competitor).filter(Competitor.priority == opts.priority).all()
+            q = q.filter(Ad.competitor_id.in_([c.id for c in tier]) | Ad.search_query.in_([c.name for c in tier]))
         elif opts.pillar:
             q = q.filter(Ad.pillar == opts.pillar)
         return q
@@ -235,7 +241,7 @@ class Pipeline:
         if opts.query:
             targets.append({"name": opts.query, "page_ids": [], "pillar": opts.pillar or "general", "kind": "query"})
         else:
-            use_competitors = bool(opts.competitor or opts.pillar or opts.all_pillars)
+            use_competitors = bool(opts.competitor or opts.pillar or opts.all_pillars or opts.priority is not None)
             if not use_competitors and not opts.keywords:
                 raise ValueError("Indica --pillar, --competitor, --query o --all.")
             if use_competitors:
@@ -246,6 +252,8 @@ class Pipeline:
                     q = q.filter(Competitor.id == self._find_competitor(db, opts.competitor).id)
                 elif opts.pillar:
                     q = q.filter(Competitor.pillar == opts.pillar)
+                if opts.priority is not None:
+                    q = q.filter(Competitor.priority == opts.priority)
                 for comp in q.order_by(Competitor.priority, Competitor.name).all():
                     targets.append({"name": comp.name, "page_ids": from_json(comp.page_ids, []), "pillar": comp.pillar or "general", "kind": "competitor"})
         if opts.keywords:
@@ -259,7 +267,7 @@ class Pipeline:
     # ---- stages ----
 
     def stage_discover(self, opts: RunOptions) -> Dict[str, Any]:
-        stats = {"queries": 0, "seen": 0, "new": 0, "updated": 0, "errors": 0, "blocked": False, "download_jobs": 0}
+        stats = {"queries": 0, "seen": 0, "new": 0, "updated": 0, "errors": 0, "blocked": False, "download_jobs": 0, "skipped_video": 0}
         with SessionLocal() as db:
             targets = self._targets(db, opts)
         hunter = self._get_hunter()
@@ -287,6 +295,9 @@ class Pipeline:
                     if opts.max_ads and stats["seen"] >= opts.max_ads:
                         break
                     self._check_stop()
+                    if opts.media_filter == "image" and any(c.get("has_video") for c in ad.get("creatives") or []):
+                        stats["skipped_video"] += 1  # Meta's image filter also returns video ads (their thumbnails): not static
+                        continue
                     self._store_discovered(ad, target, country, stats)
         return stats
 

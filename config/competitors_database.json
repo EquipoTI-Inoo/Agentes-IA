@@ -57,10 +57,13 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": "2026-10-21T21:12:45.316064+00:00",
-          "resolution_confidence": "baja",
-          "needs_review": true
+          "page_ids": [
+            "448063191718724"
+          ],
+          "resolved_at": "2026-10-22T12:26:58.188311+00:00",
+          "resolution_confidence": "media",
+          "needs_review": false,
+          "resolution_note": "nombre exacto (dominio no verificable o sin anuncios)"
         },
         {
           "name": "Synthflow AI",
@@ -75,10 +78,13 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": "2026-10-21T21:12:47.297341+00:00",
-          "resolution_confidence": "baja",
-          "needs_review": true
+          "page_ids": [
+            "191988060673277"
+          ],
+          "resolved_at": "2026-10-22T12:27:03.176405+00:00",
+          "resolution_confidence": "media",
+          "needs_review": false,
+          "resolution_note": "nombre exacto (dominio no verificable o sin anuncios)"
         },
         {
           "name": "Air AI",
@@ -94,9 +100,24 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": "2026-10-21T21:12:48.941350+00:00",
+          "resolved_at": "2026-10-22T12:27:05.344176+00:00",
           "resolution_confidence": "baja",
-          "needs_review": true
+          "needs_review": true,
+          "resolution_note": "ninguna página coincide exactamente con el nombre; no se adivina",
+          "review_candidates": [
+            {
+              "page_id": "198317336853861",
+              "page_name": "Qatar Airways"
+            },
+            {
+              "page_id": "273795515772",
+              "page_name": "KLM Royal Dutch Airlines"
+            },
+            {
+              "page_id": "324826532457",
+              "page_name": "Airbnb"
+            }
+          ]
         },
         {
           "name": "Vocads",
@@ -143,9 +164,10 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": "2026-10-21T21:15:35.831415+00:00",
+          "resolved_at": "2026-10-22T12:27:25.683737+00:00",
           "resolution_confidence": "baja",
-          "needs_review": true
+          "needs_review": true,
+          "resolution_note": "Meta no devolvió páginas para ese nombre"
         },
         {
           "name": "Kore.ai",
@@ -191,10 +213,13 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": "2026-10-21T21:15:50.160003+00:00",
-          "resolution_confidence": "baja",
-          "needs_review": true
+          "page_ids": [
+            "115514997818015"
+          ],
+          "resolved_at": "2026-10-22T12:27:33.257889+00:00",
+          "resolution_confidence": "alta",
+          "needs_review": false,
+          "resolution_note": "nombre exacto y dominio confirmado en sus anuncios"
         },
         {
           "name": "PlayHT",
@@ -207,9 +232,24 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": "2026-10-21T21:15:52.273148+00:00",
+          "resolved_at": "2026-10-22T12:27:36.585640+00:00",
           "resolution_confidence": "baja",
-          "needs_review": true
+          "needs_review": true,
+          "resolution_note": "ninguna página coincide exactamente con el nombre; no se adivina",
+          "review_candidates": [
+            {
+              "page_id": "2177044852576652",
+              "page_name": "Playground Houston"
+            },
+            {
+              "page_id": "104961482016444",
+              "page_name": "HTN Play Center"
+            },
+            {
+              "page_id": "843418435525053",
+              "page_name": "HTD Plays Games"
+            }
+          ]
         },
         {
           "name": "ElevenLabs",
@@ -259,9 +299,24 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": "2026-10-21T21:15:59.067856+00:00",
+          "resolved_at": "2026-10-22T12:27:38.610366+00:00",
           "resolution_confidence": "baja",
-          "needs_review": true
+          "needs_review": true,
+          "resolution_note": "ninguna página coincide exactamente con el nombre; no se adivina",
+          "review_candidates": [
+            {
+              "page_id": "166003526602981",
+              "page_name": "Wave AI Note Taker"
+            },
+            {
+              "page_id": "1088897854308946",
+              "page_name": "Ai-PulseWave"
+            },
+            {
+              "page_id": "1764968026941413",
+              "page_name": "Waves Open Air Festival"
+            }
+          ]
         },
         {
           "name": "Lindy AI",
@@ -324,10 +379,13 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": "2026-10-21T21:16:14.545499+00:00",
-          "resolution_confidence": "baja",
-          "needs_review": true
+          "page_ids": [
+            "105031848743269"
+          ],
+          "resolved_at": "2026-10-22T12:27:44.905328+00:00",
+          "resolution_confidence": "alta",
+          "needs_review": false,
+          "resolution_note": "nombre exacto y dominio confirmado en sus anuncios"
         },
         {
           "name": "Goodcall",
@@ -390,10 +448,13 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": "2026-10-21T21:16:31.684464+00:00",
-          "resolution_confidence": "baja",
-          "needs_review": true
+          "page_ids": [
+            "177523973188826"
+          ],
+          "resolved_at": "2026-10-22T12:27:49.191059+00:00",
+          "resolution_confidence": "media",
+          "needs_review": false,
+          "resolution_note": "nombre exacto (dominio no verificable o sin anuncios)"
         },
         {
           "name": "Syllable",
@@ -558,12 +619,30 @@
             "US",
             "ES"
           ],
-          "page_ids": [
-            "225836522159558"
-          ],
-          "resolved_at": "2026-10-21T21:17:18.534867+00:00",
+          "page_ids": [],
+          "resolved_at": "2026-10-22T12:27:51.047743+00:00",
           "resolution_confidence": "baja",
-          "needs_review": true
+          "needs_review": true,
+          "resolution_note": "ninguna página coincide exactamente con el nombre; no se adivina",
+          "review_candidates": [
+            {
+              "page_id": "225836522159558",
+              "page_name": "Yellowait"
+            },
+            {
+              "page_id": "106709974445643",
+              "page_name": "Yellow Ai Clothing"
+            },
+            {
+              "page_id": "136992406375005",
+              "page_name": "Yellow Dot Heating & Air Conditioning"
+            },
+            {
+              "page_id": "225836522159558",
+              "page_name": null,
+              "source": "resolución anterior (confianza baja)"
+            }
+          ]
         },
         {
           "name": "Conversica",
@@ -922,9 +1001,24 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": "2026-10-21T21:18:31.094148+00:00",
+          "resolved_at": "2026-10-22T12:27:54.492026+00:00",
           "resolution_confidence": "baja",
-          "needs_review": true
+          "needs_review": true,
+          "resolution_note": "ninguna página coincide exactamente con el nombre; no se adivina",
+          "review_candidates": [
+            {
+              "page_id": "101403959135541",
+              "page_name": "What's Not To Love Sales Event by Red's Auto"
+            },
+            {
+              "page_id": "1127235773808096",
+              "page_name": "AI Autofunnel-WhatsApp API"
+            },
+            {
+              "page_id": "1072777695915415",
+              "page_name": "Automatización WhatsApp Estética"
+            }
+          ]
         },
         {
           "name": "Zoko",
@@ -1054,9 +1148,24 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": "2026-10-21T21:18:52.305213+00:00",
+          "resolved_at": "2026-10-22T12:27:58.416652+00:00",
           "resolution_confidence": "baja",
-          "needs_review": true
+          "needs_review": true,
+          "resolution_note": "ninguna página coincide exactamente con el nombre; no se adivina",
+          "review_candidates": [
+            {
+              "page_id": "1036128933126942",
+              "page_name": "Bird.com"
+            },
+            {
+              "page_id": "104785842054190",
+              "page_name": "Quentin's MessageBird Shop"
+            },
+            {
+              "page_id": "107249484844729",
+              "page_name": "Birds Message"
+            }
+          ]
         },
         {
           "name": "Infobip",
@@ -1222,9 +1331,10 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": "2026-10-21T21:19:37.574037+00:00",
+          "resolved_at": "2026-10-22T12:27:59.954372+00:00",
           "resolution_confidence": "baja",
-          "needs_review": true
+          "needs_review": true,
+          "resolution_note": "Meta no devolvió páginas para ese nombre"
         },
         {
           "name": "ChatSimple",
@@ -1237,9 +1347,24 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": "2026-10-21T21:19:40.166008+00:00",
+          "resolved_at": "2026-10-22T12:28:02.684021+00:00",
           "resolution_confidence": "baja",
-          "needs_review": true
+          "needs_review": true,
+          "resolution_note": "ninguna página coincide exactamente con el nombre; no se adivina",
+          "review_candidates": [
+            {
+              "page_id": "207007043574932",
+              "page_name": "City Auto - Chattanooga"
+            },
+            {
+              "page_id": "557196240819927",
+              "page_name": "Chatgpt Made Simple"
+            },
+            {
+              "page_id": "1182284998573904",
+              "page_name": "Rose Chateaux"
+            }
+          ]
         }
       ]
     },
@@ -1467,12 +1592,30 @@
             "PE",
             "ES"
           ],
-          "page_ids": [
-            "102794649011491"
-          ],
-          "resolved_at": "2026-10-21T21:13:36.132373+00:00",
+          "page_ids": [],
+          "resolved_at": "2026-10-22T12:27:07.252167+00:00",
           "resolution_confidence": "baja",
-          "needs_review": true
+          "needs_review": true,
+          "resolution_note": "ninguna página coincide exactamente con el nombre; no se adivina",
+          "review_candidates": [
+            {
+              "page_id": "102794649011491",
+              "page_name": "Freshsales2022"
+            },
+            {
+              "page_id": "503170753555016",
+              "page_name": "fresh_sale_shop"
+            },
+            {
+              "page_id": "632824083240257",
+              "page_name": "Scalebiz.ai"
+            },
+            {
+              "page_id": "102794649011491",
+              "page_name": null,
+              "source": "resolución anterior (confianza baja)"
+            }
+          ]
         },
         {
           "name": "Monday Sales CRM",
@@ -1488,9 +1631,10 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": "2026-10-21T21:13:38.395595+00:00",
+          "resolved_at": "2026-10-22T12:27:09.753795+00:00",
           "resolution_confidence": "baja",
-          "needs_review": true
+          "needs_review": true,
+          "resolution_note": "Meta no devolvió páginas para ese nombre"
         },
         {
           "name": "ClickUp CRM",
@@ -1506,9 +1650,24 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": "2026-10-21T21:13:39.981938+00:00",
+          "resolved_at": "2026-10-22T12:27:11.266666+00:00",
           "resolution_confidence": "baja",
-          "needs_review": true
+          "needs_review": true,
+          "resolution_note": "ninguna página coincide exactamente con el nombre; no se adivina",
+          "review_candidates": [
+            {
+              "page_id": "1416932978159123",
+              "page_name": "CRM Click Publish Sandbox Page"
+            },
+            {
+              "page_id": "109502087072734",
+              "page_name": "Clicka CRM"
+            },
+            {
+              "page_id": "1948107115427197",
+              "page_name": "Leader AI Labs"
+            }
+          ]
         },
         {
           "name": "Capsule CRM",
@@ -1564,9 +1723,10 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": "2026-10-21T21:13:51.909676+00:00",
+          "resolved_at": "2026-10-22T12:27:13.900979+00:00",
           "resolution_confidence": "baja",
-          "needs_review": true
+          "needs_review": true,
+          "resolution_note": "Meta no devolvió páginas para ese nombre"
         },
         {
           "name": "Zendesk Sell",
@@ -1582,9 +1742,10 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": "2026-10-21T21:13:53.443251+00:00",
+          "resolved_at": "2026-10-22T12:27:16.355750+00:00",
           "resolution_confidence": "baja",
-          "needs_review": true
+          "needs_review": true,
+          "resolution_note": "Meta no devolvió páginas para ese nombre"
         },
         {
           "name": "SugarCRM",
@@ -1640,9 +1801,10 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": "2026-10-21T21:14:08.021578+00:00",
+          "resolved_at": "2026-10-22T12:27:19.522460+00:00",
           "resolution_confidence": "baja",
-          "needs_review": true
+          "needs_review": true,
+          "resolution_note": "Meta no devolvió páginas para ese nombre"
         },
         {
           "name": "Agile CRM",
@@ -1738,9 +1900,16 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": "2026-10-21T21:14:30.390250+00:00",
+          "resolved_at": "2026-10-22T12:27:21.894246+00:00",
           "resolution_confidence": "baja",
-          "needs_review": true
+          "needs_review": true,
+          "resolution_note": "ninguna página coincide exactamente con el nombre; no se adivina",
+          "review_candidates": [
+            {
+              "page_id": "101085999251391",
+              "page_name": "inessa.crm"
+            }
+          ]
         },
         {
           "name": "Pipeline CRM",
@@ -1816,9 +1985,10 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": "2026-10-21T21:14:48.285716+00:00",
+          "resolved_at": "2026-10-22T12:27:23.718548+00:00",
           "resolution_confidence": "baja",
-          "needs_review": true
+          "needs_review": true,
+          "resolution_note": "Meta no devolvió páginas para ese nombre"
         },
         {
           "name": "Attio",
