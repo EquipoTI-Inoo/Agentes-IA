@@ -16,6 +16,8 @@ Rules
 - Idempotent: schema_meta.schema_version marks completion; re-running changes nothing, and an
   interrupted run resumes without duplicating rows.
 - Portable: SQLAlchemy only; the backup step is SQLite-specific and skipped for other databases.
+- Then the multi-company step (src/db/tenancy.py) runs: companies / projects, every competitor in the
+  default Cosmiq project, UNIQUE(project_id, name). A database already at schema_version 6 only gets this step.
 """
 
 from __future__ import annotations
@@ -32,7 +34,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 import yaml
-from sqlalchemy import inspect, text
+from sqlalchemy import inspect, or_, text
 from sqlalchemy.engine import Engine
 from sqlalchemy.orm import Session
 
@@ -43,6 +45,7 @@ from src.db.competitors import (
 )
 from src.db.engine import (
     DATA_DIR,
+    add_missing_columns,
     LEGACY_ADS_TABLE,
     LEGACY_ANALYSES_TABLE,
     SCHEMA_VERSION,
@@ -67,6 +70,7 @@ from src.db.models import (
     MediaInfo,
     SchemaMeta,
     from_json,
+    get_default_project,
     to_json,
     utcnow,
 )
@@ -122,9 +126,9 @@ def _read_table(engine: Engine, table: str) -> List[Dict[str, Any]]:
 # Backup (SQLite only)
 # --------------------------------------------------------------------------------------
 
-def backup_sqlite(engine: Engine, backup_dir: Optional[Path] = None) -> Optional[Path]:
+def backup_sqlite(engine: Engine, backup_dir: Optional[Path] = None, label: str = "phase6") -> Optional[Path]:
     """
-    Copies the SQLite file to <data>/backup/<name>_before_phase6_<YYYYMMDD>.db and verifies that
+    Copies the SQLite file to <data>/backup/<name>_before_<label>_<YYYYMMDD>.db and verifies that
     the copy opens, passes integrity_check and has the same row count in every table.
     Returns None for non-SQLite databases (use pg_dump there).
     """
@@ -137,9 +141,9 @@ def backup_sqlite(engine: Engine, backup_dir: Optional[Path] = None) -> Optional
 
     bdir = Path(backup_dir) if backup_dir else Path(db_file).parent / "backup"
     bdir.mkdir(parents=True, exist_ok=True)
-    target = bdir / f"{Path(db_file).stem}_before_phase6_{datetime.now():%Y%m%d}.db"
+    target = bdir / f"{Path(db_file).stem}_before_{label}_{datetime.now():%Y%m%d}.db"
     if target.exists():
-        target = bdir / f"{Path(db_file).stem}_before_phase6_{datetime.now():%Y%m%d_%H%M%S}.db"
+        target = bdir / f"{Path(db_file).stem}_before_{label}_{datetime.now():%Y%m%d_%H%M%S}.db"
 
     src = sqlite3.connect(db_file)
     dst = sqlite3.connect(str(target))
@@ -357,13 +361,17 @@ def _insert_missing(session: Session, model: Any, rows: List[Dict[str, Any]], ke
 
 
 def upsert_competitors(session: Session, config_path: Optional[Path] = None) -> int:
-    """Mirrors config/competitors_database.json into competitors (by unique name). Returns row count."""
+    """Mirrors config/competitors_database.json into the default project's competitors (by name). Returns row count."""
     rows = load_competitors_config(config_path)
-    existing = {c.name: c for c in session.query(Competitor).all()}
+    project = get_default_project(session)
+    session.flush()
+    scope = or_(Competitor.project_id == project.id, Competitor.project_id.is_(None))
+    existing = {c.name: c for c in session.query(Competitor).filter(scope).all()}
     for row in rows:
         fresh = competitor_from_row(row)
         current = existing.get(row["name"])
         if current is None:
+            fresh.project = project
             session.add(fresh)
         else:
             for col in ("website", "pillar", "priority", "markets", "page_ids", "meta_json"):
@@ -406,6 +414,8 @@ def migrate(
 
     if schema_version(engine) == SCHEMA_VERSION:
         report.update(status="already_migrated", after=report["before"], plan_counts={}, discarded=[], stats={})
+        if not dry_run:
+            _tenancy_step(engine, report, backup, backup_dir)
         return report
 
     legacy_pending = has_table(engine, LEGACY_ADS_TABLE)  # interrupted earlier run
@@ -436,6 +446,7 @@ def migrate(
     if ads_table == "ads":  # legacy layout still in place: set it aside before creating the new tables
         _drop_indexes_and_rename(engine)
     Base.metadata.create_all(bind=engine)
+    add_missing_columns(engine, Base.metadata)  # e.g. competitors.project_id on a schema older than this code
 
     with Session(engine) as session:
         n_comp = upsert_competitors(session, competitors_path)
@@ -465,9 +476,27 @@ def migrate(
                 row.value = value
         session.commit()
 
+    _tenancy_step(engine, report, backup=False, backup_dir=None)  # the Phase 6 backup above already covers it
     report.update(status="migrated", after=table_counts(engine), plan_counts=_plan_counts(plan, n_comp), discarded=plan.discarded, stats=plan.stats)
     report["integrity"] = check_integrity(engine)
     return report
+
+
+def _tenancy_step(engine: Engine, report: Dict[str, Any], backup: bool, backup_dir: Optional[Path]) -> None:
+    """Multi-company step (src/db/tenancy.py); backs up first only when there is something to change."""
+    from src.db.tenancy import apply_tenancy, plan_tenancy
+
+    plan = plan_tenancy(engine)
+    pending = plan["create_tables"] or plan["add_columns"] or plan["competitors_to_attach"] or plan["rebuild_unique"] \
+        or not plan["default_project_exists"] or plan["default_profile_missing"]
+    if not pending:
+        return
+    if backup:
+        backup_file = backup_sqlite(engine, backup_dir, label="multiempresa")
+        report["backup_path"] = str(backup_file) if backup_file else None
+    report["tenancy"] = apply_tenancy(engine)
+    if report["status"] == "already_migrated":
+        report["after"] = table_counts(engine)
 
 
 def _plan_counts(plan: Plan, n_competitors: int) -> Dict[str, int]:
@@ -516,10 +545,21 @@ def check_integrity(engine: Engine) -> Dict[str, Any]:
 # Report / CLI
 # --------------------------------------------------------------------------------------
 
+def _tenancy_summary(t: Dict[str, Any]) -> str:
+    return (f"proyecto por defecto id={t['default_project_id']}, competidores asignados={t['competitors_attached']}, "
+            f"tabla reconstruida={'sí' if t['unique_rebuilt'] else 'no'}, verificación ok={t['verify']['ok']}")
+
+
 def format_report(report: Dict[str, Any]) -> str:
     lines = ["=" * 78, f"MIGRACIÓN FASE 6 — {report['status'].upper()}", "=" * 78]
     if report["status"] == "already_migrated":
-        lines.append("La base ya está en el esquema de la Fase 6 (schema_version=6). No se cambió nada.")
+        if report.get("tenancy"):
+            lines.append("La base ya estaba en la Fase 6; se aplicó solo el paso multiempresa.")
+            if report.get("backup_path"):
+                lines.append(f"Backup verificado: {report['backup_path']}")
+            lines.append(f"Multiempresa: {_tenancy_summary(report['tenancy'])}")
+        else:
+            lines.append("La base ya está en el esquema de la Fase 6 (schema_version=6). No se cambió nada.")
         lines += ["", f"{'tabla':<26}{'filas':>8}"] + [f"{t:<26}{n:>8}" for t, n in report["before"].items()]
         return "\n".join(lines)
 
@@ -534,6 +574,8 @@ def format_report(report: Dict[str, Any]) -> str:
     lines += ["", "Verificaciones:"] + [f"  {k}: {v}" for k, v in report["stats"].items()]
     if "integrity" in report:
         lines.append(f"  integridad (FK/huérfanas): {report['integrity']}")
+    if report.get("tenancy"):
+        lines.append(f"  multiempresa: {_tenancy_summary(report['tenancy'])}")
     discarded = report.get("discarded", [])
     lines += ["", f"Filas descartadas (no migradas, conservadas en las tablas legacy): {len(discarded)}"]
     reasons: Dict[Tuple[str, str], List[str]] = {}
@@ -560,7 +602,8 @@ def main(argv: Optional[List[str]] = None) -> int:
     engine = make_engine(args.db_url or default_database_url())
     report = migrate(engine, dry_run=args.dry_run, backup=not args.no_backup)
     print(format_report(report))
-    return 0 if report.get("integrity", {"ok": True})["ok"] else 1
+    ok = report.get("integrity", {"ok": True})["ok"] and report.get("tenancy", {"verify": {"ok": True}})["verify"]["ok"]
+    return 0 if ok else 1
 
 
 if __name__ == "__main__":

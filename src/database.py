@@ -67,6 +67,18 @@ def init_db() -> None:
     if added:
         logger.info(f"Esquema actualizado, columnas añadidas: {', '.join(added)}")
 
+    # Multi-company (src/db/tenancy.py): the cheap, additive part runs on every start; the table rebuild does not
+    from src.db.tenancy import attach_to_default_project, needs_unique_rebuild
+
+    with SessionLocal() as db:
+        attached = attach_to_default_project(db)
+        db.commit()
+    if attached["competitors_attached"]:
+        logger.info(f"{attached['competitors_attached']} competidores asignados al proyecto por defecto (Cosmiq)")
+    if needs_unique_rebuild(engine):
+        logger.warning("La tabla competitors aún tiene UNIQUE(name) global. Ejecuta: python -m src.db.tenancy --dry-run "
+                       "y luego python -m src.db.tenancy")
+
 
 init_db()
 

@@ -3,7 +3,11 @@ Jinora Data Model (Phase 6)
 Normalized SQLAlchemy schema, portable between SQLite (default) and PostgreSQL (DATABASE_URL):
 no SQLite-only types or functions. Dates are naive UTC datetimes.
 
-  Competitor 1-N Ad 1-N Media / 1-1 MediaInfo / 1-N Analysis / 1-1 MarketSignal / 1-N Job
+  Company 1-N Project 1-N Competitor 1-N Ad 1-N Media / 1-1 MediaInfo / 1-N Analysis / 1-1 MarketSignal / 1-N Job
+
+Multi-company service (docs/PLAN_MULTIEMPRESA.md, Phase 1): every competitor belongs to a project. The original
+Cosmiq catalog is the default project (Project.is_default); a competitor saved without a project is attached to it
+(see _assign_default_project), so code written before projects existed keeps working unchanged.
 
 Transcript, has_voiceover, language and scene_cuts_estimate live inside Analysis.result_json,
 never in columns. llm_usage / llm_attempts (quota audit) are not modeled here: QuotaGuard
@@ -28,8 +32,9 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    event,
 )
-from sqlalchemy.orm import declarative_base, relationship, synonym
+from sqlalchemy.orm import Session, declarative_base, relationship, synonym
 
 Base = declarative_base()
 
@@ -48,6 +53,29 @@ STATUS_NEEDS_REVIEW = "needs_manual_review"  # doubtful relevance: a person deci
 STATUS_INACTIVE_DATA_ONLY = "inactive_data_only"  # inactive <= 60 days: data only, no LLM
 
 EXCLUDED_FROM_QUEUE = (STATUS_REJECTED, STATUS_OUT_OF_CATALOG)
+
+# Project.status: how far a company's request got (docs/SERVICIO_MULTIEMPRESA.md). Only moves forward.
+PROJECT_REQUESTED = "requested"  # company data received
+PROJECT_PROFILED = "profiled"  # AI profile (pillars, keywords, negative terms) ready
+PROJECT_COMPETITORS_PROPOSED = "competitors_proposed"  # competitors found, waiting for the company to validate
+PROJECT_COMPETITORS_APPROVED = "competitors_approved"  # ready to collect / analyze (the default project lives here)
+PROJECT_DOWNLOADED = "downloaded"
+PROJECT_ANALYZED = "analyzed"
+PROJECT_DONE = "done"
+PROJECT_STATUSES = (
+    PROJECT_REQUESTED, PROJECT_PROFILED, PROJECT_COMPETITORS_PROPOSED, PROJECT_COMPETITORS_APPROVED,
+    PROJECT_DOWNLOADED, PROJECT_ANALYZED, PROJECT_DONE,
+)
+
+# Competitor.status: only approved competitors are collected and analyzed
+COMPETITOR_PROPOSED = "proposed"  # suggested by the AI, not validated yet
+COMPETITOR_APPROVED = "approved"
+COMPETITOR_REJECTED = "rejected"  # discarded by the company; kept so it is not proposed again
+
+# The original catalog becomes this company / project (migration and _assign_default_project)
+DEFAULT_COMPANY_NAME = "Cosmiq"
+DEFAULT_COMPANY_INDUSTRY = "Software B2B: automatización de ventas y atención para empresas de LatAm"
+DEFAULT_PROJECT_NAME = "Cosmiq - monitoreo de competidores"
 
 # Analysis.analysis_type values that carry a creative_score
 SCORED_ANALYSIS_TYPES = ("video", "static")
@@ -80,21 +108,69 @@ class SchemaMeta(Base):
     value = Column(Text, nullable=False)
 
 
+class Company(Base):
+    """A company that requests the service (the default one is Cosmiq)."""
+
+    __tablename__ = "companies"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(255), nullable=False, unique=True)
+    industry = Column(String(255), nullable=True)  # rubro
+    website = Column(String(512), nullable=True)
+    description = Column(Text, nullable=True)
+    created_at = Column(DateTime, nullable=False, default=utcnow)
+
+    projects = relationship("Project", back_populates="company", cascade="all, delete-orphan", order_by="Project.id")
+
+
+class Project(Base):
+    """One competitor analysis for a company: its profile, its competitors and, through them, their ads."""
+
+    __tablename__ = "projects"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    company_id = Column(Integer, ForeignKey("companies.id", ondelete="CASCADE"), nullable=False)
+    name = Column(String(255), nullable=False)
+    status = Column(String(32), nullable=False, default=PROJECT_REQUESTED)
+    countries = Column(Text, nullable=True)  # JSON list of ISO codes; NULL = settings.DEFAULT_COUNTRIES
+    profile_json = Column(Text, nullable=True)  # AI profile: description, pillars, keywords, negative_terms
+    auto_approve = Column(Boolean, nullable=False, default=False)  # skip the company's validation of competitors
+    budget_usd = Column(Float, nullable=True)  # AI spend cap for this project; NULL = only the global caps
+    is_default = Column(Boolean, nullable=False, default=False)  # the original Cosmiq catalog
+    created_at = Column(DateTime, nullable=False, default=utcnow)
+    updated_at = Column(DateTime, nullable=False, default=utcnow, onupdate=utcnow)
+
+    company = relationship("Company", back_populates="projects")
+    competitors = relationship("Competitor", back_populates="project", cascade="all, delete-orphan")
+
+    __table_args__ = (
+        UniqueConstraint("company_id", "name", name="uq_projects_company_name"),
+        Index("ix_projects_status", "status"),
+    )
+
+
 class Competitor(Base):
     __tablename__ = "competitors"
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    name = Column(String(255), nullable=False, unique=True)
+    # Nullable only so that older databases can gain the column; every row gets a project (migration + flush hook)
+    project_id = Column(Integer, ForeignKey("projects.id", ondelete="CASCADE"), nullable=True)
+    name = Column(String(255), nullable=False)  # unique per project, not globally
     website = Column(String(512), nullable=True)
     pillar = Column(String(64), nullable=True)
     priority = Column(Integer, nullable=False, default=2)
     markets = Column(Text, nullable=True)  # JSON list of ISO country codes
     page_ids = Column(Text, nullable=True)  # JSON list of Meta page ids
     meta_json = Column(Text, nullable=True)  # region, focus, notes, resolution_confidence, ...
+    status = Column(String(16), nullable=True, default=COMPETITOR_APPROVED)  # proposed | approved | rejected
+    affinity_score = Column(Float, nullable=True)  # 0-1, set when the AI proposes the competitor
 
+    project = relationship("Project", back_populates="competitors")
     ads = relationship("Ad", back_populates="competitor")
 
     __table_args__ = (
+        UniqueConstraint("project_id", "name", name="uq_competitors_project_name"),
+        Index("ix_competitors_project_id", "project_id"),
         Index("ix_competitors_pillar", "pillar"),
         Index("ix_competitors_priority", "priority"),
     )
@@ -295,3 +371,37 @@ class Job(Base):
         Index("ix_jobs_status", "status"),
         Index("ix_jobs_type_ad", "type", "ad_id"),
     )
+
+
+# --------------------------------------------------------------------------------------
+# Default project
+# --------------------------------------------------------------------------------------
+
+def get_default_project(session: Session, create: bool = True) -> Optional[Project]:
+    """The project that holds the original Cosmiq catalog; created (with its company) on first use."""
+    with session.no_autoflush:
+        project = session.query(Project).filter(Project.is_default.is_(True)).order_by(Project.id).first()
+        if project is None:
+            project = next((o for o in session.new if isinstance(o, Project) and o.is_default), None)
+        if project is not None or not create:
+            return project
+        company = session.query(Company).filter(Company.name == DEFAULT_COMPANY_NAME).first()
+        if company is None:
+            company = Company(name=DEFAULT_COMPANY_NAME, industry=DEFAULT_COMPANY_INDUSTRY)
+            session.add(company)
+    project = Project(company=company, name=DEFAULT_PROJECT_NAME, status=PROJECT_COMPETITORS_APPROVED,
+                      auto_approve=True, is_default=True)
+    session.add(project)
+    return project
+
+
+@event.listens_for(Session, "before_flush")
+def _assign_default_project(session: Session, _flush_context, _instances) -> None:
+    """A competitor saved without a project (code written before projects existed) joins the default project."""
+    orphans = [o for o in session.new if isinstance(o, Competitor) and o.project_id is None and o.project is None]
+    if orphans:
+        project = get_default_project(session)
+        for competitor in orphans:
+            competitor.project = project
+            if competitor.status is None:
+                competitor.status = COMPETITOR_APPROVED
