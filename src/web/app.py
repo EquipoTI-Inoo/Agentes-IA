@@ -16,7 +16,9 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 
-from src.database import AdRecord, SessionLocal, get_ads_from_db, save_or_update_ad_record
+from sqlalchemy.orm import selectinload
+
+from src.database import AdRecord, SessionLocal, get_ads_from_db, save_forensics, save_or_update_ad_record
 from src.evaluator import evaluate_ad_cognitively
 from src.pillars import PILLARS, RAW_DB
 from src.relevance import is_ad_relevant
@@ -87,7 +89,12 @@ async def dashboard_view(request: Request):
     """Render the main executive dashboard."""
     db = SessionLocal()
     try:
-        raw_ads = db.query(AdRecord).order_by(AdRecord.days_active.desc()).all()
+        raw_ads = (
+            db.query(AdRecord)
+            .options(selectinload(AdRecord.media), selectinload(AdRecord.analyses), selectinload(AdRecord.media_info))
+            .order_by(AdRecord.days_active.desc())
+            .all()
+        )
 
         total_ads = len(raw_ads)
         winning_ads_count = sum(1 for a in raw_ads if a.days_active >= 30)
@@ -287,17 +294,14 @@ async def run_forensics_on_demand(ad_id: str):
     db = SessionLocal()
     try:
         ad = db.query(AdRecord).filter(AdRecord.id == ad_id).first()
-        if not ad or not ad.video_path or not Path(ad.video_path).exists():
+        video_file = DOWNLOADS_DIR / ad.video_path if ad and ad.video_path else None
+        if not video_file or not video_file.exists():
             raise HTTPException(status_code=404, detail="Video local no disponible para este anuncio")
 
         engine = VideoForensicsEngine("base")
-        report = engine.analyze_video(Path(ad.video_path))
+        report = engine.analyze_video(video_file)
 
-        ad.duration_seconds = report.get("duration_seconds")
-        ad.full_transcript = report.get("full_transcript")
-        ad.transcript_timeline = json.dumps(report.get("transcript_timeline") or [])
-        ad.total_frames = report.get("total_frames_extracted", 0)
-
+        save_forensics(db, ad, report)
         db.commit()
         return {"status": "success", "report": report}
     finally:

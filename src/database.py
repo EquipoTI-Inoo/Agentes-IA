@@ -1,166 +1,160 @@
 """
 Database Layer (SQLAlchemy)
 Supports SQLite locally (zero config) and PostgreSQL in Docker/Cloud via DATABASE_URL.
+
+Since Phase 6 the schema lives in src/db/models.py (competitors, ads, media, media_info,
+analyses, market_signals, jobs). This module keeps the engine/session and the names the rest
+of the code already imports (AdRecord = Ad, AnalysisRecord = Analysis, save_or_update_ad_record,
+get_ads_from_db, ...). A database still in the pre-Phase-6 layout is left untouched until
+`python -m src.db.migrate` is run.
 """
 
 from __future__ import annotations
 
 import json
-import os
-from datetime import datetime, timezone
+import logging
+from datetime import datetime
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from sqlalchemy import (
-    Boolean,
-    Column,
-    DateTime,
-    Float,
-    Integer,
-    String,
-    Text,
-    create_engine,
-    desc,
-)
-from sqlalchemy.orm import declarative_base, sessionmaker
+from sqlalchemy import desc
+from sqlalchemy.orm import selectinload, sessionmaker
 
-DATA_DIR = Path(__file__).parent.parent / "data"
+from src.config import settings
+from src.db.competitors import CompetitorIndex
+from src.db.engine import DATA_DIR, default_database_url, is_legacy_schema, make_engine
+from src.db.models import (
+    STATUS_EVALUATED,
+    STATUS_PENDING,
+    Ad,
+    Analysis,
+    Base,
+    Competitor,
+    Job,
+    MarketSignal,
+    Media,
+    MediaInfo,
+    to_json,
+    utcnow,
+)
+from src.db.util import normalize_rel_path, parse_dt
+
+logger = logging.getLogger("Jinora.Database")
+
 DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-DEFAULT_DB_URL = f"sqlite:///{DATA_DIR / 'meta_ads.db'}"
-DATABASE_URL = os.environ.get("DATABASE_URL", DEFAULT_DB_URL)
-
-# SQLite multi-thread compatibility
-engine = create_engine(
-    DATABASE_URL,
-    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {},
-)
+DATABASE_URL = default_database_url()
+engine = make_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-Base = declarative_base()
+
+# Backward-compatible names used across the code base
+AdRecord = Ad
+AnalysisRecord = Analysis
+
+FORENSICS_MODEL = "faster-whisper"
 
 
-class AdRecord(Base):
-    """Archived Meta Advertisement Record."""
-
-    __tablename__ = "ads"
-
-    id = Column(String(64), primary_key=True, index=True)  # ad_id
-    page_id = Column(String(64), index=True, nullable=True)
-    page_name = Column(String(255), index=True, nullable=True)
-    delivery_start_time = Column(String(64), nullable=True)
-    days_active = Column(Integer, default=0, index=True)
-    is_active = Column(Boolean, default=True)
-    publisher_platforms = Column(Text, default="[]")  # JSON list
-    headline = Column(Text, nullable=True)
-    body_text = Column(Text, nullable=True)
-    cta_text = Column(String(128), nullable=True)
-    link_url = Column(Text, nullable=True)
-    video_path = Column(Text, nullable=True)
-    image_path = Column(Text, nullable=True)
-    has_video = Column(Boolean, default=False)
-    pillar = Column(String(64), default="general", index=True)
-    search_query = Column(String(128), index=True, nullable=True)
-
-    # Forensic Analysis Fields
-    duration_seconds = Column(Float, nullable=True)
-    full_transcript = Column(Text, nullable=True)
-    transcript_timeline = Column(Text, nullable=True)  # JSON list
-    total_frames = Column(Integer, default=0)
-    cognitive_score = Column(Integer, nullable=True)
-    score_breakdown = Column(Text, nullable=True)  # JSON dict
-
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-    updated_at = Column(
-        DateTime,
-        default=lambda: datetime.now(timezone.utc),
-        onupdate=lambda: datetime.now(timezone.utc),
-    )
+def init_db() -> None:
+    """Creates the Phase 6 tables. Never touches a database that still has the legacy layout."""
+    if is_legacy_schema(engine):
+        logger.warning(
+            "La base tiene el esquema anterior a la Fase 6. Ejecuta: python -m src.db.migrate --dry-run "
+            "y luego python -m src.db.migrate"
+        )
+        return
+    Base.metadata.create_all(bind=engine)
 
 
-class AnalysisRecord(Base):
-    """Archived Deep AI Evaluation Analysis (Video or Static)."""
-
-    __tablename__ = "analyses"
-
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    ad_id = Column(String(64), index=True, nullable=False)
-    model = Column(String(64), nullable=False)
-    prompt_version = Column(String(32), default="v1")
-    rubric_version = Column(String(32), default="v1")
-    creative_hash = Column(String(128), index=True, nullable=True)
-    analysis_type = Column(String(32), default="video")  # video / static
-    creative_score = Column(Integer, nullable=False)
-    result_json = Column(Text, nullable=False)
-    cost_usd = Column(Float, default=0.0)
-    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
-
-
-# Create tables
-Base.metadata.create_all(bind=engine)
+init_db()
 
 
 def normalize_to_relative_path(path_str: Optional[str]) -> Optional[str]:
-    """Convert any full/absolute or messy path to relative path with respect to DOWNLOADS_DIR."""
-    if not path_str:
-        return None
-    clean = str(path_str).replace("\\", "/").strip()
-    if "/downloads/" in clean:
-        return clean.split("/downloads/", 1)[1]
-    if clean.startswith("downloads/"):
-        return clean[len("downloads/"):]
-    return clean
+    """Path relative to DOWNLOADS_DIR (forward slashes); None if it cannot be anchored there."""
+    return normalize_rel_path(path_str)
 
 
-def save_or_update_ad_record(ad_data: Dict[str, Any], pillar: str = "general", search_query: str = "") -> AdRecord:
-    """Insert or update ad record in DB from scraper dict."""
+# --------------------------------------------------------------------------------------
+# Writes
+# --------------------------------------------------------------------------------------
+
+def _upsert_media(db, ad: Ad, kind: str, rel_path: str) -> None:
+    f = settings.downloads_path / rel_path
+    size = f.stat().st_size if f.exists() else None
+    for m in ad.media:
+        if m.kind == kind:
+            if m.rel_path != rel_path:
+                m.rel_path, m.size, m.sha256 = rel_path, size, None
+            return
+    ad.media.append(Media(kind=kind, rel_path=rel_path, size=size))
+
+
+def save_forensics(db, ad: Ad, report: Dict[str, Any]) -> None:
+    """Stores a local forensic (Whisper) report as an Analysis row + media duration; no columns."""
+    payload = {
+        "full_transcript": report.get("full_transcript"),
+        "transcript_timeline": report.get("transcript_timeline") or [],
+        "total_frames": report.get("total_frames_extracted", 0),
+        "duration_seconds": report.get("duration_seconds"),
+    }
+    row = next((a for a in ad.analyses if a.analysis_type == "forensics" and a.model == FORENSICS_MODEL), None)
+    if row is None:
+        ad.analyses.append(Analysis(
+            model=FORENSICS_MODEL, prompt_version="n/a", rubric_version="n/a", analysis_type="forensics",
+            creative_score=None, result_json=json.dumps(payload, ensure_ascii=False),
+        ))
+    else:
+        row.result_json = json.dumps(payload, ensure_ascii=False)
+    if report.get("duration_seconds") is not None:
+        if ad.media_info is None:
+            ad.media_info = MediaInfo()
+        ad.media_info.duration_s = report["duration_seconds"]
+
+
+def save_or_update_ad_record(ad_data: Dict[str, Any], pillar: str = "general", search_query: str = "") -> Ad:
+    """Insert or update ad (and its media / forensics) in the DB from a scraper dict."""
     db = SessionLocal()
     try:
         ad_id = str(ad_data.get("ad_id"))
-        existing = db.query(AdRecord).filter(AdRecord.id == ad_id).first()
-
+        existing = db.get(Ad, ad_id)
         creatives = ad_data.get("creatives", [])
         c0 = creatives[0] if creatives else {}
 
-        # Check local files
-        downloaded = ad_data.get("downloaded_files", [])
-        v_path = next((f for f in downloaded if f.endswith(".mp4")), None)
-        i_path = next((f for f in downloaded if f.endswith(".jpg")), None)
-
-        forensics = ad_data.get("forensics") or {}
-
-        if not existing:
-            existing = AdRecord(id=ad_id)
+        if existing is None:
+            existing = Ad(id=ad_id, status=STATUS_PENDING)
             db.add(existing)
 
-        existing.page_id = str(ad_data.get("page_id") or "")
+        existing.page_id = str(ad_data.get("page_id") or "") or None
         existing.page_name = ad_data.get("page_name") or "Desconocido"
-        existing.delivery_start_time = ad_data.get("delivery_start_time")
+        existing.start_date = parse_dt(ad_data.get("delivery_start_time"))
+        existing.stop_date = parse_dt(ad_data.get("delivery_stop_time"))
+        if ad_data.get("countries"):
+            existing.country_list = json.dumps(ad_data.get("countries"))
         existing.days_active = ad_data.get("days_active", 0)
         existing.is_active = ad_data.get("is_active", True)
-        existing.publisher_platforms = json.dumps(ad_data.get("publisher_platforms") or [])
+        existing.has_video = any(c.get("has_video") for c in creatives) or existing.has_video or any(
+            str(f).endswith(".mp4") for f in ad_data.get("downloaded_files", [])
+        )
+        existing.platforms = json.dumps(ad_data.get("publisher_platforms") or [])
         existing.headline = c0.get("title")
         existing.body_text = c0.get("body")
         existing.cta_text = c0.get("cta_text")
         existing.link_url = c0.get("link_url")
-        existing.has_video = any(c.get("has_video") for c in creatives)
         existing.pillar = pillar
         existing.search_query = search_query
 
-        if v_path:
-            existing.video_path = normalize_to_relative_path(v_path)
-        if i_path:
-            existing.image_path = normalize_to_relative_path(i_path)
+        competitor_id = CompetitorIndex(db.query(Competitor).all()).resolve(existing.page_id, existing.page_name)
+        if competitor_id:
+            existing.competitor_id = competitor_id
 
-        if forensics:
-            existing.duration_seconds = forensics.get("duration_seconds")
-            existing.full_transcript = forensics.get("full_transcript")
-            existing.transcript_timeline = json.dumps(forensics.get("transcript_timeline") or [])
-            existing.total_frames = forensics.get("total_frames_extracted", 0)
+        for f in ad_data.get("downloaded_files", []):
+            kind = "video" if str(f).endswith(".mp4") else ("image" if str(f).endswith(".jpg") else None)
+            if kind and (rel := normalize_rel_path(f)):
+                _upsert_media(db, existing, kind, rel)
+            elif kind:
+                logger.warning(f"Ruta de media no relativizable, no se guarda: {f}")
 
-        ev = ad_data.get("evaluation") or {}
-        if ev:
-            existing.cognitive_score = ev.get("total_score")
-            existing.score_breakdown = json.dumps(ev)
+        if ad_data.get("forensics"):
+            save_forensics(db, existing, ad_data["forensics"])
 
         db.commit()
         db.refresh(existing)
@@ -169,24 +163,68 @@ def save_or_update_ad_record(ad_data: Dict[str, Any], pillar: str = "general", s
         db.close()
 
 
+def ensure_ad(db, ad_dict: Dict[str, Any]) -> Ad:
+    """Returns the Ad row for ad_dict, creating a minimal one if the ad is not stored yet (FK safety)."""
+    ad_id = str(ad_dict.get("ad_id") or ad_dict.get("id"))
+    ad = db.get(Ad, ad_id)
+    if ad is None:
+        creatives = ad_dict.get("creatives") or []
+        c0 = creatives[0] if creatives else {}
+        ad = Ad(
+            id=ad_id,
+            page_name=ad_dict.get("page_name"),
+            headline=ad_dict.get("headline") or c0.get("title"),
+            body_text=ad_dict.get("body_text") or c0.get("body"),
+            cta_text=ad_dict.get("cta_text") or c0.get("cta_text"),
+            link_url=ad_dict.get("link_url") or c0.get("link_url"),
+            status=STATUS_PENDING,
+        )
+        db.add(ad)
+        db.flush()
+    return ad
+
+
+def mark_evaluation_failed(db, ad_dict: Dict[str, Any], error: str) -> None:
+    """Leaves the ad in pending_evaluation and records the failure as a Job (retry_after = now)."""
+    ad = ensure_ad(db, ad_dict)
+    ad.status = STATUS_PENDING
+    payload = {"status": "pending_evaluation", "last_error": error, "failed_at": utcnow().isoformat(), "retry_after": utcnow().isoformat()}
+    job = next((j for j in ad.jobs if j.type == "evaluate" and j.status == "pending"), None)
+    if job is None:
+        ad.jobs.append(Job(type="evaluate", status="pending", error=error, payload=to_json(payload)))
+    else:
+        job.error, job.payload = error, to_json(payload)
+    db.commit()
+
+
+def mark_evaluated(ad: Ad) -> None:
+    """Sets status 'evaluated' and closes any pending evaluate job (caller commits)."""
+    ad.status = STATUS_EVALUATED
+    for job in ad.jobs:
+        if job.type == "evaluate" and job.status == "pending":
+            job.status, job.finished_at = "done", utcnow()
+
+
+# --------------------------------------------------------------------------------------
+# Reads
+# --------------------------------------------------------------------------------------
+
 def get_ads_from_db(
     pillar: Optional[str] = None,
     min_days: int = 0,
     has_video_only: bool = False,
     limit: int = 50,
-) -> List[AdRecord]:
-    """Query ads with optional filters."""
+) -> List[Ad]:
+    """Query ads with optional filters (relationships are eager-loaded; safe to use after return)."""
     db = SessionLocal()
     try:
-        q = db.query(AdRecord)
+        q = db.query(Ad).options(selectinload(Ad.media), selectinload(Ad.analyses), selectinload(Ad.media_info))
         if pillar and pillar != "all":
-            q = q.filter(AdRecord.pillar == pillar)
+            q = q.filter(Ad.pillar == pillar)
         if min_days > 0:
-            q = q.filter(AdRecord.days_active >= min_days)
+            q = q.filter(Ad.days_active >= min_days)
         if has_video_only:
-            q = q.filter(AdRecord.has_video == True)
-        
-        q = q.order_by(desc(AdRecord.days_active))
-        return q.limit(limit).all()
+            q = q.filter(Ad.has_video.is_(True))
+        return q.order_by(desc(Ad.days_active)).limit(limit).all()
     finally:
         db.close()
