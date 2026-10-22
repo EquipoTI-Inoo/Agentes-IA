@@ -42,11 +42,11 @@ class Settings(BaseSettings):
         description="Primary LLM provider for evaluation and intelligence (Gemini Free Tier)",
     )
     LLM_MODEL: str = Field(
-        default="gemini-2.5-flash",
+        default="gemini-3.5-flash",
         description="High-tier multimodal model for creative auditing",
     )
     LLM_MODEL_CHEAP: str = Field(
-        default="gemini-2.5-flash-lite",
+        default="gemini-3.5-flash-lite",
         description="Cost-effective model for fast classification and relevance checks",
     )
 
@@ -66,6 +66,10 @@ class Settings(BaseSettings):
     CLAUDE_MODEL_STATIC: str = Field(
         default="claude-sonnet-5-5",
         description="Claude model for static ad evaluations",
+    )
+    CLAUDE_MAX_IMAGE_PX: int = Field(
+        default=1568,
+        description="Maximum image dimension in pixels sent to Claude",
     )
 
     # Geographical Markets (comma-separated string or list)
@@ -162,6 +166,15 @@ class Settings(BaseSettings):
     def empty_str_to_none(cls, v):
         if v == "" or (isinstance(v, str) and not v.strip()):
             return None
+        return v
+
+    @field_validator("LLM_MODEL", "LLM_MODEL_CHEAP", mode="before")
+    @classmethod
+    def upgrade_deprecated_models(cls, v):
+        if v == "gemini-2.5-flash":
+            return "gemini-3.5-flash"
+        if v == "gemini-2.5-flash-lite":
+            return "gemini-3.5-flash-lite"
         return v
 
     @field_validator("DEFAULT_COUNTRIES", mode="after")

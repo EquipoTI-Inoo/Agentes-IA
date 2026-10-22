@@ -82,7 +82,7 @@ class QuotaGuard:
         return conn
 
     def _init_db(self) -> None:
-        """Create llm_usage table if it does not exist."""
+        """Create llm_usage table if it does not exist and ensure columns."""
         with self._get_connection() as conn:
             conn.execute(
                 """
@@ -90,6 +90,8 @@ class QuotaGuard:
                     id INTEGER PRIMARY KEY AUTOINCREMENT,
                     day_pt TEXT NOT NULL,
                     model TEXT NOT NULL,
+                    provider TEXT DEFAULT 'gemini',
+                    costo_estimado_usd REAL DEFAULT 0.0,
                     requests INTEGER NOT NULL DEFAULT 0,
                     tokens_in INTEGER NOT NULL DEFAULT 0,
                     tokens_out INTEGER NOT NULL DEFAULT 0,
@@ -98,6 +100,14 @@ class QuotaGuard:
                 );
                 """
             )
+            # Ensure columns exist if table was created in an earlier phase
+            cur = conn.cursor()
+            cur.execute("PRAGMA table_info(llm_usage)")
+            cols = [row["name"] for row in cur.fetchall()]
+            if "provider" not in cols:
+                conn.execute("ALTER TABLE llm_usage ADD COLUMN provider TEXT DEFAULT 'gemini'")
+            if "costo_estimado_usd" not in cols:
+                conn.execute("ALTER TABLE llm_usage ADD COLUMN costo_estimado_usd REAL DEFAULT 0.0")
             conn.commit()
 
     def get_daily_usage(self, model: str, day_pt: Optional[str] = None) -> Dict[str, int]:
@@ -194,26 +204,43 @@ class QuotaGuard:
         tokens_out: int = 0,
         requests: int = 1,
         day_pt: Optional[str] = None,
+        provider: str = "gemini",
+        cost_usd: float = 0.0,
     ) -> None:
-        """Atomically record actual token and request consumption."""
+        """Atomically record actual token, request and cost consumption."""
         day = day_pt or get_current_day_pt()
         with self._get_connection() as conn:
             conn.execute(
                 """
-                INSERT INTO llm_usage (day_pt, model, requests, tokens_in, tokens_out)
-                VALUES (?, ?, ?, ?, ?)
+                INSERT INTO llm_usage (day_pt, model, provider, costo_estimado_usd, requests, tokens_in, tokens_out)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT(day_pt, model) DO UPDATE SET
                     requests = requests + excluded.requests,
                     tokens_in = tokens_in + excluded.tokens_in,
-                    tokens_out = tokens_out + excluded.tokens_out;
+                    tokens_out = tokens_out + excluded.tokens_out,
+                    costo_estimado_usd = costo_estimado_usd + excluded.costo_estimado_usd,
+                    provider = excluded.provider;
                 """,
-                (day, model, requests, tokens_in, tokens_out),
+                (day, model, provider, cost_usd, requests, tokens_in, tokens_out),
             )
             conn.commit()
 
         logger.info(
-            f"📊 LLM Usage recorded [{model} | {day}]: +{requests} req, +{tokens_in} tok_in, +{tokens_out} tok_out"
+            f"📊 LLM Usage recorded [{provider} | {model} | {day}]: +{requests} req, +{tokens_in} tok_in, +{tokens_out} tok_out, +${cost_usd:.4f}"
         )
+
+    def get_total_spend(self, provider: Optional[str] = None) -> float:
+        """Calculate total cumulative spend in USD (e.g. for Claude budget tracking)."""
+        with self._get_connection() as conn:
+            cur = conn.cursor()
+            if provider:
+                cur.execute("SELECT SUM(costo_estimado_usd) as total FROM llm_usage WHERE provider = ?", (provider,))
+            else:
+                cur.execute("SELECT SUM(costo_estimado_usd) as total FROM llm_usage")
+            row = cur.fetchone()
+            if row and row["total"] is not None:
+                return float(row["total"])
+        return 0.0
 
     def execute_with_retry(
         self,

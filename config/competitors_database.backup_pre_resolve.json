@@ -1,0 +1,1799 @@
+{
+  "total_competitors": 105,
+  "pillars": {
+    "voz": {
+      "name": "Agentes de IA de Voz (Voice AI & Phone Agents)",
+      "competitors": [
+        {
+          "name": "Vapi AI",
+          "website": "https://vapi.ai",
+          "region": "Global/US",
+          "focus": "Voice AI Platform for Devs & Enterprise",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Bland AI",
+          "website": "https://bland.ai",
+          "region": "Global/US",
+          "focus": "Phone calling infrastructure & SDRs",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Retell AI",
+          "website": "https://retellai.com",
+          "region": "Global/US",
+          "focus": "Ultra-low latency conversational voice",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Synthflow AI",
+          "website": "https://synthflow.ai",
+          "region": "Global/EU",
+          "focus": "No-code voice agents for agencies",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Air AI",
+          "website": "https://air.ai",
+          "region": "US/Global",
+          "focus": "Long form 40min conversational calls",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Vocads",
+          "website": "https://vocads.com",
+          "region": "Europe/Global",
+          "focus": "Voice surveys & interactive campaigns",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "EliseAI",
+          "website": "https://eliseai.com",
+          "region": "US",
+          "focus": "Voice AI for Real Estate & Healthcare",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Dialpad AI",
+          "website": "https://dialpad.com",
+          "region": "Global",
+          "focus": "Enterprise business phone system with AI",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Kore.ai",
+          "website": "https://kore.ai",
+          "region": "Global",
+          "focus": "Enterprise conversational voice & text",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Replicant",
+          "website": "https://replicant.ai",
+          "region": "US",
+          "focus": "Contact center autonomous voice agents",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "PolyAI",
+          "website": "https://poly.ai",
+          "region": "UK/US",
+          "focus": "Superhuman customer-led voice assistants",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "PlayHT",
+          "website": "https://play.ht",
+          "region": "Global",
+          "focus": "Real-time voice agents & TTS",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "ElevenLabs",
+          "website": "https://elevenlabs.io",
+          "region": "Global",
+          "focus": "Conversational AI agent framework",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Phonely AI",
+          "website": "https://phonely.ai",
+          "region": "US/AU",
+          "focus": "AI virtual receptionist for clinics & SMBs",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "MyWave AI",
+          "website": "https://mywave.ai",
+          "region": "Global",
+          "focus": "Voice-enabled sales & onboarding",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Lindy AI",
+          "website": "https://lindy.ai",
+          "region": "US",
+          "focus": "Autonomous AI voice employees",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Bolna AI",
+          "website": "https://bolna.dev",
+          "region": "Global",
+          "focus": "Open voice agent orchestration",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Callbell",
+          "website": "https://callbell.eu",
+          "region": "Europe/Latam",
+          "focus": "Multi-channel and VoIP customer support",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Slang.ai",
+          "website": "https://slang.ai",
+          "region": "US",
+          "focus": "Phone answering AI for restaurants & hospitality",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Goodcall",
+          "website": "https://goodcall.com",
+          "region": "US",
+          "focus": "Conversational AI phone answering for local business",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "TrueLark",
+          "website": "https://truelark.com",
+          "region": "US",
+          "focus": "AI phone and text receptionist for spas & wellness",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Curious Thing",
+          "website": "https://curiousthing.io",
+          "region": "APAC/Global",
+          "focus": "Voice AI for debt collection & lead gen",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Talkie.ai",
+          "website": "https://talkie.ai",
+          "region": "Europe",
+          "focus": "Healthcare voice automation",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Syllable",
+          "website": "https://syllable.ai",
+          "region": "US",
+          "focus": "Hospital & healthcare phone AI",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Invoca",
+          "website": "https://invoca.com",
+          "region": "US",
+          "focus": "Contact center call intelligence & AI",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Cresta",
+          "website": "https://cresta.com",
+          "region": "US",
+          "focus": "Real-time AI coaching for phone agents",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Observe.ai",
+          "website": "https://observe.ai",
+          "region": "US",
+          "focus": "Contact center LLM automation",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Balto",
+          "website": "https://balto.ai",
+          "region": "US",
+          "focus": "Live guidance for phone sales calls",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Cognigy",
+          "website": "https://cognigy.com",
+          "region": "Germany/Global",
+          "focus": "Enterprise contact center voice automation",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Omilia",
+          "website": "https://omilia.com",
+          "region": "Europe/Global",
+          "focus": "Banking voicebots & conversational IVR",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Amberscript",
+          "website": "https://amberscript.com",
+          "region": "Europe",
+          "focus": "Speech processing & voice audio tools",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Verloop.io",
+          "website": "https://verloop.io",
+          "region": "Global/APAC",
+          "focus": "Voice & chat customer automation",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Yellow.ai",
+          "website": "https://yellow.ai",
+          "region": "Global",
+          "focus": "Dynamic conversational voice & chat agents",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Conversica",
+          "website": "https://conversica.com",
+          "region": "US",
+          "focus": "Revenue digital assistants for phone & email",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Tenios",
+          "website": "https://tenios.de",
+          "region": "Germany/EU",
+          "focus": "Cloud PBX & AI Voicebot",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        }
+      ]
+    },
+    "conversacional": {
+      "name": "Agentes Conversacionales (WhatsApp, Instagram, Omnicanal)",
+      "competitors": [
+        {
+          "name": "ManyChat",
+          "website": "https://manychat.com",
+          "region": "Global/US",
+          "focus": "Instagram DM & WhatsApp marketing king",
+          "priority": 1,
+          "markets": [
+            "PE",
+            "MX",
+            "CO",
+            "AR",
+            "CL",
+            "ES",
+            "US"
+          ],
+          "page_ids": [
+            "521778124648972"
+          ],
+          "resolved_at": "2026-10-21T19:13:38.301616+00:00",
+          "resolution_confidence": "alta",
+          "needs_review": false
+        },
+        {
+          "name": "Chatbase",
+          "website": "https://chatbase.co",
+          "region": "Global",
+          "focus": "Custom ChatGPT bots for WhatsApp & Web",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Botpress",
+          "website": "https://botpress.com",
+          "region": "Global",
+          "focus": "Next-gen autonomous conversational agents",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Voiceflow",
+          "website": "https://voiceflow.com",
+          "region": "Global",
+          "focus": "Collaborative AI agent builder",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Wati",
+          "website": "https://wati.io",
+          "region": "Global/APAC",
+          "focus": "WhatsApp Business API CRM & bots",
+          "priority": 1,
+          "markets": [
+            "PE",
+            "MX",
+            "CO",
+            "AR",
+            "CL",
+            "ES",
+            "US"
+          ],
+          "page_ids": [
+            "1354596307740913"
+          ],
+          "resolved_at": "2026-10-21T19:13:43.291500+00:00",
+          "resolution_confidence": "media",
+          "needs_review": false
+        },
+        {
+          "name": "Respond.io",
+          "website": "https://respond.io",
+          "region": "Global",
+          "focus": "Customer conversation management software",
+          "priority": 1,
+          "markets": [
+            "PE",
+            "MX",
+            "CO",
+            "AR",
+            "CL",
+            "ES",
+            "US"
+          ],
+          "page_ids": [
+            "633874670104937"
+          ],
+          "resolved_at": "2026-10-21T19:13:49.333354+00:00",
+          "resolution_confidence": "alta",
+          "needs_review": false
+        },
+        {
+          "name": "Sirenapp (Zenvia)",
+          "website": "https://zenvia.com",
+          "region": "Latam",
+          "focus": "WhatsApp CRM for automotive and real estate",
+          "priority": 1,
+          "markets": [
+            "PE",
+            "MX",
+            "CO",
+            "AR",
+            "CL",
+            "ES",
+            "US"
+          ],
+          "page_ids": [
+            "111465748993235"
+          ],
+          "resolved_at": "2026-10-21T20:31:20.898552+00:00",
+          "resolution_confidence": "alta",
+          "needs_review": false,
+          "notes": "Página global (Zenvia). Anuncios en portugués, ~41 activos en BR. Pendiente verificar si anuncia en PE/MX y si existe página LatAm hispana."
+        },
+        {
+          "name": "Leadsales",
+          "website": "https://leadsales.io",
+          "region": "Mexico/Latam",
+          "focus": "WhatsApp CRM multiagent columns",
+          "priority": 1,
+          "markets": [
+            "PE",
+            "MX",
+            "CO",
+            "AR",
+            "CL",
+            "ES",
+            "US"
+          ],
+          "page_ids": [
+            "105860241124620"
+          ],
+          "resolved_at": "2026-10-21T19:13:59.131891+00:00",
+          "resolution_confidence": "media",
+          "needs_review": false
+        },
+        {
+          "name": "Trengo",
+          "website": "https://trengo.com",
+          "region": "Europe",
+          "focus": "Smart omnichannel inbox & WhatsApp AI",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Tidio (Lyro)",
+          "website": "https://tidio.com",
+          "region": "Global",
+          "focus": "AI customer service for Shopify & web",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Intercom (Fin AI)",
+          "website": "https://intercom.com",
+          "region": "Global",
+          "focus": "Enterprise AI agent for support & sales",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Drift",
+          "website": "https://drift.com",
+          "region": "US",
+          "focus": "B2B conversational marketing & qualification",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Landbot",
+          "website": "https://landbot.io",
+          "region": "Spain/Global",
+          "focus": "No-code WhatsApp & Web bot builder",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "B2Chat",
+          "website": "https://b2chat.io",
+          "region": "Colombia/Latam",
+          "focus": "Multiagent WhatsApp platform in Latin America",
+          "priority": 1,
+          "markets": [
+            "PE",
+            "MX",
+            "CO",
+            "AR",
+            "CL",
+            "ES",
+            "US"
+          ],
+          "page_ids": [
+            "417689861931253"
+          ],
+          "resolved_at": "2026-10-21T20:31:20.898552+00:00",
+          "resolution_confidence": "alta",
+          "needs_review": false,
+          "notes": "Detectado solo en CO (~12 resultados). La página 'Alcaldía de Medellín' NO es B2Chat, solo menciona la marca: no agregarla."
+        },
+        {
+          "name": "Chatwoot",
+          "website": "https://chatwoot.com",
+          "region": "Global",
+          "focus": "Open-source customer engagement platform",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Crisp",
+          "website": "https://crisp.chat",
+          "region": "Europe/Global",
+          "focus": "Messaging platform with mini CRM and AI bot",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "WhatsAuto",
+          "website": "https://whatsauto.org",
+          "region": "Global",
+          "focus": "Automated replies & chatbot for WhatsApp",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Zoko",
+          "website": "https://zoko.io",
+          "region": "Global/US",
+          "focus": "WhatsApp sales platform for ecommerce",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Botmaker",
+          "website": "https://botmaker.com",
+          "region": "Latam/US",
+          "focus": "Official Meta provider for enterprise WhatsApp",
+          "priority": 1,
+          "markets": [
+            "PE",
+            "MX",
+            "CO",
+            "AR",
+            "CL",
+            "ES",
+            "US"
+          ],
+          "page_ids": [
+            "1777273855683516"
+          ],
+          "resolved_at": "2026-10-21T19:14:06.498198+00:00",
+          "resolution_confidence": "media",
+          "needs_review": false
+        },
+        {
+          "name": "Yalo",
+          "website": "https://yalo.com",
+          "region": "Latam/Global",
+          "focus": "Conversational commerce for CPG & retail",
+          "priority": 1,
+          "markets": [
+            "PE",
+            "MX",
+            "CO",
+            "AR",
+            "CL",
+            "ES",
+            "US"
+          ],
+          "page_ids": [
+            "1145825061947434"
+          ],
+          "resolved_at": "2026-10-21T19:14:12.664818+00:00",
+          "resolution_confidence": "media",
+          "needs_review": false
+        },
+        {
+          "name": "Aivo",
+          "website": "https://aivo.co",
+          "region": "Latam/Global",
+          "focus": "Generative AI conversational support for banks",
+          "priority": 1,
+          "markets": [
+            "PE",
+            "MX",
+            "CO",
+            "AR",
+            "CL",
+            "ES",
+            "US"
+          ],
+          "page_ids": [
+            "958949387309946"
+          ],
+          "resolved_at": "2026-10-21T19:14:18.316370+00:00",
+          "resolution_confidence": "media",
+          "needs_review": false
+        },
+        {
+          "name": "Gupshup",
+          "website": "https://gupshup.io",
+          "region": "Global",
+          "focus": "Conversational cloud & bot development",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Sleekflow",
+          "website": "https://sleekflow.io",
+          "region": "APAC/Global",
+          "focus": "Social commerce omnichannel software",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Bird (MessageBird)",
+          "website": "https://bird.com",
+          "region": "Global",
+          "focus": "Omnichannel CRM and message workflows",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Infobip",
+          "website": "https://infobip.com",
+          "region": "Global",
+          "focus": "Enterprise CPaaS & Answers bot platform",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "AiSensy",
+          "website": "https://aisensy.com",
+          "region": "Global",
+          "focus": "WhatsApp marketing and AI chatbots",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Gallabox",
+          "website": "https://gallabox.com",
+          "region": "India/Global",
+          "focus": "WhatsApp shared inbox & catalog bots",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Novocall",
+          "website": "https://novocall.co",
+          "region": "Global",
+          "focus": "Call & WhatsApp lead generation widgets",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Userlike",
+          "website": "https://userlike.com",
+          "region": "Germany/EU",
+          "focus": "Customer messaging with WhatsApp & AI",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "LivePerson",
+          "website": "https://liveperson.com",
+          "region": "US/Global",
+          "focus": "Enterprise conversational AI orchestration",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Ada Support",
+          "website": "https://ada.cx",
+          "region": "Canada/Global",
+          "focus": "AI agent for automated customer service",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Heyday",
+          "website": "https://hootsuite.com",
+          "region": "Global",
+          "focus": "Conversational AI for retail by Hootsuite",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Botsonic",
+          "website": "https://writesonic.com",
+          "region": "Global",
+          "focus": "Custom knowledge-base chatbot builder",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Fastbots.ai",
+          "website": "https://fastbots.ai",
+          "region": "UK/Global",
+          "focus": "AI chatbot trained on company data",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "ChatSimple",
+          "website": "https://chatsimple.ai",
+          "region": "US",
+          "focus": "AI inbound sales agent for websites",
+          "priority": 3,
+          "markets": [
+            "US",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        }
+      ]
+    },
+    "crm": {
+      "name": "CRM Inteligente & Automatización de Ventas",
+      "competitors": [
+        {
+          "name": "GoHighLevel",
+          "website": "https://gohighlevel.com",
+          "region": "US/Global",
+          "focus": "The #1 all-in-one CRM & agency white label",
+          "priority": 1,
+          "markets": [
+            "PE",
+            "MX",
+            "CO",
+            "AR",
+            "CL",
+            "ES",
+            "US"
+          ],
+          "page_ids": [
+            "100238679837847"
+          ],
+          "resolved_at": "2026-10-21T19:14:23.554290+00:00",
+          "resolution_confidence": "media",
+          "needs_review": false
+        },
+        {
+          "name": "Kommo",
+          "website": "https://kommo.com",
+          "region": "Global/Latam",
+          "focus": "Messenger-based sales CRM for WhatsApp",
+          "priority": 1,
+          "markets": [
+            "PE",
+            "MX",
+            "CO",
+            "AR",
+            "CL",
+            "ES",
+            "US"
+          ],
+          "page_ids": [
+            "2346613968898720"
+          ],
+          "resolved_at": "2026-10-21T19:14:29.617075+00:00",
+          "resolution_confidence": "media",
+          "needs_review": false
+        },
+        {
+          "name": "HubSpot",
+          "website": "https://hubspot.com",
+          "region": "Global",
+          "focus": "Inbound marketing leader & Breeze AI",
+          "priority": 1,
+          "markets": [
+            "PE",
+            "MX",
+            "CO",
+            "AR",
+            "CL",
+            "ES",
+            "US"
+          ],
+          "page_ids": [
+            "192993730741131"
+          ],
+          "resolved_at": "2026-10-21T19:14:35.461018+00:00",
+          "resolution_confidence": "alta",
+          "needs_review": false
+        },
+        {
+          "name": "Clientify",
+          "website": "https://clientify.com",
+          "region": "Spain/Latam",
+          "focus": "Inbound marketing & CRM in Spanish",
+          "priority": 1,
+          "markets": [
+            "PE",
+            "MX",
+            "CO",
+            "AR",
+            "CL",
+            "ES",
+            "US"
+          ],
+          "page_ids": [
+            "1459762167605155"
+          ],
+          "resolved_at": "2026-10-21T19:14:42.302736+00:00",
+          "resolution_confidence": "media",
+          "needs_review": false
+        },
+        {
+          "name": "Zoho CRM",
+          "website": "https://zoho.com",
+          "region": "Global",
+          "focus": "Zia AI powered sales workflows & ecosystem",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "ActiveCampaign",
+          "website": "https://activecampaign.com",
+          "region": "Global",
+          "focus": "Marketing automation & CRM pipeline",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Pipedrive",
+          "website": "https://pipedrive.com",
+          "region": "Global",
+          "focus": "Activity-based sales CRM with AI assistant",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Salesforce (Agentforce)",
+          "website": "https://salesforce.com",
+          "region": "Global",
+          "focus": "Enterprise CRM and autonomous Agentforce",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Keap",
+          "website": "https://keap.com",
+          "region": "US",
+          "focus": "CRM, sales & marketing automation for SMBs",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Close CRM",
+          "website": "https://close.com",
+          "region": "US",
+          "focus": "Inside sales CRM with integrated VoIP & SMS",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Freshsales",
+          "website": "https://freshworks.com",
+          "region": "Global",
+          "focus": "Freddy AI lead scoring and sales pipeline",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Monday Sales CRM",
+          "website": "https://monday.com",
+          "region": "Global",
+          "focus": "Visual customizable CRM with automations",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "ClickUp CRM",
+          "website": "https://clickup.com",
+          "region": "Global",
+          "focus": "All-in-one workspace with native CRM & AI",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Capsule CRM",
+          "website": "https://capsulecrm.com",
+          "region": "UK/Global",
+          "focus": "Simple and effective contact management",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Insightly",
+          "website": "https://insightly.com",
+          "region": "US",
+          "focus": "CRM and project management integration",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Copper CRM",
+          "website": "https://copper.com",
+          "region": "US",
+          "focus": "Native Google Workspace integrated CRM",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Zendesk Sell",
+          "website": "https://zendesk.com",
+          "region": "Global",
+          "focus": "Sales pipeline tool built into Zendesk suite",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "SugarCRM",
+          "website": "https://sugarcrm.com",
+          "region": "US/Global",
+          "focus": "Predictive AI sales platform",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Nimble",
+          "website": "https://nimble.com",
+          "region": "US",
+          "focus": "Social relationship management and B2B CRM",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Nutshell CRM",
+          "website": "https://nutshell.com",
+          "region": "US",
+          "focus": "Stress-free CRM with email marketing",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Agile CRM",
+          "website": "https://agilecrm.com",
+          "region": "Global",
+          "focus": "All-in-one CRM with telephony and marketing",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Vtiger CRM",
+          "website": "https://vtiger.com",
+          "region": "Global",
+          "focus": "One View CRM with Calculus AI assistant",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Holded",
+          "website": "https://holded.com",
+          "region": "Spain/Latam",
+          "focus": "Cloud ERP and CRM for SMBs",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "RD Station",
+          "website": "https://rdstation.com",
+          "region": "Brazil/Latam",
+          "focus": "Marketing and sales automation leader in Latam",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Ines CRM",
+          "website": "https://ines.com",
+          "region": "France/EU",
+          "focus": "B2B SaaS CRM for European SMBs",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Pipeline CRM",
+          "website": "https://pipelinecrm.com",
+          "region": "US",
+          "focus": "Sales pipeline management for deal closers",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "LeadSquared",
+          "website": "https://leadsared.com",
+          "region": "Global/APAC",
+          "focus": "High-velocity sales execution CRM",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Ontraport",
+          "website": "https://ontraport.com",
+          "region": "US",
+          "focus": "Business automation for courses and memberships",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Folk CRM",
+          "website": "https://folk.app",
+          "region": "France/Global",
+          "focus": "Next-gen collaborative contact manager",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Attio",
+          "website": "https://attio.com",
+          "region": "Global",
+          "focus": "Real-time AI-native customizable CRM",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Apollo.io",
+          "website": "https://apollo.io",
+          "region": "US/Global",
+          "focus": "B2B lead database and automated outreach",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Lemlist",
+          "website": "https://lemlist.com",
+          "region": "Europe/Global",
+          "focus": "Cold email personalization & multichannel CRM",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Instantly.ai",
+          "website": "https://instantly.ai",
+          "region": "US/Global",
+          "focus": "Scale cold email with built-in Unibox CRM",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Clay",
+          "website": "https://clay.com",
+          "region": "US",
+          "focus": "AI data enrichment and prospecting workflows",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        },
+        {
+          "name": "Smartlead.ai",
+          "website": "https://smartlead.ai",
+          "region": "Global",
+          "focus": "Cold outreach infrastructure with CRM tracking",
+          "priority": 2,
+          "markets": [
+            "US",
+            "MX",
+            "CO",
+            "PE",
+            "ES"
+          ],
+          "page_ids": [],
+          "resolved_at": null,
+          "resolution_confidence": null,
+          "needs_review": false
+        }
+      ]
+    }
+  }
+}

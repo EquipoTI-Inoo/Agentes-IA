@@ -77,6 +77,24 @@ class AdRecord(Base):
     )
 
 
+class AnalysisRecord(Base):
+    """Archived Deep AI Evaluation Analysis (Video or Static)."""
+
+    __tablename__ = "analyses"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    ad_id = Column(String(64), index=True, nullable=False)
+    model = Column(String(64), nullable=False)
+    prompt_version = Column(String(32), default="v1")
+    rubric_version = Column(String(32), default="v1")
+    creative_hash = Column(String(128), index=True, nullable=True)
+    analysis_type = Column(String(32), default="video")  # video / static
+    creative_score = Column(Integer, nullable=False)
+    result_json = Column(Text, nullable=False)
+    cost_usd = Column(Float, default=0.0)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+
 # Create tables
 Base.metadata.create_all(bind=engine)
 

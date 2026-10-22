@@ -1,0 +1,43 @@
+version: "1.0"
+name: "Rúbrica de Evaluación de Anuncios Estáticos, Carruseles y DCO (Jinora)"
+scoring:
+  scale: "0-25 por dimensión (total 0-100 calculado por código)"
+  neutrality: "Neutralidad frente a la IA: no se penaliza ni premia la IA. Se evalúa el impacto persuasivo"
+  caps: "Sin cupos ni topes numéricos. Rango 0-25 gobernado por anclas verificables"
+
+dimensions:
+  stop_power:
+    name: "Poder de detención visual (Stop Power)"
+    max_score: 25
+    anchors:
+      "0-6": "Imagen de stock genérica, banner corporativo aburrido o tipografía ilegible en celular."
+      "7-12": "Diseño prolijo pero común; se confunde fácilmente en el scroll orgánico del feed."
+      "13-19": "Interrupción visual efectiva (captura de WhatsApp, contraste alto o titular grande que detiene)."
+      "20-25": "Diseño visualmente magnético; imposible de ignorar en móvil, genera curiosidad o impacto instantáneo."
+
+  message_clarity:
+    name: "Claridad del mensaje y propuesta"
+    max_score: 25
+    anchors:
+      "0-6": "Mensaje confuso, saturado de texto diminuto o propuesta incomprensible."
+      "7-12": "Se comprende tras leer con detenimiento, pero exige esfuerzo cognitivo excesivo."
+      "13-19": "Propuesta y dolor claros en 1 a 2 segundos; jerarquía visual limpia."
+      "20-25": "Mensaje transparente y contundente en el primer vistazo; conexión inmediata problema a solución."
+
+  proof:
+    name: "Prueba visible o demostración"
+    max_score: 25
+    anchors:
+      "0-6": "Cero prueba; solo texto declarativo sin respaldo visible."
+      "7-12": "Muestra logo o ilustración conceptual abstracta sin pantalla real."
+      "13-19": "Muestra captura real del software, interfaz de chat o métrica concreta."
+      "20-25": "Demostración visual evidente (ej. flujo de conversación real, comparativa visual antes/después o cifras comprobables)."
+
+  offer_cta:
+    name: "Oferta, beneficio y llamada a la acción"
+    max_score: 25
+    anchors:
+      "0-6": "Sin llamada a la acción visible o beneficio inexistente."
+      "7-12": "CTA pasivo y tradicional ('Más información') sin incentivo específico."
+      "13-19": "CTA visible con beneficio explícito de hacer clic."
+      "20-25": "Oferta de mínimo riesgo destacada (prueba sin tarjeta, demo interactiva, plantilla gratis) con botón de alto contraste."

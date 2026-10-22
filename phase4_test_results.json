@@ -1,0 +1,121 @@
+{
+  "summaries": {
+    "1714051753080819": {
+      "competidor": "Leadsales",
+      "tipo": "WhatsApp",
+      "total_score": 65,
+      "dimensiones": {
+        "hook": 17,
+        "mechanism": 16,
+        "narrative": 17,
+        "offer": 15
+      },
+      "value_proposition": "Ayuda a PYMES y equipos comerciales a convertir el caos de WhatsApp en un flujo organizado de chats tipo CRM para evitar perder ventas.",
+      "feature_focus": [
+        "gestion_leads_crm",
+        "atencion_omnicanal"
+      ],
+      "ai_mention": "ninguna",
+      "what_to_model": "El uso de analogías sencillas y cotidianas ('organizados como si fuera un Excel') apoyadas por una vista rápida en pantalla de la interfaz de gestión.",
+      "cosmiq_adaptation_idea": "Grabar un video en formato UGC/Talking Head donde se muestre cómo Cosmiq organiza las conversaciones de WhatsApp en un embudo Kanban visual, destacando la asignación automática de leads a vendedores para eliminar el caos de chats no respondidos."
+    },
+    "1041244048736662": {
+      "competidor": "Clientify",
+      "tipo": "CRM",
+      "total_score": 66,
+      "dimensiones": {
+        "hook": 16,
+        "mechanism": 17,
+        "narrative": 18,
+        "offer": 15
+      },
+      "value_proposition": "Simplifica la gestión de redes sociales permitiendo programar contenido para múltiples plataformas desde una única interfaz centralizada.",
+      "feature_focus": [
+        "automatizacion",
+        "atencion_omnicanal"
+      ],
+      "ai_mention": "ninguna",
+      "what_to_model": "La narrativa de contraste visual entre el caos multitarea y la simplicidad de una sola interfaz unificada.",
+      "cosmiq_adaptation_idea": "Crear un anuncio enfocado en la atención omnicanal de Cosmiq mostrando el contraste entre responder mensajes en 5 apps distintas vs. gestionarlos todos de forma centralizada en una sola bandeja de entrada de WhatsApp y CRM."
+    },
+    "1649292236915392": {
+      "competidor": "B2Chat",
+      "tipo": "Mensajes Masivos / Campañas",
+      "total_score": 60,
+      "dimensiones": {
+        "hook": 16,
+        "mechanism": 11,
+        "narrative": 17,
+        "offer": 16
+      },
+      "value_proposition": "Permite realizar envíos masivos por WhatsApp a clientes de manera fácil y sin riesgo de que bloqueen la línea telefónica.",
+      "feature_focus": [
+        "mensajes_masivos_campanas",
+        "automatizacion"
+      ],
+      "ai_mention": "ninguna",
+      "what_to_model": "La escenificación visual del caos (pantalla llena de mensajes de 'Spam' y rechazo) para conectar empáticamente con el problema antes de presentar la solución.",
+      "cosmiq_adaptation_idea": "Recrear un formato UGC donde el creador intente enviar una promo a 200 clientes copiando y pegando hasta que WhatsApp le frena el envío. Luego muestra la pantalla de Cosmiq cargando la lista de contactos y programando la campaña masiva en segundos."
+    }
+  },
+  "consistency": {
+    "runs": [
+      {
+        "corrida": 1,
+        "total": 65,
+        "hook": 17,
+        "mechanism": 16,
+        "narrative": 17,
+        "offer": 15
+      },
+      {
+        "corrida": 2,
+        "total": 59,
+        "hook": 14,
+        "mechanism": 15,
+        "narrative": 16,
+        "offer": 14
+      },
+      {
+        "corrida": 3,
+        "total": 59,
+        "hook": 15,
+        "mechanism": 14,
+        "narrative": 16,
+        "offer": 14
+      }
+    ],
+    "max_diff_per_dimension": {
+      "hook": 3,
+      "mechanism": 2,
+      "narrative": 1,
+      "offer": 1
+    },
+    "max_diff_total": 6
+  },
+  "transcriptions": [
+    {
+      "ad_id": "1097388605975667",
+      "page_name": "WATI - WhatsApp Team Inbox",
+      "whisper_sample": "Every message you miss is a new order going to your competitor. With Wati, your team can manage messages from WhatsApp, Messenger, Instagram, and TikTok, all from one shared inbox. You can also build ",
+      "gemini_sample": "Every message you miss is a new order going to your competitor. With Wati, your team can manage messages from WhatsApp, Messenger, Instagram, and TikTok, all from one shared inbox. You can also build "
+    },
+    {
+      "ad_id": "1666749958340789",
+      "page_name": "HubSpot",
+      "whisper_sample": "Here's how the day starts when you run your business on HubSpot. You open your laptop, and... ...your contacts are up to date, meeting notes logged, deals updated. Need a summary on a deal? Just ask. ",
+      "gemini_sample": "Here's how the day starts when you run your business on HubSpot. You open your laptop, and... ...your contacts are up to date, meeting notes logged, deals updated. Need a summary on a deal? Just ask. "
+    },
+    {
+      "ad_id": "1574738331364465",
+      "page_name": "Bland AI",
+      "whisper_sample": "Can I talk to a real person? I thought you were the real person. Absolutely. Wait time might be a couple minutes right now. Didn't even realize that you're a robot. Thanks for calling. This is Sam. Ar",
+      "gemini_sample": "Can I talk to a real person? I thought you were the real person. Absolutely. Wait time might be a couple minutes right now. Didn't even realize that you're a robot. Thanks for calling. This is Sam. Ar"
+    }
+  ],
+  "gemini_requests_used_today": 8,
+  "breakdown": {
+    "gemini_3.5_flash": 7,
+    "gemini_3.5_flash_lite": 1
+  }
+}

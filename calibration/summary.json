@@ -1,0 +1,648 @@
+{
+  "competitors_used": [
+    {
+      "name": "ManyChat",
+      "pillar": "conversacional",
+      "page_ids": [
+        "521778124648972"
+      ]
+    },
+    {
+      "name": "Wati",
+      "pillar": "conversacional",
+      "page_ids": [
+        "1354596307740913"
+      ]
+    },
+    {
+      "name": "Respond.io",
+      "pillar": "conversacional",
+      "page_ids": [
+        "633874670104937"
+      ]
+    },
+    {
+      "name": "Sirenapp (Zenvia)",
+      "pillar": "conversacional",
+      "page_ids": [
+        "111465748993235"
+      ]
+    },
+    {
+      "name": "Leadsales",
+      "pillar": "conversacional",
+      "page_ids": [
+        "105860241124620"
+      ]
+    },
+    {
+      "name": "B2Chat",
+      "pillar": "conversacional",
+      "page_ids": [
+        "417689861931253"
+      ]
+    },
+    {
+      "name": "Botmaker",
+      "pillar": "conversacional",
+      "page_ids": [
+        "1777273855683516"
+      ]
+    },
+    {
+      "name": "Yalo",
+      "pillar": "conversacional",
+      "page_ids": [
+        "1145825061947434"
+      ]
+    },
+    {
+      "name": "Aivo",
+      "pillar": "conversacional",
+      "page_ids": [
+        "958949387309946"
+      ]
+    },
+    {
+      "name": "GoHighLevel",
+      "pillar": "crm",
+      "page_ids": [
+        "100238679837847"
+      ]
+    },
+    {
+      "name": "Kommo",
+      "pillar": "crm",
+      "page_ids": [
+        "2346613968898720"
+      ]
+    },
+    {
+      "name": "HubSpot",
+      "pillar": "crm",
+      "page_ids": [
+        "192993730741131"
+      ]
+    },
+    {
+      "name": "Clientify",
+      "pillar": "crm",
+      "page_ids": [
+        "1459762167605155"
+      ]
+    }
+  ],
+  "stats_by_competitor": {
+    "ManyChat": {
+      "pillar": "conversacional",
+      "page_ids": [
+        "521778124648972"
+      ],
+      "total_active_ads": 60,
+      "unique_active_ads": 60,
+      "valid_videos_downloaded": 29,
+      "ad_ids": [
+        "1713095463282435",
+        "4534938653408175",
+        "2011309346221837",
+        "3415082778671696",
+        "1472979864890827",
+        "1384798307161520",
+        "3860161044126796",
+        "1655797159512230",
+        "1595457875387314",
+        "27922037817497156",
+        "29057798297159867",
+        "2731622980627797",
+        "3401581216690860",
+        "1417390877249248",
+        "2002321847121382",
+        "1486445093339249",
+        "1605980027649675",
+        "1771108223913519",
+        "1394383629308788",
+        "1362494622661016",
+        "1625404845670812",
+        "1212264714398801",
+        "2027131318676452",
+        "1928808841131495",
+        "1812358023267842",
+        "1748258599843733",
+        "1576101846746875",
+        "4513387302265478",
+        "2055219068533134"
+      ]
+    },
+    "Wati": {
+      "pillar": "conversacional",
+      "page_ids": [
+        "1354596307740913"
+      ],
+      "total_active_ads": 0,
+      "unique_active_ads": 0,
+      "valid_videos_downloaded": 0,
+      "ad_ids": []
+    },
+    "Respond.io": {
+      "pillar": "conversacional",
+      "page_ids": [
+        "633874670104937"
+      ],
+      "total_active_ads": 27,
+      "unique_active_ads": 27,
+      "valid_videos_downloaded": 9,
+      "ad_ids": [
+        "1494875851816166",
+        "1756002402332109",
+        "3295950203935679",
+        "1667861361531621",
+        "1693383095733282",
+        "1360444689308190",
+        "2204028800149905",
+        "931108833186595",
+        "4547328608856825"
+      ]
+    },
+    "Sirenapp (Zenvia)": {
+      "pillar": "conversacional",
+      "page_ids": [
+        "111465748993235"
+      ],
+      "total_active_ads": 0,
+      "unique_active_ads": 0,
+      "valid_videos_downloaded": 0,
+      "ad_ids": []
+    },
+    "Leadsales": {
+      "pillar": "conversacional",
+      "page_ids": [
+        "105860241124620"
+      ],
+      "total_active_ads": 20,
+      "unique_active_ads": 20,
+      "valid_videos_downloaded": 20,
+      "ad_ids": [
+        "2080297739420616",
+        "1483988960013623",
+        "1311337847506556",
+        "753524677691154",
+        "1970350000577693",
+        "1492646162448035",
+        "988948260321136",
+        "36219581377625327",
+        "1607218947048894",
+        "959135193577292",
+        "2518365168582568",
+        "4528979444093515",
+        "1714051753080819",
+        "1473870097287725",
+        "1085623500491272",
+        "1440048911421674",
+        "3172443476285076",
+        "1122026556842684",
+        "1108207102169837",
+        "1943013097103395"
+      ]
+    },
+    "B2Chat": {
+      "pillar": "conversacional",
+      "page_ids": [
+        "417689861931253"
+      ],
+      "total_active_ads": 8,
+      "unique_active_ads": 8,
+      "valid_videos_downloaded": 6,
+      "ad_ids": [
+        "1649292236915392",
+        "3196802334044120",
+        "983854394746909",
+        "2126850111244150",
+        "1137563185289120",
+        "1635972811473026"
+      ]
+    },
+    "Botmaker": {
+      "pillar": "conversacional",
+      "page_ids": [
+        "1777273855683516"
+      ],
+      "total_active_ads": 0,
+      "unique_active_ads": 0,
+      "valid_videos_downloaded": 0,
+      "ad_ids": []
+    },
+    "Yalo": {
+      "pillar": "conversacional",
+      "page_ids": [
+        "1145825061947434"
+      ],
+      "total_active_ads": 4,
+      "unique_active_ads": 4,
+      "valid_videos_downloaded": 4,
+      "ad_ids": [
+        "1065641169804418",
+        "29060448650264796",
+        "1071510859206761",
+        "1007098185737026"
+      ]
+    },
+    "Aivo": {
+      "pillar": "conversacional",
+      "page_ids": [
+        "958949387309946"
+      ],
+      "total_active_ads": 0,
+      "unique_active_ads": 0,
+      "valid_videos_downloaded": 0,
+      "ad_ids": []
+    },
+    "GoHighLevel": {
+      "pillar": "crm",
+      "page_ids": [
+        "100238679837847"
+      ],
+      "total_active_ads": 0,
+      "unique_active_ads": 0,
+      "valid_videos_downloaded": 0,
+      "ad_ids": []
+    },
+    "Kommo": {
+      "pillar": "crm",
+      "page_ids": [
+        "2346613968898720"
+      ],
+      "total_active_ads": 20,
+      "unique_active_ads": 20,
+      "valid_videos_downloaded": 18,
+      "ad_ids": [
+        "2571927979903555",
+        "1425066669524530",
+        "1539500827501015",
+        "1069206225867069",
+        "2056925934949114",
+        "1414563830814417",
+        "28435221392803953",
+        "1769946064228279",
+        "2294062234705728",
+        "1420505839521808",
+        "1090756593703703",
+        "3256621714526754",
+        "2314619262639267",
+        "1457408352923005",
+        "1027611873647483",
+        "888523897558322",
+        "1293109026247218",
+        "1634879065035686"
+      ]
+    },
+    "HubSpot": {
+      "pillar": "crm",
+      "page_ids": [
+        "192993730741131"
+      ],
+      "total_active_ads": 51,
+      "unique_active_ads": 51,
+      "valid_videos_downloaded": 0,
+      "ad_ids": []
+    },
+    "Clientify": {
+      "pillar": "crm",
+      "page_ids": [
+        "1459762167605155"
+      ],
+      "total_active_ads": 47,
+      "unique_active_ads": 47,
+      "valid_videos_downloaded": 22,
+      "ad_ids": [
+        "1840633103784246",
+        "1144670331322080",
+        "991562669866791",
+        "2140721320183206",
+        "29006294575648805",
+        "2327665621405143",
+        "1661612795509500",
+        "2545781825947531",
+        "1578247970181656",
+        "2302356930600740",
+        "1107511505017138",
+        "1844026786914120",
+        "4953056544958428",
+        "1041244048736662",
+        "1429712389121724",
+        "2146133972981571",
+        "1973843676659662",
+        "2130807644290526",
+        "948685710925289",
+        "2619094848494131",
+        "1072218478861394",
+        "1796768251456655"
+      ]
+    }
+  },
+  "retried_videos_downloaded": 18,
+  "total_videos_downloaded_in_run": 126,
+  "discarded_duration": 1,
+  "discarded_duplicate": 22,
+  "selected_20": [
+    {
+      "ad_id": "2571927979903555",
+      "competidor": "Kommo",
+      "pilar": "crm",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\Kommo\\2571927979903555\\video_0.mp4",
+      "duration_s": 28.89,
+      "resolution": "476x846 (9:16)",
+      "headline": "OFERTA EN KOMMO HOME",
+      "body_text": "Lavarropas BGH 8KG Inverter. Ahorrá energía con el máximo rendimiento.\n\n✔️ Todos los medios de pago.\n✔️ Envíos contraentrega en CABA: ¡pagás al recibir!\n✔️ Retiros: Padua, Villa del Parque y Bella Vista.\n\n📲 Consultá precio y stock por WhatsApp:\n\n✅ Aboná al recibir: Envíos contraentrega exclusivos en CABA.\n✅ Todos los medios de pago | Venta Mayorista y Minorista.\n\n📍 Retiros por Padua, Villa del Parque o Bella Vista.",
+      "cta": "Shop now",
+      "link_url": "https://api.whatsapp.com/send",
+      "countries": "AR",
+      "days_active": 49,
+      "file_size_mb": 3.7468605041503906
+    },
+    {
+      "ad_id": "1027611873647483",
+      "competidor": "Kommo",
+      "pilar": "crm",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\Kommo\\1027611873647483\\video_0.mp4",
+      "duration_s": 43.28,
+      "resolution": "576x1024 (9:16)",
+      "headline": "Heladera 3 puertas",
+      "body_text": "Puertas (480 Litros).\nDiseñada para que guardes todo de forma inteligente: cuenta con freezer súper espacioso, cajones y estantes adaptables a tus necesidades.\n\n💸 Valor: $1.430.000\n🛡️ 10 años de garantía en el motor (Tranquilidad asegurada).\n🚚 Envío directo a tu domicilio.\n📍 Visitanos en una de nuestras sucursales.\n👇 Hacé clic en \"Enviar mensaje\" para reservar la tuya hoy mismo.",
+      "cta": "Send WhatsApp message",
+      "link_url": "https://api.whatsapp.com/send",
+      "countries": "AR",
+      "days_active": 16,
+      "file_size_mb": 6.401946067810059
+    },
+    {
+      "ad_id": "1661612795509500",
+      "competidor": "Clientify",
+      "pilar": "crm",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\Clientify\\1661612795509500\\video_0.mp4",
+      "duration_s": 17.11,
+      "resolution": "720x1280 (9:16)",
+      "headline": "🚨 WhatsApp cambió sus tarifas",
+      "body_text": "🚨 ¡Atención! Desde el 1 de octubre, Meta cambió las reglas de WhatsApp.\n\nLos mensajes de servicio y utilidad de WhatsApp Business Platform pueden representar nuevos costos para tu empresa. 💸\n\nPero ¿y si pudieras atender igual de bien enviando menos mensajes?\n\nEn nuestro webinar GRATUITO descubrirás cómo aprovechar los agentes de IA y WhatsApp Flows para optimizar conversaciones, reducir mensajes innecesarios y mejorar la atención a tus clientes.\n\n📅 Martes 27 de octubre | 10:00 a. m. (CDMX)\n\n👉 ¡Regístrate gratis y aprende a adaptar tu negocio a las nuevas tarifas!",
+      "cta": "Book now",
+      "link_url": "http://fb.me/",
+      "countries": "MX",
+      "days_active": 5,
+      "file_size_mb": 1.111109733581543
+    },
+    {
+      "ad_id": "2140721320183206",
+      "competidor": "Clientify",
+      "pilar": "crm",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\Clientify\\2140721320183206\\video_0.mp4",
+      "duration_s": 31.15,
+      "resolution": "720x1280 (9:16)",
+      "headline": "De horas buscando datos, a un clic.",
+      "body_text": "280 millones de contactos. Mira cómo encuentras al decisor exacto en segundos.\n\nFiltras por cargo, sector, tamaño de empresa y país. RadarB2B encuentra a la persona correcta, te da su email profesional verificado, y lo guarda directo en tu CRM como oportunidad.\n\nNada de adivinar quién decide. Nada de veinte pestañas abiertas.",
+      "cta": "Sign up",
+      "link_url": "https://clientify.com/campana/crm-radar-b2b",
+      "countries": "AR, CL, CO, ES, MX",
+      "days_active": 78,
+      "file_size_mb": 2.400928497314453
+    },
+    {
+      "ad_id": "1007098185737026",
+      "competidor": "Yalo",
+      "pilar": "conversacional",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\Yalo\\1007098185737026\\video_0.mp4",
+      "duration_s": 19.43,
+      "resolution": "720x1280 (9:16)",
+      "headline": "ADIÓS CICATRICES HOY 👉",
+      "body_text": "¿Cansada de esconder tus marcas bajo la ropa o intentar cubrirlas con capas de maquillaje sin éxito? 🛑✨\n\nEsa es la \"vieja manera\". Usar remedios caseros o cremas corporales comunes es un error; no penetran en el tejido dañado, no rompen la fibrosis y solo te hacen perder tiempo mientras la marca sigue exactamente igual.\n\nEntra la dermo-reparación avanzada para cicatrices.\nNo es un humectante superficial, es una fórmula de regeneración celular de rápida absorción que actúa directamente sobre el tejido dañado en 3 pasos:\n\n1️⃣ Penetra: Sus ingredientes activos llegan a las capas profundas para ablandar el tejido endurecido de la marca.\n2️⃣ Aplana: Estimula la producción de colágeno natural para alisar y suavizar la textura irregular de la piel.\n3️⃣ Aclara: Desvanece el color oscuro o rojizo progresivamente, igualando tu tono natural en cicatrices viejas y nuevas.\n\nRecupera la confianza de mostrar tu piel sin inseguridades.\n👉 Toca el botón de abajo, pide tu tratamiento hoy y paga en efectivo al recibir en la puerta de tu casa a nivel nacional.",
+      "cta": "Learn more",
+      "link_url": "https://yaloperu.pe/products/scar-removal-b",
+      "countries": "PE",
+      "days_active": 6,
+      "file_size_mb": 2.7808914184570312
+    },
+    {
+      "ad_id": "29060448650264796",
+      "competidor": "Yalo",
+      "pilar": "conversacional",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\Yalo\\29060448650264796\\video_0.mp4",
+      "duration_s": 34.53,
+      "resolution": "720x1280 (9:16)",
+      "headline": "ADIÓS CICATRICES HOY 👉",
+      "body_text": "¿Cansada de esconder tus marcas bajo la ropa o intentar cubrirlas con capas de maquillaje sin éxito? 🛑✨\n\nEsa es la \"vieja manera\". Usar remedios caseros o cremas corporales comunes es un error; no penetran en el tejido dañado, no rompen la fibrosis y solo te hacen perder tiempo mientras la marca sigue exactamente igual.\n\nEntra la dermo-reparación avanzada para cicatrices.\nNo es un humectante superficial, es una fórmula de regeneración celular de rápida absorción que actúa directamente sobre el tejido dañado en 3 pasos:\n\n1️⃣ Penetra: Sus ingredientes activos llegan a las capas profundas para ablandar el tejido endurecido de la marca.\n2️⃣ Aplana: Estimula la producción de colágeno natural para alisar y suavizar la textura irregular de la piel.\n3️⃣ Aclara: Desvanece el color oscuro o rojizo progresivamente, igualando tu tono natural en cicatrices viejas y nuevas.\n\nRecupera la confianza de mostrar tu piel sin inseguridades.\n👉 Toca el botón de abajo, pide tu tratamiento hoy y paga en efectivo al recibir en la puerta de tu casa a nivel nacional.",
+      "cta": "Learn more",
+      "link_url": "https://yaloperu.pe/products/scar-removal-b",
+      "countries": "PE",
+      "days_active": 12,
+      "file_size_mb": 4.5405426025390625
+    },
+    {
+      "ad_id": "3860161044126796",
+      "competidor": "ManyChat",
+      "pilar": "conversacional",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\ManyChat\\3860161044126796\\video_0.mp4",
+      "duration_s": 40.42,
+      "resolution": "720x1280 (9:16)",
+      "headline": "",
+      "body_text": "When you can’t answer everyone, @manychat does 📲🤩 Here’s 3 automations that convert even when you’re offline!\n\n1️⃣ Comment-to-DM Automation\n2️⃣ Automated FAQ Replies\n3️⃣ Story Reply Automation\n\nComment “DM me” below for a free month of ManyChat Pro 🫶\n\n#manychatpartner #manychat #contentcreator #creatortools #socialmediatips #instagramtips #socialmediagrowth #creatorlife",
+      "cta": "Install now",
+      "link_url": "http://itunes.apple.com/app/id1460129210",
+      "countries": "ES",
+      "days_active": 36,
+      "file_size_mb": 5.513344764709473
+    },
+    {
+      "ad_id": "2204028800149905",
+      "competidor": "Respond.io",
+      "pilar": "conversacional",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\Respond.io\\2204028800149905\\video_0.mp4",
+      "duration_s": 60.12,
+      "resolution": "720x1280 (9:16)",
+      "headline": "From Chat to Customer — All in One Platform",
+      "body_text": "Slow replies lose customers. Respond.io brings every chat, call, and email into one inbox — so your team responds faster and stays ahead of competitors.\n\n✅ Manage conversations from WhatsApp, Instagram, TikTok, and more.\n✅ Track every prospect — from first chat to returning customer.\n✅ Focus on winning more customers while AI handle FAQs and follow-ups.\n✅ Gain actionable insights into conversations and team performance. \n\nAll on a platform with 99.999% uptime and real human support.",
+      "cta": "Learn More",
+      "link_url": "https://respond.io/?utm_source=facebook&utm_medium=paidsocial&utm_campaign=2025+Meta+Retargeting+Leads+Multi-Region-Sales&utm_term=AnimatedVideo",
+      "countries": "AR, CL, CO, ES, MX, PE, US",
+      "days_active": 2,
+      "file_size_mb": 4.448931694030762
+    },
+    {
+      "ad_id": "2011309346221837",
+      "competidor": "ManyChat",
+      "pilar": "conversacional",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\ManyChat\\2011309346221837\\video_0.mp4",
+      "duration_s": 74.07,
+      "resolution": "720x1280 (9:16)",
+      "headline": "",
+      "body_text": "it’s not a real job, it’s the dream job.\n\nwhy do YOU show up? \n\ntell me in the comments, I’d love to know 🤍\n\n#ManychatPartner #ad @manychat",
+      "cta": "Sign up",
+      "link_url": "https://get.manychat.com/real-job",
+      "countries": "AR, CL, CO, MX, PE",
+      "days_active": 16,
+      "file_size_mb": 9.160141944885254
+    },
+    {
+      "ad_id": "1137563185289120",
+      "competidor": "B2Chat",
+      "pilar": "conversacional",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\B2Chat\\1137563185289120\\video_0.mp4",
+      "duration_s": 30.67,
+      "resolution": "360x480 (4:5)",
+      "headline": "Demo GRATIS. Agenda ya",
+      "body_text": "Si tu WhatsApp solo sirve para decir \"ya le confirmo\" y luego olvidarlo… lo estás desperdiciando. 😬\nB2Chat convierte ese mismo WhatsApp en tu canal de ventas #1: respuestas automáticas, múltiples agentes, reportes y mucho más.🔥\n\nTu competencia ya lo está haciendo. ¿Y tú?\n👉 Agenda tu demo gratis",
+      "cta": "Get Offer",
+      "link_url": "http://fb.me/",
+      "countries": "CO",
+      "days_active": 20,
+      "file_size_mb": 0.7113847732543945
+    },
+    {
+      "ad_id": "1713095463282435",
+      "competidor": "ManyChat",
+      "pilar": "conversacional",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\ManyChat\\1713095463282435\\video_0.mp4",
+      "duration_s": 82.52,
+      "resolution": "360x640 (9:16)",
+      "headline": "",
+      "body_text": "Así puedes aumentar las interacciones de tu próxima publicación de Instagram usando @manychat 🔥\nsolo comenta “Genial” y te enviaré el enlace para que lo pruebes tú mismo 🚀\nTienes más info en el link de mi Bio 🙃\n#manychatpartner",
+      "cta": "Install now",
+      "link_url": "http://itunes.apple.com/app/id1460129210",
+      "countries": "AR, CL, CO, MX, PE",
+      "days_active": 49,
+      "file_size_mb": 3.1831483840942383
+    },
+    {
+      "ad_id": "1607218947048894",
+      "competidor": "Leadsales",
+      "pilar": "conversacional",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\Leadsales\\1607218947048894\\video_0.mp4",
+      "duration_s": 30.29,
+      "resolution": "720x1280 (9:16)",
+      "headline": "Vende más por WhatsApp",
+      "body_text": "📲 Si quieres enviar mensajes masivos por WhatsApp y evitar ser bloqueado, tienes que conocer Leadsales.\n\n✅ Esta plataforma te permite mandar mensajes masivos de manera oficial.\n\n💬 Además, vas a poder centralizar tus conversaciones de Whatsapp, Facebook e Instagram en un solo lugar.\n\n👩🏻‍💼 Asignar cada conversación a cada persona de tu equipo de ventas y medir el rendimiento de tu equipo.\n\n🌎 Así fue como Inmobili Internacional vendió 10X más en WhatsApp.\n\n🔥 ¿Quieres tener los mismos resultados?\n\n📆 Agenda hoy mismo tu demo y deja que te enseñemos como Leadsales puede tranformar tu negocio.",
+      "cta": "Learn more",
+      "link_url": "https://lp.leadsales.io/form_v3",
+      "countries": "MX",
+      "days_active": 160,
+      "file_size_mb": 7.372769355773926
+    },
+    {
+      "ad_id": "1108207102169837",
+      "competidor": "Leadsales",
+      "pilar": "conversacional",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\Leadsales\\1108207102169837\\video_0.mp4",
+      "duration_s": 33.32,
+      "resolution": "720x1280 (9:16)",
+      "headline": "📲 Envía WhatsApp masivos",
+      "body_text": "📲 Llega a cientos de clientes en minutos. Envía mensajes masivos por WhatsApp para promociones, recordatorios y seguimientos sin hacerlo uno por uno.",
+      "cta": "Learn more",
+      "link_url": "https://leadsales-ops-mkt.leadsalesapi.com/wapi",
+      "countries": "MX",
+      "days_active": 19,
+      "file_size_mb": 7.994799613952637
+    },
+    {
+      "ad_id": "2619094848494131",
+      "competidor": "Clientify",
+      "pilar": "crm",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\Clientify\\2619094848494131\\video_0.mp4",
+      "duration_s": 40.11,
+      "resolution": "720x1280 (9:16)",
+      "headline": "🧩 Todo tu proceso en un CRM",
+      "body_text": "🧩 ¿Ventas, WhatsApp, email y seguimiento viven en herramientas distintas? Clientify reúne el proceso comercial en un solo lugar para que tu equipo trabaje con el mismo contexto. 🚀 Empieza tu Free Trial.",
+      "cta": "Learn more",
+      "link_url": "https://clientify.com/crm/automatizaciones?utm_source=facebook&utm_medium=paid&utm_campaign=core_crm_freetrial_es_q4_2026&utm_term=exacta&utm_content=banner_d",
+      "countries": "ES",
+      "days_active": 43,
+      "file_size_mb": 1.813150405883789
+    },
+    {
+      "ad_id": "1649292236915392",
+      "competidor": "B2Chat",
+      "pilar": "conversacional",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\B2Chat\\1649292236915392\\video_0.mp4",
+      "duration_s": 36.55,
+      "resolution": "720x720 (1:1)",
+      "headline": "Campañas reales. Sin bloqueos.",
+      "body_text": "Envíos Masivos. Cero caos.\nHaz clic aquí para agendar una demo gratuita. ✨",
+      "cta": "Get Offer",
+      "link_url": "http://fb.me/",
+      "countries": "CO",
+      "days_active": 50,
+      "file_size_mb": 4.072173118591309
+    },
+    {
+      "ad_id": "1693383095733282",
+      "competidor": "Respond.io",
+      "pilar": "conversacional",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\Respond.io\\1693383095733282\\video_0.mp4",
+      "duration_s": 30.66,
+      "resolution": "720x1280 (9:16)",
+      "headline": "See the Full Picture.",
+      "body_text": "Every chat, every lead — finally in one view.",
+      "cta": "Learn More",
+      "link_url": "https://respond.io/?utm_source=facebook&utm_medium=paidsocial&utm_campaign=2025+Meta+Retargeting+Leads+Multi-Region-Sales&utm_term=Lifecycle+video",
+      "countries": "AR, CL, CO, ES, MX, PE, US",
+      "days_active": 2,
+      "file_size_mb": 3.0909767150878906
+    },
+    {
+      "ad_id": "1065641169804418",
+      "competidor": "Yalo",
+      "pilar": "conversacional",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\Yalo\\1065641169804418\\video_0.mp4",
+      "duration_s": 33.83,
+      "resolution": "720x1280 (9:16)",
+      "headline": "ADIÓS CICATRICES HOY 👉",
+      "body_text": "¿Cansada de esconder tus marcas bajo la ropa o intentar cubrirlas con capas de maquillaje sin éxito? 🛑✨\n\nEsa es la \"vieja manera\". Usar remedios caseros o cremas corporales comunes es un error; no penetran en el tejido dañado, no rompen la fibrosis y solo te hacen perder tiempo mientras la marca sigue exactamente igual.\n\nEntra la dermo-reparación avanzada para cicatrices.\nNo es un humectante superficial, es una fórmula de regeneración celular de rápida absorción que actúa directamente sobre el tejido dañado en 3 pasos:\n\n1️⃣ Penetra: Sus ingredientes activos llegan a las capas profundas para ablandar el tejido endurecido de la marca.\n2️⃣ Aplana: Estimula la producción de colágeno natural para alisar y suavizar la textura irregular de la piel.\n3️⃣ Aclara: Desvanece el color oscuro o rojizo progresivamente, igualando tu tono natural en cicatrices viejas y nuevas.\n\nRecupera la confianza de mostrar tu piel sin inseguridades.\n👉 Toca el botón de abajo, pide tu tratamiento hoy y paga en efectivo al recibir en la puerta de tu casa a nivel nacional.",
+      "cta": "Learn more",
+      "link_url": "https://yaloperu.pe/products/scar-removal-b",
+      "countries": "PE",
+      "days_active": 13,
+      "file_size_mb": 4.519012451171875
+    },
+    {
+      "ad_id": "1756002402332109",
+      "competidor": "Respond.io",
+      "pilar": "conversacional",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\Respond.io\\1756002402332109\\video_0.mp4",
+      "duration_s": 60.12,
+      "resolution": "720x720 (1:1)",
+      "headline": "AI Agent for WhatsApp Chat & Voice Calls",
+      "body_text": "Your best sales agent doesn’t sleep.\n\nOur AI Agent answers on WhatsApp — on chat and voice calls — so every lead gets a response, 24/7.",
+      "cta": "Learn More",
+      "link_url": "http://www.respond.io/",
+      "countries": "AR, CL, CO, MX, PE, US",
+      "days_active": 9,
+      "file_size_mb": 3.657329559326172
+    },
+    {
+      "ad_id": "3172443476285076",
+      "competidor": "Leadsales",
+      "pilar": "conversacional",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\Leadsales\\3172443476285076\\video_0.mp4",
+      "duration_s": 44.46,
+      "resolution": "720x1280 (9:16)",
+      "headline": "Tu CRM para WhatsApp",
+      "body_text": "💸 Ya pagaste por el lead. No lo pierdas en WhatsApp.\n\nCon Leadsales centraliza conversaciones, asigna vendedores y automatiza el seguimiento de leads con un CRM para WhatsApp.\n\n📲 Deja de perder oportunidades. Activa tu plan de LeadSales hoy.",
+      "cta": "Learn more",
+      "link_url": "https://leadsales-ops-mkt.leadsalesapi.com/wapi",
+      "countries": "MX",
+      "days_active": 34,
+      "file_size_mb": 9.91406536102295
+    },
+    {
+      "ad_id": "1634879065035686",
+      "competidor": "Kommo",
+      "pilar": "crm",
+      "video_abs_path": "C:\\Users\\riega\\Documents\\Jinora\\downloads\\Kommo\\1634879065035686\\video_0.mp4",
+      "duration_s": 15.83,
+      "resolution": "576x1024 (9:16)",
+      "headline": "Smart TV 43\"",
+      "body_text": "El tamaño ideal para cualquier ambiente de tu casa. 📺✨ Llevate tu Smart TV Philips 43\" Full HD con Google TV.\nDisfrutá de todas tus aplicaciones favoritas, series y películas con una increíble nitidez y la practicidad de un sistema super intuitivo.\n\n🛡️ 1 año de garantía oficial.\n🚚 Llega en caja cerrada (¡Consultá por envíos en el día!).\n📍 Visitanos en nuestras sucursales.\n👇 Hacé clic en \"Enviar mensaje\" para consultar precio y stock disponible.",
+      "cta": "Send WhatsApp message",
+      "link_url": "https://api.whatsapp.com/send",
+      "countries": "AR",
+      "days_active": 6,
+      "file_size_mb": 1.8189477920532227
+    }
+  ]
+}

@@ -268,13 +268,14 @@ class MetaAdsHunter:
         max_bytes: int = 200 * 1024 * 1024,
     ) -> bool:
         """Download file via streaming into temporary .tmp file and atomic rename on success.
-        Only retries network/HTTP/connection errors; does NOT retry when max_bytes is exceeded (ValueError).
+        Only retries network/HTTP/connection errors; does NOT retry when max_bytes is exceeded (ValueError)
+        or on programming errors (TypeError, AttributeError, etc.).
         """
         tmp_path = dest_path.with_suffix(f"{dest_path.suffix}.tmp")
 
         def _should_retry_download(exc: BaseException) -> bool:
-            # Do not retry if the file exceeded maximum size limits (fatal, not transient)
-            if isinstance(exc, ValueError):
+            # Do not retry fatal programming or size limit exceptions
+            if isinstance(exc, (ValueError, TypeError, AttributeError, KeyError, IndexError, NameError)):
                 return False
             return True
 
@@ -289,7 +290,8 @@ class MetaAdsHunter:
             if tmp_path.exists():
                 tmp_path.unlink(missing_ok=True)
 
-            with self.collector.client.session.get(url, stream=True, timeout=timeout) as resp:
+            resp = self.collector.client.session.get(url, stream=True, timeout=timeout)
+            try:
                 if resp.status_code != 200:
                     raise IOError(f"HTTP status {resp.status_code} while downloading {url}")
 
@@ -303,6 +305,9 @@ class MetaAdsHunter:
                                 f"Archivo excede límite de {max_bytes / (1024 * 1024):.0f} MB: {total_downloaded} bytes"
                             )
                         f.write(chunk)
+            finally:
+                if hasattr(resp, "close"):
+                    resp.close()
 
             if total_downloaded < min_bytes:
                 raise IOError(f"Archivo descargado demasiado pequeño ({total_downloaded} bytes)")

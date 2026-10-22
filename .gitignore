@@ -15,6 +15,9 @@ env/
 
 # Media downloads & database backups
 downloads/
+calibration/**/*.mp4
+calibration/videos_scrape/
+calibration/videos20/
 data/*.db
 data/backup/
 logs/

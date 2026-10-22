@@ -17,9 +17,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "1046506741888989"
+          ],
+          "resolved_at": "2026-10-21T21:12:36.335608+00:00",
+          "resolution_confidence": "alta",
           "needs_review": false
         },
         {
@@ -35,9 +37,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "716526724886767"
+          ],
+          "resolved_at": "2026-10-21T21:12:43.171649+00:00",
+          "resolution_confidence": "alta",
           "needs_review": false
         },
         {
@@ -54,9 +58,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:12:45.316064+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "Synthflow AI",
@@ -72,9 +76,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:12:47.297341+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "Air AI",
@@ -90,9 +94,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:12:48.941350+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "Vocads",
@@ -104,9 +108,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "1096144773575445"
+          ],
+          "resolved_at": "2026-10-21T21:15:30.005976+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -119,9 +125,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "110103780356503"
+          ],
+          "resolved_at": "2026-10-21T21:15:34.085040+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -135,9 +143,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:15:35.831415+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "Kore.ai",
@@ -149,9 +157,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "171254336413130"
+          ],
+          "resolved_at": "2026-10-21T21:15:41.887249+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -164,9 +174,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "102306719898697"
+          ],
+          "resolved_at": "2026-10-21T21:15:48.111894+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -180,9 +192,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:15:50.160003+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "PlayHT",
@@ -195,9 +207,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:15:52.273148+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "ElevenLabs",
@@ -212,9 +224,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "108361132071329"
+          ],
+          "resolved_at": "2026-10-21T21:12:54.665043+00:00",
+          "resolution_confidence": "alta",
           "needs_review": false
         },
         {
@@ -227,9 +241,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "141615889026962"
+          ],
+          "resolved_at": "2026-10-21T21:15:56.675588+00:00",
+          "resolution_confidence": "alta",
           "needs_review": false
         },
         {
@@ -243,9 +259,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:15:59.067856+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "Lindy AI",
@@ -257,9 +273,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "136704839531501"
+          ],
+          "resolved_at": "2026-10-21T21:16:04.479627+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -272,9 +290,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "1340635455802185"
+          ],
+          "resolved_at": "2026-10-21T21:16:07.652258+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -287,9 +307,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "132225047430635"
+          ],
+          "resolved_at": "2026-10-21T21:16:12.761370+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -303,9 +325,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:16:14.545499+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "Goodcall",
@@ -317,9 +339,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "739667512724342"
+          ],
+          "resolved_at": "2026-10-21T21:16:20.151395+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -332,9 +356,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "827935443736155"
+          ],
+          "resolved_at": "2026-10-21T21:16:24.178020+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -347,9 +373,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "105539888693161"
+          ],
+          "resolved_at": "2026-10-21T21:16:29.160059+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -363,9 +391,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:16:31.684464+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "Syllable",
@@ -377,9 +405,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "1035610663158413"
+          ],
+          "resolved_at": "2026-10-21T21:16:37.276163+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -392,9 +422,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "306868349410843"
+          ],
+          "resolved_at": "2026-10-21T21:16:42.578725+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -407,9 +439,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "715078685011060"
+          ],
+          "resolved_at": "2026-10-21T21:16:48.404835+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -422,9 +456,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "104124477849191"
+          ],
+          "resolved_at": "2026-10-21T21:16:51.678615+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -437,9 +473,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "137433539654170"
+          ],
+          "resolved_at": "2026-10-21T21:16:57.018478+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -452,9 +490,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "328756350789809"
+          ],
+          "resolved_at": "2026-10-21T21:17:02.963277+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -467,9 +507,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "1694348407353288"
+          ],
+          "resolved_at": "2026-10-21T21:17:08.062325+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -482,9 +524,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "554283188285127"
+          ],
+          "resolved_at": "2026-10-21T21:17:11.548588+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -497,9 +541,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "246247655469142"
+          ],
+          "resolved_at": "2026-10-21T21:17:14.933953+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -512,10 +558,12 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "page_ids": [
+            "225836522159558"
+          ],
+          "resolved_at": "2026-10-21T21:17:18.534867+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "Conversica",
@@ -527,9 +575,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "1480686058837955"
+          ],
+          "resolved_at": "2026-10-21T21:17:24.438513+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -542,9 +592,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "107235695751533"
+          ],
+          "resolved_at": "2026-10-21T21:17:30.603623+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         }
       ]
@@ -584,9 +636,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "125373487335728"
+          ],
+          "resolved_at": "2026-10-21T21:17:37.275893+00:00",
+          "resolution_confidence": "alta",
           "needs_review": false
         },
         {
@@ -599,9 +653,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "539843886214444"
+          ],
+          "resolved_at": "2026-10-21T21:17:42.727735+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -614,9 +670,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "333970750491149"
+          ],
+          "resolved_at": "2026-10-21T21:17:48.359049+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -718,9 +776,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "907108809383196"
+          ],
+          "resolved_at": "2026-10-21T21:17:53.978984+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -733,9 +793,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "1144700952223863"
+          ],
+          "resolved_at": "2026-10-21T21:18:01.421741+00:00",
+          "resolution_confidence": "alta",
           "needs_review": false
         },
         {
@@ -748,9 +810,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "627141290483363"
+          ],
+          "resolved_at": "2026-10-21T21:18:06.018054+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -763,9 +827,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "1259164617432771"
+          ],
+          "resolved_at": "2026-10-21T21:18:11.689851+00:00",
+          "resolution_confidence": "alta",
           "needs_review": false
         },
         {
@@ -778,9 +844,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "205557853353266"
+          ],
+          "resolved_at": "2026-10-21T21:18:18.043696+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -816,9 +884,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "831461766706307"
+          ],
+          "resolved_at": "2026-10-21T21:18:23.400224+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -831,9 +901,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "415003241874446"
+          ],
+          "resolved_at": "2026-10-21T21:18:28.771092+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -847,9 +919,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:18:31.094148+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "Zoko",
@@ -861,9 +933,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "911470185377253"
+          ],
+          "resolved_at": "2026-10-21T21:18:37.278889+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -942,9 +1016,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "204640507863"
+          ],
+          "resolved_at": "2026-10-21T21:18:43.874885+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -957,9 +1033,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "368232197098317"
+          ],
+          "resolved_at": "2026-10-21T21:18:49.422222+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -973,9 +1051,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:18:52.305213+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "Infobip",
@@ -987,9 +1065,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "150473311640966"
+          ],
+          "resolved_at": "2026-10-21T21:18:56.950541+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1002,9 +1082,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "354159652230280"
+          ],
+          "resolved_at": "2026-10-21T21:19:02.690228+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1017,9 +1099,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "106370524349811"
+          ],
+          "resolved_at": "2026-10-21T21:19:06.329958+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1032,9 +1116,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "131457810966226"
+          ],
+          "resolved_at": "2026-10-21T21:19:11.608971+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1047,9 +1133,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "216290601767382"
+          ],
+          "resolved_at": "2026-10-21T21:19:16.864377+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1062,9 +1150,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "49571722061"
+          ],
+          "resolved_at": "2026-10-21T21:19:20.376907+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1077,9 +1167,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "813154332169460"
+          ],
+          "resolved_at": "2026-10-21T21:19:26.978052+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1092,9 +1184,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "115506927827930"
+          ],
+          "resolved_at": "2026-10-21T21:19:32.801914+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1107,9 +1201,11 @@
             "US",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "109845491786635"
+          ],
+          "resolved_at": "2026-10-21T21:19:36.042008+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1123,9 +1219,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:19:37.574037+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "ChatSimple",
@@ -1138,9 +1234,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:19:40.166008+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         }
       ]
     },
@@ -1248,9 +1344,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "451768878925128"
+          ],
+          "resolved_at": "2026-10-21T21:13:01.684493+00:00",
+          "resolution_confidence": "alta",
           "needs_review": false
         },
         {
@@ -1266,9 +1364,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "61486037227"
+          ],
+          "resolved_at": "2026-10-21T21:13:07.555604+00:00",
+          "resolution_confidence": "alta",
           "needs_review": false
         },
         {
@@ -1284,9 +1384,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "161613810523306"
+          ],
+          "resolved_at": "2026-10-21T21:13:13.803434+00:00",
+          "resolution_confidence": "alta",
           "needs_review": false
         },
         {
@@ -1302,9 +1404,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "5634829153"
+          ],
+          "resolved_at": "2026-10-21T21:13:21.588582+00:00",
+          "resolution_confidence": "alta",
           "needs_review": false
         },
         {
@@ -1320,9 +1424,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "54368662036"
+          ],
+          "resolved_at": "2026-10-21T21:13:26.739739+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1338,9 +1444,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "107504249001775"
+          ],
+          "resolved_at": "2026-10-21T21:13:31.045488+00:00",
+          "resolution_confidence": "alta",
           "needs_review": false
         },
         {
@@ -1356,10 +1464,12 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "page_ids": [
+            "102794649011491"
+          ],
+          "resolved_at": "2026-10-21T21:13:36.132373+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "Monday Sales CRM",
@@ -1375,9 +1485,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:13:38.395595+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "ClickUp CRM",
@@ -1393,9 +1503,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:13:39.981938+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "Capsule CRM",
@@ -1410,9 +1520,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "1225581557573690"
+          ],
+          "resolved_at": "2026-10-21T21:13:45.510226+00:00",
+          "resolution_confidence": "alta",
           "needs_review": false
         },
         {
@@ -1428,9 +1540,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "332401296614856"
+          ],
+          "resolved_at": "2026-10-21T21:13:50.175909+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1447,9 +1561,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:13:51.909676+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "Zendesk Sell",
@@ -1465,9 +1579,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:13:53.443251+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "SugarCRM",
@@ -1482,9 +1596,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "470649392960036"
+          ],
+          "resolved_at": "2026-10-21T21:13:59.928139+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1500,9 +1616,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "157004611629632"
+          ],
+          "resolved_at": "2026-10-21T21:14:06.426471+00:00",
+          "resolution_confidence": "alta",
           "needs_review": false
         },
         {
@@ -1519,9 +1637,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:14:08.021578+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "Agile CRM",
@@ -1536,9 +1654,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "129296180603354"
+          ],
+          "resolved_at": "2026-10-21T21:14:11.621046+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1554,9 +1674,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "111393017033032"
+          ],
+          "resolved_at": "2026-10-21T21:14:17.809593+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1572,9 +1694,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "696998944086984"
+          ],
+          "resolved_at": "2026-10-21T21:14:22.771129+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1590,9 +1714,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "106133501842048"
+          ],
+          "resolved_at": "2026-10-21T21:14:27.729557+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1609,9 +1735,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:14:30.390250+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "Pipeline CRM",
@@ -1626,9 +1752,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "14090700713"
+          ],
+          "resolved_at": "2026-10-21T21:14:35.494206+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1644,9 +1772,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "383796804983536"
+          ],
+          "resolved_at": "2026-10-21T21:14:41.358700+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1662,9 +1792,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "226944997321771"
+          ],
+          "resolved_at": "2026-10-21T21:14:45.942368+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1681,9 +1813,9 @@
             "ES"
           ],
           "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
-          "needs_review": false
+          "resolved_at": "2026-10-21T21:14:48.285716+00:00",
+          "resolution_confidence": "baja",
+          "needs_review": true
         },
         {
           "name": "Attio",
@@ -1698,9 +1830,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "112455948544611"
+          ],
+          "resolved_at": "2026-10-21T21:14:54.458136+00:00",
+          "resolution_confidence": "alta",
           "needs_review": false
         },
         {
@@ -1716,9 +1850,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "1721601594588742"
+          ],
+          "resolved_at": "2026-10-21T21:15:00.171140+00:00",
+          "resolution_confidence": "alta",
           "needs_review": false
         },
         {
@@ -1734,9 +1870,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "166578040606211"
+          ],
+          "resolved_at": "2026-10-21T21:15:05.026378+00:00",
+          "resolution_confidence": "alta",
           "needs_review": false
         },
         {
@@ -1752,9 +1890,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "100142475589176"
+          ],
+          "resolved_at": "2026-10-21T21:15:11.169856+00:00",
+          "resolution_confidence": "alta",
           "needs_review": false
         },
         {
@@ -1770,9 +1910,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "387109594970918"
+          ],
+          "resolved_at": "2026-10-21T21:15:18.432455+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         },
         {
@@ -1788,9 +1930,11 @@
             "PE",
             "ES"
           ],
-          "page_ids": [],
-          "resolved_at": null,
-          "resolution_confidence": null,
+          "page_ids": [
+            "475924338937889"
+          ],
+          "resolved_at": "2026-10-21T21:15:23.836786+00:00",
+          "resolution_confidence": "media",
           "needs_review": false
         }
       ]
