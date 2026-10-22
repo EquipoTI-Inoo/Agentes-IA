@@ -49,8 +49,7 @@ class VideoForensicsEngine:
     def __init__(self, whisper_model_size: str = "base") -> None:
         if WhisperModel is None:
             raise RuntimeError(
-                "VideoForensicsEngine está DEPRECATED y faster-whisper no está instalado. "
-                "Gemini multimodal maneja la transcripción y el análisis nativamente (Fase 0.2)."
+                "faster-whisper no está instalado. Instálalo desde requirements-dev.txt para usar VideoForensicsEngine."
             )
         logger.info(f"Cargando modelo Whisper ({whisper_model_size})...")
         # Runs on CPU with int8 quantization for high speed, or CUDA if available

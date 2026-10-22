@@ -35,7 +35,120 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 logger = logging.getLogger("Jinora.Calibrate")
 
 MANUAL_SCORES_PATH = ROOT_DIR / "calibration" / "manual_scores.csv"
+MANIFEST_PATH = ROOT_DIR / "calibration" / "videos_scrape" / "lista.csv"
 DOWNLOADS_DIR = ROOT_DIR / "downloads"
+
+
+def load_manifest(manifest_path: Path = MANIFEST_PATH) -> Dict[int, Dict[str, Any]]:
+    """
+    Loads manifest from lista.csv returning mapping from video number n (int) -> metadata dict:
+    {
+        "n": int,
+        "ad_id": str,
+        "competitor": str,
+        "duration_s": float,
+        "filename": str,
+        "pillar": str,
+    }
+    """
+    if not manifest_path.exists():
+        return {}
+    mapping = {}
+    with open(manifest_path, "r", encoding="utf-8-sig") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            try:
+                n = int(row.get("n", 0))
+            except ValueError:
+                continue
+            mapping[n] = {
+                "n": n,
+                "ad_id": str(row.get("ad_id", "")).strip(),
+                "competitor": str(row.get("competidor", "")).strip(),
+                "duration_s": float(row.get("duracion_s", 0.0) or 0.0),
+                "filename": str(row.get("archivo", "")).strip(),
+                "pillar": str(row.get("pilar", "")).strip(),
+            }
+    return mapping
+
+
+def validate_and_map_external_entry(
+    entry: Dict[str, Any],
+    manifest: Optional[Dict[int, Dict[str, Any]]] = None,
+) -> Tuple[Optional[str], List[str]]:
+    """
+    Validates an external score entry (identifying video by 'n', 'video_number', 'pestaña' or 'ad_id').
+    If given by number, resolves ad_id from manifest and verifies that competitor and duration match.
+    Returns: (resolved_ad_id, warnings)
+    """
+    if manifest is None:
+        manifest = load_manifest()
+
+    warnings: List[str] = []
+    ad_id = str(entry.get("ad_id", "")).strip()
+
+    # Determine video number if provided
+    raw_n = (
+        entry.get("n")
+        or entry.get("video_number")
+        or entry.get("video_num")
+        or entry.get("pestaña")
+        or entry.get("pestana")
+    )
+    n = None
+    if raw_n is not None and str(raw_n).strip():
+        try:
+            num_str = "".join(ch for ch in str(raw_n) if ch.isdigit())
+            if num_str:
+                n = int(num_str)
+        except Exception:
+            pass
+
+    manifest_item = None
+    if n is not None:
+        if n in manifest:
+            manifest_item = manifest[n]
+        else:
+            warnings.append(f"Video #{n} no encontrado en el manifiesto oficial lista.csv.")
+
+    if manifest_item is None and ad_id:
+        for item in manifest.values():
+            if item["ad_id"] == ad_id:
+                manifest_item = item
+                break
+
+    if manifest_item is None:
+        return (ad_id if ad_id else None), warnings
+
+    resolved_ad_id = manifest_item["ad_id"]
+    if ad_id and ad_id != resolved_ad_id:
+        warnings.append(
+            f"Discrepancia en video #{manifest_item['n']}: ad_id provisto '{ad_id}' no coincide con el del manifiesto '{resolved_ad_id}'."
+        )
+
+    # Validate competitor if provided in external entry
+    ext_comp = entry.get("competitor") or entry.get("competidor")
+    if ext_comp:
+        clean_ext_comp = str(ext_comp).strip().lower()
+        clean_man_comp = manifest_item["competitor"].strip().lower()
+        if clean_ext_comp != clean_man_comp:
+            warnings.append(
+                f"Discrepancia en video #{manifest_item['n']}: competidor externo '{ext_comp}' no coincide con el manifiesto '{manifest_item['competitor']}' (ad_id: {resolved_ad_id})."
+            )
+
+    # Validate duration if provided in external entry
+    ext_dur = entry.get("duration") or entry.get("duration_s") or entry.get("duracion_s")
+    if ext_dur is not None:
+        try:
+            dur_float = float(ext_dur)
+            if abs(dur_float - manifest_item["duration_s"]) > 1.5:
+                warnings.append(
+                    f"Discrepancia en video #{manifest_item['n']}: duración externa {dur_float:.1f}s no coincide con manifiesto {manifest_item['duration_s']:.1f}s (ad_id: {resolved_ad_id})."
+                )
+        except ValueError:
+            pass
+
+    return resolved_ad_id, warnings
 
 
 def compute_spearman(x: List[float], y: List[float]) -> float:
@@ -93,11 +206,16 @@ def load_manual_scores(csv_path: Path = MANUAL_SCORES_PATH) -> List[Dict[str, An
         logger.warning(f"Archivo de calibracion no encontrado: {csv_path}")
         return []
 
+    manifest = load_manifest()
     valid_entries = []
     with open(csv_path, "r", encoding="utf-8-sig") as f:
         reader = csv.DictReader(f)
         for row in reader:
-            ad_id = str(row.get("ad_id", "")).strip()
+            resolved_ad_id, warnings = validate_and_map_external_entry(row, manifest)
+            for w in warnings:
+                logger.warning(f"[Calibrate] {w}")
+
+            ad_id = resolved_ad_id or str(row.get("ad_id", "")).strip()
             if not ad_id:
                 continue
 

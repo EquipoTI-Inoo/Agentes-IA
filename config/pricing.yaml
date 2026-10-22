@@ -16,6 +16,6 @@ anthropic:
       output_per_million: 4.00
 
 gemini:
-  default_model: "gemini-2.5-flash"
+  default_model: "gemini-3.5-flash"
   free_tier: true
   cost_per_request: 0.00
